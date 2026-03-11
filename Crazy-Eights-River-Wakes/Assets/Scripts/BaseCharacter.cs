@@ -21,6 +21,7 @@ public abstract class BaseCharacter : MonoBehaviour
         
     }
 
+    // This should handle what happens when CardManager notifies this player that it is their turn
     public abstract void BeginCardTurn();
 
     public void EndTurn() {
