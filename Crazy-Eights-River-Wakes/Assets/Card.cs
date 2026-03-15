@@ -27,7 +27,7 @@ public class Card : MonoBehaviour
 
     public bool IsValidMatch(Card other) {
         // 8s are wild: they always match
-        if (suit == 8) {
+        if (rank == 8) {
             return true;
         }
         // Otherwise, match is valid if suit or rank matches the other card's
