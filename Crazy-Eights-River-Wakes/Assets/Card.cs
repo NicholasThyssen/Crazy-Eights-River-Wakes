@@ -38,9 +38,19 @@ public class Card : MonoBehaviour
     }
 
     // Function for changing the suit of an 8
-    public bool ChangeSuit(Suit new_suit) {
+    public void ChangeSuit(Suit new_suit) {
         suit = new_suit;
         // TODO: Insert a special effect coroutine here (spawn smoke clouds? play a sound effect? make the card glow?)
         UpdateCardFace();
+    }
+
+    public int GetCardScore() {
+        if (rank == 7) {
+            return 50;
+        }
+        else if (rank > 8) {
+            return 10;
+        }
+        return rank + 1;
     }
 }
