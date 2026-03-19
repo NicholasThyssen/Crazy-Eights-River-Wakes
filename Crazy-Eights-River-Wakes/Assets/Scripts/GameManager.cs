@@ -1,0 +1,32 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class GameManager : MonoBehaviour
+{
+    public GameState gameState;
+    public static GameManager instance;
+    public List<BaseCharacter> characters;
+
+    private void Awake()
+    {
+        instance = this;
+        this.gameState = GameState.Default;
+        this.characters = new List<BaseCharacter>();
+    }
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        var charactersArray = FindObjectsByType<BaseCharacter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        this.characters = new List<BaseCharacter>(charactersArray);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}
+
+public enum GameState { 
+    Default,
+}
