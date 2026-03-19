@@ -18,7 +18,7 @@ public class Card : MonoBehaviour
 }
 
 
-public enum Suit
+public enum CardSuit
 {
     Clubs,
     Diamonds,
@@ -26,7 +26,7 @@ public enum Suit
     Spades
 }
 
-public enum Rank
+public enum CardRank
 {
     Ace,
     Two,
