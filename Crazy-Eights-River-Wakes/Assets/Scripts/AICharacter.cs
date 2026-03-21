@@ -1,8 +1,10 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class AICharacter : BaseCharacter
 {
+    private List<Card> cards; 
     public override void BeginCardTurn()
     {
         StartCoroutine(HandleCardTurn());

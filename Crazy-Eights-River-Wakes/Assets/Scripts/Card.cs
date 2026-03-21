@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
+    public CardSuit suit;
+    public CardRank rank;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -23,7 +25,8 @@ public enum CardSuit
     Clubs,
     Diamonds,
     Hearts,
-    Spades
+    Spades,
+    None // used for 8 and Swap
 }
 
 public enum CardRank
@@ -43,3 +46,5 @@ public enum CardRank
     Skip,       // special
     PlusOne     // special
 }
+
+
