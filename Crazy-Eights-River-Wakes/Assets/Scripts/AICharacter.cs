@@ -29,7 +29,10 @@ public class AICharacter : BaseCharacter
             DrawNewCard();
             yield return new WaitForSeconds(1f);
             validCards = this.cardDeck.GetCards().Where(card=>card.suit == CardGameManager.instance.GetCurrSuit() || card.rank == CardGameManager.instance.GetCurrRank() || card.suit == CardSuit.None).ToList();
-            cardToPlay = ChooseRandomCard(validCards);
+            if (validCards.Count > 0)
+            {
+                cardToPlay = ChooseRandomCard(validCards);
+            }
         }
 
 

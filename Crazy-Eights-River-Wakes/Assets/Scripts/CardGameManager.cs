@@ -93,11 +93,15 @@ public class CardGameManager : MonoBehaviour
         }
 
         // update curr suit/rank
-        currRank = cardPlayed.rank;
-        if (cardPlayed.suit != CardSuit.None)
+        if (cardPlayed != null)
         {
-            currSuit = cardPlayed.suit;
-        } 
+            currRank = cardPlayed.rank;
+            if (cardPlayed.suit != CardSuit.None)
+            {
+                currSuit = cardPlayed.suit;
+            } 
+        }
+        
 
         // TODO: Actually handle card logic here!!!!
 
