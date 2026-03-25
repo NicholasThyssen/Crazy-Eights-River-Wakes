@@ -11,8 +11,10 @@ public class TestCard : Card
         rend = GetComponent<Renderer>();
         text = GetComponentInChildren<TextMeshPro>();
     }
-    public void Initialize(CardSuit suite, CardRank rank)
+    public void Initialize(CardSuit suit, CardRank rank)
     {
+        this.suit = suit;
+        this.rank = rank;
         // Set text
         if (text != null)
         {
@@ -22,7 +24,7 @@ public class TestCard : Card
         // Set cube color
         if (rend != null)
         {
-            rend.material.color = GetColorFromSuit(suite);
+            rend.material.color = GetColorFromSuit(suit);
         }
     }
 

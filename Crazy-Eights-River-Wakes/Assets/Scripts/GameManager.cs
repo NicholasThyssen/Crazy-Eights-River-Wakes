@@ -4,7 +4,9 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameState gameState;
+    [HideInInspector]
     public static GameManager instance;
+    [HideInInspector]
     public List<BaseCharacter> characters;
 
     private void Awake()

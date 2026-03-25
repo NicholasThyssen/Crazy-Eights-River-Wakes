@@ -6,7 +6,7 @@ public class CardSpawner : MonoBehaviour
     public GameObject cardPrefab;
     public CardDeck deck;
 
-    void Start()
+    void Awake()
     {
 
         List<Card> cards = new List<Card>();
@@ -44,6 +44,7 @@ public class CardSpawner : MonoBehaviour
             offset += Vector3.forward * 0.001f;
         }
 
+        Debug.Log("SETTINGS CARDS TO GENERATED CARDS");
         deck.SetCards(cards);
         deck.ShuffleDeck();
     }

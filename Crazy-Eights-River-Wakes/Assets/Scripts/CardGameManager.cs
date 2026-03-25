@@ -4,12 +4,20 @@ using UnityEngine;
 
 public class CardGameManager : MonoBehaviour
 {
+    public static CardGameManager instance;
     private int currentTurnIdx;
+    
     private BaseCharacter currentPlayerTurn;
     public CardDeck deck;
+    public CardDeck discardPile;    // this is where placed cards go. Players do not draw from here
 
     private CardSuit currSuit;
     private CardRank currRank;
+
+    void Awake()
+    {
+        instance = this;
+    }
 
 
     void Start()
@@ -17,6 +25,12 @@ public class CardGameManager : MonoBehaviour
 
         // initialize first card (beginning suit/rank)
         Card firstCard = deck.DrawRandomCard();
+        Debug.Log("FIRST CARD IS");
+        Debug.Log(firstCard);
+        if (discardPile != null)
+        {
+            discardPile.AddCard(firstCard);
+        }
         currRank = firstCard.rank;
         currSuit = firstCard.suit;
 
@@ -54,6 +68,7 @@ public class CardGameManager : MonoBehaviour
         if (players != null && players.Count > 0)
         {
             currentPlayerTurn = players[currentTurnIdx];
+            currentPlayerTurn.BeginCardTurn();  // notify player that it is their turn
         }
 
     }
@@ -64,23 +79,31 @@ public class CardGameManager : MonoBehaviour
         
     }
 
-    private void HandleCardDrawn(BaseCharacter playerDrawing, Suit cardSuit, Rank cardRank)
-    {
-
-    }
-
     private List<BaseCharacter> GetPlayers()
     {
         return GameManager.instance.characters;
     }
 
     // Call this from BaseCharacter when done drawing
-    public void EndTurn(BaseCharacter player)
+    public void EndTurn(BaseCharacter player, Card cardPlayed)
     {
         if (player != currentPlayerTurn)
         {
             throw new System.Exception("EndTurn was called by a player while it was not their turn");
         }
+
+        // update curr suit/rank
+        if (cardPlayed != null)
+        {
+            currRank = cardPlayed.rank;
+            if (cardPlayed.suit != CardSuit.None)
+            {
+                currSuit = cardPlayed.suit;
+            } 
+        }
+        
+
+        // TODO: Actually handle card logic here!!!!
 
         // move onto next player
         currentTurnIdx = (currentTurnIdx + 1) % GetPlayers().Count;
@@ -88,6 +111,16 @@ public class CardGameManager : MonoBehaviour
 
         // notify player that it is their turn
         currentPlayerTurn.BeginCardTurn();
+    }
+
+    public CardSuit GetCurrSuit()
+    {
+        return this.currSuit;
+    }
+
+    public CardRank GetCurrRank()
+    {
+        return this.currRank;
     }
 }
 
