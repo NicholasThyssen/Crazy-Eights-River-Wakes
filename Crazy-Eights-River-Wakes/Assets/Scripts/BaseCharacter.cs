@@ -3,15 +3,16 @@ using UnityEngine;
 
 public abstract class BaseCharacter : MonoBehaviour
 {
-    protected bool isCrouched = false;
     protected Animator animator;
-    protected List<Card> cards;
+    protected CardDeck cardDeck;
+    
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        cards = new List<Card>();
+        SpawnCardDeck();
     }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -26,24 +27,26 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public void AddCard(Card card)
     {
-        this.cards.Add(card);
+        this.cardDeck.AddCard(card);
     }
 
     // This should handle what happens when CardManager notifies this player that it is their turn
     public abstract void BeginCardTurn();
 
-    public void EndTurn() {
-        throw new System.NotImplementedException();
+    public void EndTurn(Card cardPlayed) {
+        CardGameManager.instance.EndTurn(this, cardPlayed);
     }
 
-    public void ToggleCrouch()
+    // Spawns the card deck at a given location. For AI characters this is overridden to use the deckAttach object as parent 
+    protected virtual void SpawnCardDeck()
     {
-        SetCrouch(!!isCrouched);
-    }
-
-    public void SetCrouch(bool shouldCrouch)
-    {
-        isCrouched = shouldCrouch;
-        animator.SetBool("IsCrouching", isCrouched);
+        GameObject cardDeckGameObj = new GameObject("CardDeck");
+        this.cardDeck = cardDeckGameObj.AddComponent<CardDeck>();
+        /*the 2 lines below are from AICharacter. They don't work here since we don't have deckAttach
+        I left them for reference as a guide
+        */
+        
+        // cardDeck.transform.SetParent(this.deckAttach.transform);
+        // cardDeck.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 }
