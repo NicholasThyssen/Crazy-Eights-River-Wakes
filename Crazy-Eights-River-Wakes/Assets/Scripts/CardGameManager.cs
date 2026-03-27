@@ -6,6 +6,7 @@ public class CardGameManager : MonoBehaviour
 {
     public static CardGameManager instance;
     private int currentTurnIdx;
+    private bool reverseOrder = false;
     
     private BaseCharacter currentPlayerTurn;
     public CardDeck deck;
@@ -102,14 +103,54 @@ public class CardGameManager : MonoBehaviour
             } 
         }
         
-
         // TODO: Actually handle card logic here!!!!
+        
 
         // move onto next player
         currentTurnIdx = (currentTurnIdx + 1) % GetPlayers().Count;
         currentPlayerTurn = GetPlayers()[currentTurnIdx];
 
         // notify player that it is their turn
+        currentPlayerTurn.BeginCardTurn();
+    }
+
+    public void AllDrawOne()
+    {
+        // Play an effect here, all other players aside from the current draw one card   
+    }
+
+    public void SkipNextPlayer()
+    {
+        // Play an effect here, set something to skip the next player
+    }
+
+    public void ReverseTurnOrder()
+    {
+        // Flip the bool, maybe play an effect here
+        reverseOrder = !reverseOrder;
+    }
+
+    public void ProgressTurnOrder(bool skipping = false)
+    {
+        // If skipping, turn order progresses by 2 instead of 1
+        orderProgression = (skipping ? 2 : 1) * (reverseOrder ? -1 : 1);
+        // Move to next player in turn order
+        // % is remainder not modulo, so add player count to handle negative cases
+        // e.g. going from 3 to 2: (3-1+4) % 4 = 2
+        // going from 2 to 0: (2+2+4) % 4 = 0
+        // going from 0 to 1: (0+1+4) % 4 = 1
+        // going from 1 to 3: (1-2+4) % 4 = 3
+        currentTurnIdx = (currentTurnIdx + orderProgression + GetPlayers().Count) % GetPlayers().Count;
+        // Set the current player to next in the order
+        currentPlayerTurn = GetPlayers()[currentTurnIdx];
+    }
+
+    public void MoveToNextTurn()
+    {
+        // Nove to next player in the turn order;
+        progressTurnOrder();
+        // Notify player it's their turn
+        // May want to send an event to the player here? But that can come when the logic is more fleshed out and animations are a bit furtehr developed.
         currentPlayerTurn.BeginCardTurn();
     }
 
