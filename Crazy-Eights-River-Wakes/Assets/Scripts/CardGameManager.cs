@@ -114,26 +114,47 @@ public class CardGameManager : MonoBehaviour
         currentPlayerTurn.BeginCardTurn();
     }
 
+    public void DrawCardsForPlayer(int playerIndex, int amount = 1)
+    {
+        BaseCharacter targetPlayer = GetPlayers()[currentTurnIdx];
+
+        if (deck.PeekTop() == null)
+        {
+            // If the deck is empty, replace the deck with the discard pile (sans the top card) and shuffle.
+            // If the discard pile is somehow empty too (how???), spawn a fresh deck.
+        }
+        Card nextCard = deck.Pop();
+
+        // Add cards to the target player's hand (animate them flying into the visible hand?)
+    }
+
+    public void Swap()
+    {
+        // Perform a swap action here with animations        
+    }
+
     public void AllDrawOne()
     {
-        // Play an effect here, all other players aside from the current draw one card   
+        // Play an effect here, all other players aside from the current draw one card
+        // Animate cards auto-adding to player's hands
     }
 
     public void SkipNextPlayer()
     {
         // Play an effect here, set something to skip the next player
+        // When progressing turn order, skipping = true
     }
 
     public void ReverseTurnOrder()
     {
-        // Flip the bool, maybe play an effect here
+        // Flip the bool, play an effect here
         reverseOrder = !reverseOrder;
     }
 
     public void ProgressTurnOrder(bool skipping = false)
     {
         // If skipping, turn order progresses by 2 instead of 1
-        orderProgression = (skipping ? 2 : 1) * (reverseOrder ? -1 : 1);
+        int orderProgression = (skipping ? 2 : 1) * (reverseOrder ? -1 : 1);
         // Move to next player in turn order
         // % is remainder not modulo, so add player count to handle negative cases
         // e.g. going from 3 to 2: (3-1+4) % 4 = 2
@@ -148,7 +169,7 @@ public class CardGameManager : MonoBehaviour
     public void MoveToNextTurn()
     {
         // Nove to next player in the turn order;
-        progressTurnOrder();
+        ProgressTurnOrder();
         // Notify player it's their turn
         // May want to send an event to the player here? But that can come when the logic is more fleshed out and animations are a bit furtehr developed.
         currentPlayerTurn.BeginCardTurn();

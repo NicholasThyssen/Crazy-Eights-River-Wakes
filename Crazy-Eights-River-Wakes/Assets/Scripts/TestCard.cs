@@ -58,6 +58,11 @@ public class TestCard : Card
         faceMaterial.SetFloat("Rank", (int)rank);
     }
 
+    public void PlaySpecialEffect(string effectName)
+    {
+        
+    }
+
     // Returns a non-zero value if the card can be played to the current pile.
     // I'd make this a boolean, but I don't know how wilds and swaps are planned to be handled.
     private int IsValidPlayable(CardSuit suit, CardRank rank)
