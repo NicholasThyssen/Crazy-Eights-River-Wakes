@@ -22,29 +22,29 @@ public class Card : MonoBehaviour
 
 public enum CardSuit
 {
-    Clubs,
-    Diamonds,
-    Hearts,
-    Spades,
+    Hearts = 0,
+    Clubs = 1,
+    Spades = 2,
+    Diamonds = 3,
     None // used for 8 and Swap
 }
 
 public enum CardRank
 {
-    Ace,
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,      // special
-    Nine,
-    Ten,
-    Reverse,    // special
-    Swap,       // special
-    Skip,       // special
-    PlusOne     // special
+    Ace = 0,
+    Two = 1,
+    Three = 2,
+    Four = 3,
+    Five = 4,
+    Six = 5,
+    Seven = 6,
+    Eight = 7,      // special
+    Nine = 8,
+    Ten = 9,
+    Reverse = 10,    // special / Jack
+    Skip = 11,       // special / Queen
+    PlusOne = 12,    // special / King
+    Swap = 13,       // special (For the Swap card, should we make it a Joker? Since we've already represented all the standard ranks in a 52-card deck)
 }
 
 
