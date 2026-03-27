@@ -40,7 +40,21 @@ public class TestCard : Card
     // Sets the face texture of the card.
     private void SetFaceTexture(CardSuit suit, CardRank rank)
     {
-        faceMaterial.SetFloat("Suit", (int)suit);
+        if (rank != CardRank.Eight && rank != CardRank.Swap) {
+            faceMaterial.SetFloat("Suit", (int)suit);
+        }
+        else if (rank == CardRank.Eight)
+        {
+            // Set the card to a blue 8 for now
+            faceMaterial.SetFloat("Suit", 0);
+            faceMaterial.SetFloat("Rank", 7);
+        }
+        else if (rank == CardRank.Swap)
+        {
+            // Set the card to a green 8 for now
+            faceMaterial.SetFloat("Suit", 1);
+            faceMaterial.SetFloat("Rank", 7);
+        }
         faceMaterial.SetFloat("Rank", (int)rank);
     }
 
