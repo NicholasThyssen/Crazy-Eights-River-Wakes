@@ -12,14 +12,19 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        this.gameState = GameState.Default;
-        this.characters = new List<BaseCharacter>();
+        gameState = GameState.Default;
+        characters = new List<BaseCharacter>();
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        characters = BuildCharactersArray();
+    }
+
+    public List<BaseCharacter> BuildCharactersArray()
+    {
         var charactersArray = FindObjectsByType<BaseCharacter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-        this.characters = new List<BaseCharacter>(charactersArray);
+        return new List<BaseCharacter>(charactersArray);
     }
 
     // Update is called once per frame

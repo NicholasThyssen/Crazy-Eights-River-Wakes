@@ -39,9 +39,7 @@ public class CardSpawner : MonoBehaviour
         Vector3 offset = Vector3.zero;
         foreach(Card card in cards)
         {
-            card.gameObject.transform.SetParent(deck.gameObject.transform);
-            card.gameObject.transform.localPosition = offset;
-            offset += Vector3.forward * 0.001f;
+            deck.AddCard(card);
         }
 
         Debug.Log("SETTINGS CARDS TO GENERATED CARDS");

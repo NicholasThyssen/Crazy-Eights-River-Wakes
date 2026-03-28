@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.Events;
+
 public class CardGameManager : MonoBehaviour
 {
+    public UnityEvent<int> currentPlayerChanged;
     public static CardGameManager instance;
     private int currentTurnIdx;
     private bool reverseOrder = false;
@@ -35,6 +38,8 @@ public class CardGameManager : MonoBehaviour
         currRank = firstCard.rank;
         currSuit = firstCard.suit;
 
+        Debug.Log("First card rank/suit assigned");
+
         // If suit is none, choose a random suit (other than none)
         if (currSuit == CardSuit.None)
         {
@@ -51,26 +56,8 @@ public class CardGameManager : MonoBehaviour
             }
             currSuit = suits[UnityEngine.Random.Range(0, suits.Count)];
         }
-        
-        // start off at player 0's turn
-        currentTurnIdx = 0;
-        List<BaseCharacter> players = GetPlayers();
 
-        // give them all cards to start off with
-        foreach(BaseCharacter character in players)
-        {
-            for(int i = 0; i < 5; i++)
-            {
-                character.AddCard(this.deck.DrawRandomCard());
-            }
-            
-        }
-
-        if (players != null && players.Count > 0)
-        {
-            currentPlayerTurn = players[currentTurnIdx];
-            currentPlayerTurn.BeginCardTurn();  // notify player that it is their turn
-        }
+        BeginFirstTurn();
 
     }
 
@@ -80,9 +67,44 @@ public class CardGameManager : MonoBehaviour
         
     }
 
+    private void BeginFirstTurn()
+    {
+        Debug.Log("Beginning pre-round actions...");
+       // start off at player 0's turn
+        currentTurnIdx = 0;
+        List<BaseCharacter> players = GetPlayers();
+
+        Debug.Log("Drawing cards for each player...");
+
+        // give them all cards to start off with
+        foreach(BaseCharacter character in players)
+        {
+            for(int i = 0; i < 5; i++)
+            {
+                character.AddCard(deck.Pop());
+            }
+            
+        }
+
+        if (players != null && players.Count > 0)
+        {
+            Debug.Log("First player starts their turn.");
+            currentPlayerTurn = players[currentTurnIdx];
+            currentPlayerTurn.BeginCardTurn();  // notify player that it is their turn
+        }        
+    }
+
     private List<BaseCharacter> GetPlayers()
     {
-        return GameManager.instance.characters;
+        if (GameManager.instance.characters.Count > 0) {
+            return GameManager.instance.characters;
+        }
+        else
+        {
+            // Let's put out this fire before it starts
+            GameManager.instance.characters = GameManager.instance.BuildCharactersArray();
+            return GameManager.instance.characters;
+        }
     }
 
     // Call this from BaseCharacter when done drawing
