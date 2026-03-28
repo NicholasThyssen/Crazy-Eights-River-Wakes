@@ -85,6 +85,16 @@ public class TestCard : Card
         return 0;
     }
 
+    private void EnableXRInteractions()
+    {
+        
+    }
+
+    private void DisableXRInteractions()
+    {
+        
+    }
+
     private static Color GetColorFromSuit(CardSuit suit)
 {
     switch (suit)

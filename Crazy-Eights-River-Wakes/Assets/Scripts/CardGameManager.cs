@@ -114,21 +114,34 @@ public class CardGameManager : MonoBehaviour
         currentPlayerTurn.BeginCardTurn();
     }
 
+    // Draw a single card from the main deck and add it to the XR hand the player is using to draw from the deck in addition to the player's card hand.
+    public void DrawCardFromDeck(int playerIndex, Transform targetAttach)
+    {
+        Card nextCard = GetNextCardFromDeck();
+    }
+
+    // Draw any amount of cards from the main deck and add them to that player's card hand, with accompany animations/effects.
     public void DrawCardsForPlayer(int playerIndex, int amount = 1)
     {
         BaseCharacter targetPlayer = GetPlayers()[currentTurnIdx];
 
+        Card nextCard = GetNextCardFromDeck();
+
+        // Add cards to the target player's hand (animate them flying into the visible hand?)
+    }
+
+    public Card GetNextCardFromDeck()
+    {
         if (deck.PeekTop() == null)
         {
             // If the deck is empty, replace the deck with the discard pile (sans the top card) and shuffle.
             // If the discard pile is somehow empty too (how???), spawn a fresh deck.
         }
         Card nextCard = deck.Pop();
-
-        // Add cards to the target player's hand (animate them flying into the visible hand?)
+        return nextCard;
     }
 
-    public void Swap()
+    public void SwapHands()
     {
         // Perform a swap action here with animations        
     }
