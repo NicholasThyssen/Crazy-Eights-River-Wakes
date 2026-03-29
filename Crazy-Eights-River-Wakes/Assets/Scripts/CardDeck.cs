@@ -7,7 +7,7 @@ public class CardDeck : MonoBehaviour
 
     public void Awake()
     {
-        cards = new List<Card>(GetComponentsInChildren<Card>());
+        cards = new List<Card>();
     }
 
     // Shouldn't be needed; only used for testing purposes
@@ -91,6 +91,10 @@ public class CardDeck : MonoBehaviour
         this.cards.Add(card);
         card.transform.SetParent(this.transform);
         card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        Debug.Log(
+ $"AddCard called. card={(card == null ? "NULL" : card.name)}, cardsList={(cards == null ? "NULL" : "OK")}",
+ this
+);
 
         // move card to be physically in front of the others (so they aren't all at the same location)
         Vector3 offset = 0.001f * this.cards.Count * Vector3.forward;

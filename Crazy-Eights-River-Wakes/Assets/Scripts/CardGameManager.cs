@@ -14,6 +14,9 @@ public class CardGameManager : MonoBehaviour
     private CardSuit currSuit;
     private CardRank currRank;
 
+    public SuitSelectionUI suitUI;
+    public SwapSelectionUI swapUI;
+
     void Awake()
     {
         instance = this;
@@ -22,6 +25,9 @@ public class CardGameManager : MonoBehaviour
 
     void Start()
     {
+
+        Debug.Log("Manager deck = " + deck, deck);
+        Debug.Log("Manager deck card count = " + (deck == null ? -1 : deck.GetCards().Count));
 
         // initialize first card (beginning suit/rank)
         Card firstCard = deck.DrawRandomCard();
@@ -100,12 +106,23 @@ public class CardGameManager : MonoBehaviour
                 currSuit = cardPlayed.suit;
             } 
         }
-        
 
-        // TODO: Actually handle card logic here!!!!
+        // Looks at card played to see its effects on the game
+        HandleCardEffects(player, cardPlayed);
 
-        // move onto next player
-        currentTurnIdx = (currentTurnIdx + 1) % GetPlayers().Count;
+        int count = GetPlayers().Count;
+
+        // Move onto the next player by checking if reversed first
+        if (!reversed)
+        {
+            currentTurnIdx = (currentTurnIdx + 1) % count;
+
+        }
+        else
+        {
+            currentTurnIdx = (currentTurnIdx - 1 + count) % count;
+        }
+
         currentPlayerTurn = GetPlayers()[currentTurnIdx];
 
         // notify player that it is their turn
@@ -121,6 +138,121 @@ public class CardGameManager : MonoBehaviour
     {
         return this.currRank;
     }
+
+    // Checks if card can be played or not. True if playable else it can't be.
+    public bool CanPlayCard(Card card)
+    {
+        // If 8, then playable
+        if (card.rank == CardRank.Eight)
+            return true;
+
+        // If same rank or same suit, then playable
+        if (card.suit == currSuit || card.rank == currRank)
+            return true;
+
+        return false;
+    }
+
+    // This handles scenarios in which 
+    private void HandleCardEffects(BaseCharacter player, Card cardPlayed)
+    {
+        if (cardPlayed == null)
+            return;
+
+        switch (cardPlayed.rank)
+        {
+            case CardRank.Eight:
+                // Player chooses suit — for now pick random
+                RequestSuitChoice(player);
+                Debug.Log("Suit changed!");
+                return;
+
+            // Skips the next player who would go in the turn order
+            case CardRank.Skip:
+                currentTurnIdx = (currentTurnIdx + 1) % GetPlayers().Count;
+                Debug.Log("Next player skipped!");
+                break;
+
+            // Reverses turn order of players
+            case CardRank.Reverse:
+                ReverseTurnOrder();
+                Debug.Log("Turn order reversed!");
+                break;
+
+            // For now simply adds one card to next player but could make it so if next player has +1 they could play it
+            case CardRank.PlusOne:
+                BaseCharacter next = GetPlayers()[(currentTurnIdx + 1) % GetPlayers().Count];
+                next.AddCard(deck.DrawRandomCard());
+                Debug.Log("Next player draws +1");
+                break;
+
+            // Will swap hands with another player
+            case CardRank.Swap:
+                RequestSwapChoice(player);
+                Debug.Log("Hands swapped!");
+                return;
+        }
+    }
+
+    // Will wit until they choose
+    public void RequestSuitChoice(BaseCharacter player)
+    {
+        suitUI.Show(player);
+    }
+
+    public void RequestSwapChoice(BaseCharacter player)
+    {
+        swapUI.Show(player, GetPlayers());
+    }
+
+    public void OnSuitChosen(CardSuit chosenSuit)
+    {
+        currSuit = chosenSuit;
+        Debug.Log("Suit chosen: " + chosenSuit);
+
+        ContinueTurnAfterEffect();
+    }
+
+    public void OnSwapChosen(BaseCharacter target)
+    {
+        var players = GetPlayers();
+
+        // Swap hands
+        var temp = currentPlayerTurn.GetHand();
+        currentPlayerTurn.SetHand(target.GetHand());
+        target.SetHand(temp);
+
+        Debug.Log("Swapped hands with: " + target.name);
+
+        ContinueTurnAfterEffect();
+    }
+
+
+    // Initially set to false as we go in the correct turn order
+    private bool reversed = false;
+
+    // Reverse the turn order
+    private void ReverseTurnOrder()
+    {
+        reversed = !reversed;
+    }
+
+    private void ContinueTurnAfterEffect()
+    {
+        int count = GetPlayers().Count;
+
+        if (!reversed)
+            currentTurnIdx = (currentTurnIdx + 1) % count;
+        else
+            currentTurnIdx = (currentTurnIdx - 1 + count) % count;
+
+        currentPlayerTurn = GetPlayers()[currentTurnIdx];
+        currentPlayerTurn.BeginCardTurn();
+    }
+
+
+
+
 }
 
 public enum Suit

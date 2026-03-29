@@ -4,10 +4,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameState gameState;
-    [HideInInspector]
-    public static GameManager instance;
-    [HideInInspector]
-    public List<BaseCharacter> characters;
+    [HideInInspector] public static GameManager instance;
+    [HideInInspector] public List<BaseCharacter> characters;
 
     private void Awake()
     {
@@ -23,13 +21,16 @@ public class GameManager : MonoBehaviour
         
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+    }
+
     void Update()
     {
-        
     }
 }
 
-public enum GameState { 
+public enum GameState
+{
     Default,
 }
