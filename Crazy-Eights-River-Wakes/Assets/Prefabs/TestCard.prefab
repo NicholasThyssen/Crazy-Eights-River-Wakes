@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 2679217966744344522}
   - component: {fileID: 7856760336381909310}
   - component: {fileID: 8913118846334742726}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TestCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -506,7 +506,7 @@ GameObject:
   - component: {fileID: 6150169993095646586}
   - component: {fileID: 7216584380168687811}
   - component: {fileID: 3174101831208023146}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
