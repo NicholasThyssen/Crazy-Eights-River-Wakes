@@ -25,7 +25,6 @@ public class CardGameManager : MonoBehaviour
 
         // initialize first card (beginning suit/rank)
         Card firstCard = deck.DrawRandomCard();
-        Debug.Log("FIRST CARD IS");
         Debug.Log(firstCard);
         if (discardPile != null)
         {
