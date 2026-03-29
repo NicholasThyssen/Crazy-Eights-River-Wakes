@@ -16,10 +16,10 @@ MonoBehaviour:
   - Default
   - Grabbable
   - 
-  - 
-  - 
-  - 
-  - 
+  - Card
+  - Hand
+  - Draw Deck
+  - Discard Deck
   - 
   - 
   - 
