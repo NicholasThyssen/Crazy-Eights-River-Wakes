@@ -1,9 +1,19 @@
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class Card : MonoBehaviour
 {
     public CardSuit suit;
     public CardRank rank;
+
+    protected Rigidbody rb;
+    protected BoxCollider collider;
+
+    void Awake()
+    {
+        rb = gameObject.GetComponent<Rigidbody>();
+        collider = gameObject.GetComponent<BoxCollider>();
+    }
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -17,8 +27,29 @@ public class Card : MonoBehaviour
         
     }
 
-}
+    public void EnablePhysics()
+    {
+        rb.isKinematic = false;
+        //collider.enabled = true;
+    }
 
+    public void DisablePhysics()
+    {
+        rb.isKinematic = true;
+        //collider.enabled = false;
+    }
+
+    public void EnableGrab()
+    {
+        
+    }
+
+    public void DisableGrab()
+    {
+        
+    }
+
+}
 
 public enum CardSuit
 {

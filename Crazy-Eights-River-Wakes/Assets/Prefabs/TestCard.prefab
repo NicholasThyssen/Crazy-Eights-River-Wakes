@@ -239,8 +239,8 @@ GameObject:
   - component: {fileID: 2679217966744344522}
   - component: {fileID: 8913118846334742726}
   - component: {fileID: 2241563169377384438}
-  - component: {fileID: 16508229834201957}
-  - component: {fileID: 4526017047159654632}
+  - component: {fileID: 3402207149334506664}
+  - component: {fileID: 2122794869756117702}
   m_Layer: 0
   m_Name: TestCard
   m_TagString: Untagged
@@ -357,7 +357,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.25, y: 1.25, z: 5}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &16508229834201957
+--- !u!54 &3402207149334506664
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -384,14 +384,14 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
---- !u!114 &4526017047159654632
+--- !u!114 &2122794869756117702
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4378521283812266844}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ad34abafad169848a38072baa96cdb2, type: 3}
   m_Name: 
@@ -695,7 +695,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6150169993095646586
 RectTransform:
   m_ObjectHideFlags: 0

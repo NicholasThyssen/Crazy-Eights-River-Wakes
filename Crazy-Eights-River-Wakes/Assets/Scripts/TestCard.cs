@@ -7,17 +7,21 @@ public class TestCard : Card
     private Renderer rend;
     private Material faceMaterial;
 
-    private Rigidbody rigidbody;
-    private BoxCollider collider;
+
 
     void Awake()
     {
+        rb = gameObject.GetComponent<Rigidbody>();
+        collider = gameObject.GetComponent<BoxCollider>();
+
         rend = GetComponent<Renderer>();
         text = GetComponentInChildren<TextMeshPro>();
         faceMaterial = transform.GetChild(0).GetComponent<MeshRenderer>().material; // "Face" should always be the first child in the GameObject hierarchy
 
-        rigidbody = GetComponent<Rigidbody>();
-        collider = GetComponent<BoxCollider>();
+        if (faceMaterial != null)
+        {
+            SetFaceTexture(suit, rank);
+        }
     }
 
     public void Initialize(CardSuit suit, CardRank rank)
@@ -41,30 +45,6 @@ public class TestCard : Card
         {
             rend.material.color = GetColorFromSuit(suit);
         }
-
-        DisablePhysics();
-    }
-
-    public void EnablePhysics()
-    {
-        rigidbody.isKinematic = true;
-        collider.enabled = true;
-    }
-
-    public void DisablePhysics()
-    {
-        rigidbody.isKinematic = false;
-        collider.enabled = false;
-    }
-
-    public void EnableGrab()
-    {
-        
-    }
-
-    public void DisableGrab()
-    {
-        
     }
 
     // Sets the face texture of the card.
