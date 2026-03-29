@@ -150,7 +150,7 @@ public class CardDeck : MonoBehaviour
             }
         }
 
-        // ShuffleDeck();
+        ShuffleDeck();
     }
 
     public void UpdateCardBlob()
