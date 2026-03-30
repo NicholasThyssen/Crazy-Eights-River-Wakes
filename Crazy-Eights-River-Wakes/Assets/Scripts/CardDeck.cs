@@ -199,6 +199,10 @@ public class CardDeck : MonoBehaviour
         cards.Add(card);
         card.transform.SetParent(this.transform);
         card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        Debug.Log(
+ $"AddCard called. card={(card == null ? "NULL" : card.name)}, cardsList={(cards == null ? "NULL" : "OK")}",
+ this
+);
 
         if (faceDownDeck)
         {

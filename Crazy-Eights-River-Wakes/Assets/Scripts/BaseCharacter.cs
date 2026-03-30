@@ -5,12 +5,12 @@ public abstract class BaseCharacter : MonoBehaviour
 {
     protected Animator animator;
     protected CardDeck cardDeck;
-    
+
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        SpawnCardDeck();
+        //SpawnCardDeck();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -27,7 +27,11 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public void AddCard(Card card)
     {
-        this.cardDeck.AddCard(card);
+        if (card == null) return;
+
+        hand.Add(card);
+        card.transform.SetParent(this.transform); // or a hand anchor
+                                                  // optionally position it here
     }
 
     // This should handle what happens when CardManager notifies this player that it is their turn
@@ -36,6 +40,50 @@ public abstract class BaseCharacter : MonoBehaviour
     public void EndTurn(Card cardPlayed) {
         CardGameManager.instance.EndTurn(this, cardPlayed);
     }
+
+
+    // List of player's hand
+    private List<Card> hand = new List<Card>();
+
+    // We remove card from hand
+    public void RemoveCard(Card card)
+    {
+        hand.Remove(card);
+        // update visuals if needed
+    }
+
+    // We get their hand
+    public List<Card> GetHand()
+    {
+        return hand;
+    }
+
+    // Set hand to something new
+    public void SetHand(List<Card> newHand)
+    {
+        hand = newHand;
+        // update visuals if needed
+    }
+
+    // Lets player see UI to choose suit to change (after playing an 8)
+    public void ShowSuitSelectionUI()
+    {
+        CardGameManager.instance.suitUI.Show(this);
+    }
+
+    // Lets player see UI to choose player to swap (after playing a swap)
+    public void ShowSwapSelectionUI(List<BaseCharacter> players)
+    {
+        CardGameManager.instance.swapUI.Show(this, players);
+    }
+
+    private void RefreshHandUI()
+    {
+        // TODO: redraw the cards visually
+        // This depends on your existing UI system
+    }
+
+
 
     // Spawns the card deck at a given location. For AI characters this is overridden to use the deckAttach object as parent 
     protected virtual void SpawnCardDeck()

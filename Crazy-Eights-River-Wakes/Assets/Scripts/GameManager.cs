@@ -4,21 +4,20 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameState gameState;
-    [HideInInspector]
-    public static GameManager instance;
-    [HideInInspector]
-    public List<BaseCharacter> characters;
+    [HideInInspector] public static GameManager instance;
+    [HideInInspector] public List<BaseCharacter> characters;
 
     private void Awake()
     {
         instance = this;
         gameState = GameState.Default;
         characters = new List<BaseCharacter>();
+        var charactersArray = FindObjectsByType<BaseCharacter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        characters = BuildCharactersArray();
+        
     }
 
     public List<BaseCharacter> BuildCharactersArray()
@@ -32,8 +31,17 @@ public class GameManager : MonoBehaviour
     {
         
     }
+
+    void Start()
+    {
+    }
+
+    void Update()
+    {
+    }
 }
 
-public enum GameState { 
+public enum GameState
+{
     Default,
 }
