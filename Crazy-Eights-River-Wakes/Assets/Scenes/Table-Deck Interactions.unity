@@ -5386,14 +5386,14 @@ PrefabInstance:
     - target: {fileID: 7469204013236556488, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
       propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1817799341}
+      objectReference: {fileID: 0}
     - target: {fileID: 7469204013236556488, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
       propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7469204013236556488, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
       propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PopCardFromHand
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7469204013236556488, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
       propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -5408,7 +5408,12 @@ PrefabInstance:
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 884403612552627953, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
+    - {fileID: 5300797013395482482, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
+    - {fileID: 2943472226510442111, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
+    - {fileID: 3377041938239811473, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
+    - {fileID: 3390589281780543626, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4412261983161512068, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
