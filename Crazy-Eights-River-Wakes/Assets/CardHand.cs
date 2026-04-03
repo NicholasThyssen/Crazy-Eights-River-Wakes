@@ -1,8 +1,11 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
+// A physical card hand for holding cards. NOT the actual metaphorical hand that the characters use.
 public class CardHand : MonoBehaviour
 {
     public GameObject socketPrefab;
@@ -11,8 +14,14 @@ public class CardHand : MonoBehaviour
 
     public float fanSpread = 2.0f;
 
+    private BaseCharacter owner;
+
+    private Transform lastKnownSocketPosition;
+
     private List<Card> heldCards;
     
+    private Transform fallDetector;
+
     private Transform sockets;
     private XRSocketInteractor currentSocket;
 
@@ -22,10 +31,17 @@ public class CardHand : MonoBehaviour
     
     private List<(XRSocketInteractor, Card)> socketCardPairs;
 
+    private Rigidbody rb;
+
     public Transform cardAnchor;
+
+    public UnityEvent<Card> cardAdded;
+
+    public UnityEvent<Card> cardRemoved;
 
     void Awake()
     {
+        rb = GetComponent<Rigidbody>();
         sockets = transform.GetChild(1);
         InitializeHand();
     }
@@ -33,6 +49,8 @@ public class CardHand : MonoBehaviour
     private void InitializeHand()
     {
         heldCards = new List<Card>();
+
+        fallDetector = transform.GetChild(2);
 
         activeSockets = new List<XRSocketInteractor>();
         inactiveSockets = new Stack<XRSocketInteractor>();
@@ -54,6 +72,11 @@ public class CardHand : MonoBehaviour
         UpdateCurrentSocket();
     }
 
+    public void Clear()
+    {
+        
+    }
+
     public void AttachCardToHand(XRSocketInteractor eventSocket = null)
     {
         Debug.Log("Card attached to hand.");
@@ -63,6 +86,7 @@ public class CardHand : MonoBehaviour
             Card addedCard = selected.transform.gameObject.GetComponent<Card>();
             addedCard.DisablePhysics();
             heldCards.Add(addedCard);
+            cardAdded.Invoke(addedCard);
             socketCardPairs.Add((currentSocket, addedCard));
         }
 
@@ -83,6 +107,25 @@ public class CardHand : MonoBehaviour
         }
     }
 
+    // "Summon" the card to the hand, e.g.
+    public void SummonCardToHand(Card targetCard, bool instant = false)
+    {
+        XRGrabInteractable targetGrab = targetCard.gameObject.GetComponent<XRGrabInteractable>();
+        targetCard.DisablePhysics();
+        targetGrab.enabled = false;
+        if (instant)
+        {
+            targetCard.gameObject.transform.position = currentSocket.transform.position;
+            targetGrab.enabled = true;
+        }
+        else
+        {
+            targetCard.gameObject.transform.position = currentSocket.transform.position;
+            targetGrab.enabled = true;
+        }
+
+    }
+
     public void PopCardFromHand(XRSocketInteractor eventSocket = null)
     {
         Debug.Log("Card detached from socket " + eventSocket + ".");
@@ -93,11 +136,20 @@ public class CardHand : MonoBehaviour
         heldCards.Remove(foundTuple.Item2);
         activeSockets.Remove(eventSocket);
         inactiveSockets.Push(eventSocket);
+        cardRemoved.Invoke(foundTuple.Item2);
         eventSocket.gameObject.SetActive(false);
 
         MakeCardFan();
 
         Debug.Log("You now have " + heldCards.Count + " cards in your hand.");
+    }
+
+    public void ReturnHandToPlayer()
+    {
+        rb.velocity = new Vector3(0.0f, 0.0f, 0.0f);
+        // Play smoke effect?
+        transform.position = lastKnownSocketPosition.position;
+        transform.rotation = lastKnownSocketPosition.rotation;
     }
     
     public void MakeCardFan()
@@ -106,17 +158,5 @@ public class CardHand : MonoBehaviour
         {
             continue;
         }
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

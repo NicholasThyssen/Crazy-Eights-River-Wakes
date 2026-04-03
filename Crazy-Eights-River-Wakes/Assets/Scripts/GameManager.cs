@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
         characters = new List<BaseCharacter>();
         var charactersArray = FindObjectsByType<BaseCharacter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
     }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -30,14 +31,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
-    }
-
-    void Start()
-    {
-    }
-
-    void Update()
-    {
     }
 }
 

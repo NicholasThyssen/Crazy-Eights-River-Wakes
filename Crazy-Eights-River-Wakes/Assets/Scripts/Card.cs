@@ -49,6 +49,22 @@ public class Card : MonoBehaviour
         
     }
 
+    public bool IsValidMatch(Card rhs)
+    {
+        if (rank == CardRank.Eight || rhs.rank == CardRank.Eight)
+        {
+            return true;
+        }
+        else if (rank == CardRank.Swap || rhs.rank == CardRank.Swap)
+        {
+            return true;
+        }
+        else
+        {
+            return rank == rhs.rank || suit == rhs.suit;
+        }
+    }
+
 }
 
 public enum CardSuit

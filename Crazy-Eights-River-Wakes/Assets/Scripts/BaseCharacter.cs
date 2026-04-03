@@ -6,10 +6,19 @@ public abstract class BaseCharacter : MonoBehaviour
     protected Animator animator;
     protected CardDeck cardDeck;
 
+    // The list of the player's OWNED cards (i.e. those in their hand + any loose cards).
+    protected List<Card> ownedCards;
+
+    // The physical representation of a player's hand.
+    protected CardHand playerHand;
+
+    protected bool playedThisTurn = false;
+
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        Initialize();
         //SpawnCardDeck();
     }
 
@@ -23,6 +32,11 @@ public abstract class BaseCharacter : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void Initialize()
+    {
+        ownedCards = new List<Card>();
     }
 
     public void AddCard(Card card)
@@ -39,6 +53,45 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public void EndTurn(Card cardPlayed) {
         CardGameManager.instance.EndTurn(this, cardPlayed);
+        playedThisTurn = false;
+    }
+
+    public List<Card> GetOwnedCards()
+    {
+        return ownedCards;
+    }
+
+    public int GetOwnedCardsCount()
+    {
+        return ownedCards.Count;
+    }
+
+    public void SetOwnedCards(List<Card> newOwnedCards)
+    {
+        ownedCards.Clear();
+        //playerHand.Clear();
+        //playerHand.ClearHeldCards();
+        ownedCards = newOwnedCards;
+        foreach (Card c in ownedCards)
+        {
+            TeleportCardToHand(c);
+        }
+    }
+
+    public void AddCardToOwned(Card targetCard)
+    {
+        ownedCards.Add(targetCard);
+        
+    }
+
+    public void ClearCardFromOwned(Card targetCard)
+    {
+        ownedCards.Remove(targetCard);
+    }
+
+    public void TeleportCardToHand(Card targetCard)
+    {
+        playerHand.SummonCardToHand(targetCard);
     }
 
 

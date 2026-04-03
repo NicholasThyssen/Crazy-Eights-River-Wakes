@@ -196,12 +196,6 @@ public class CardGameManager : MonoBehaviour
         // When progressing turn order, skipping = true
     }
 
-    public void ReverseTurnOrder()
-    {
-        // Flip the bool, play an effect here
-        reverseOrder = !reverseOrder;
-    }
-
     public void ProgressTurnOrder(bool skipping = false)
     {
         // If skipping, turn order progresses by 2 instead of 1

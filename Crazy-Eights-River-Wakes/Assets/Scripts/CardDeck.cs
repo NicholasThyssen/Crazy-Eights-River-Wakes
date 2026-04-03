@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class CardDeck : MonoBehaviour
 {
@@ -9,6 +11,8 @@ public class CardDeck : MonoBehaviour
     private Transform respawnAnchor;
     private Transform cardBlob;
 
+    private XRSocketInteractor acceptSocket;
+
     public bool faceDownDeck = false;
     public bool spawnCardsOnAwake = false;
     public GameObject cardPrefab;
@@ -16,12 +20,14 @@ public class CardDeck : MonoBehaviour
     public UnityEvent<string> deckShuffled;
     public UnityEvent<bool> deckRespawned;
 
+    public UnityEvent<Card> cardPlayedToDeck;
+
     public void Awake()
     {
         if (transform.childCount > 0)
         {
             cardBlob = transform.GetChild(0);
-            //Destroy(cardBlob.gameObject);
+            acceptSocket = transform.GetChild(1).GetComponent<XRSocketInteractor>();
         }
         // Spawn cards if necessary
         if (spawnCardsOnAwake)
@@ -215,6 +221,29 @@ public class CardDeck : MonoBehaviour
         card.gameObject.transform.localPosition += offset;
         
         UpdateCardBlob();
+    }
+
+    public void CardAcceptedBySocket()
+    {
+        // Get the card and add it to the deck
+        // Send an event afterward that the game manager picks up on
+        Card newCard = new Card();
+    }
+
+    public void DrawCardToPlayer(BaseCharacter target, bool autoAdd = false)
+    {
+
+        if (autoAdd)
+        {
+            
+        }
+    }
+
+    public bool EvaluateSelection(Card candidateCard)
+    {
+        Card topCard = PeekTop();
+        if (topCard == null) return true;
+        return topCard.IsValidMatch(candidateCard);
     }
 
     public void MergeDeckAndShuffle(CardDeck deck)
