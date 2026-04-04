@@ -1,6 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using System;
 
 using UnityEngine.Events;
 
@@ -64,8 +67,14 @@ public class CardGameManager : MonoBehaviour
             currSuit = suits[UnityEngine.Random.Range(0, suits.Count)];
         }
 
-        BeginFirstTurn();
+        StartCoroutine(WaitToStart());
+    }
 
+    IEnumerator WaitToStart()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        BeginFirstTurn();
     }
 
     // Update is called once per frame
@@ -85,32 +94,42 @@ public class CardGameManager : MonoBehaviour
         {
             Debug.Log("First player starts their turn.");
             currentPlayerTurn = players[currentTurnIdx];
-            currentPlayerTurn.BeginCardTurn();  // notify player that it is their turn
             beginPlayerTurn.Invoke(currentPlayerTurn);
         }        
     }
 
     private List<BaseCharacter> SetupPlayers()
     {
+        int playerId = 0;
         Debug.Log("Performing card setup...");
         List<BaseCharacter> players = GetPlayers();
         foreach (BaseCharacter player in players)
         {
+            player.playerId = playerId;
+            playerId++;
             player.AssignListeners();
         }
 
-        Debug.Log("Drawing cards for each player...");
-
-        // give them all cards to start off with
-        foreach(BaseCharacter character in players)
-        {
-            for(int i = 0; i < 5; i++)
-            {
-                character.AddCard(deck.Pop());
-            }  
-        }
+        // Deal each player five cards
+        DealCards(players);
 
         return players;
+    }
+
+    private void DealCards(List<BaseCharacter> players)
+    {
+        Debug.Log("Drawing cards for each player...");
+
+        for (int i = 0; i < 5; i++)
+        {
+            foreach(BaseCharacter player in players)
+            {
+                Card topCard = deck.Pop();
+                player.TeleportNewCardToHand(topCard);
+            }     
+        }
+
+        Debug.Log("Cards dealt. # of remaining cards in draw deck: " + deck.GetCardCount());
     }
 
     private List<BaseCharacter> GetPlayers()
@@ -129,46 +148,11 @@ public class CardGameManager : MonoBehaviour
     // Call this from BaseCharacter when done drawing
     public void EndTurn(BaseCharacter player, Card cardPlayed)
     {
-        if (player != currentPlayerTurn)
-        {
-            throw new System.Exception("EndTurn was called by a player while it was not their turn");
-        }
 
-        // update curr suit/rank
-        if (cardPlayed != null)
-        {
-            currRank = cardPlayed.rank;
-            if (cardPlayed.suit != CardSuit.None)
-            {
-                currSuit = cardPlayed.suit;
-            } 
-        }
-
-        // Looks at card played to see its effects on the game
-        HandleCardEffects(player, cardPlayed);
-
-        int count = GetPlayers().Count;
-
-        // Move onto the next player by checking if reversed first
-        if (!reversed)
-        {
-            currentTurnIdx = (currentTurnIdx + 1) % count;
-
-        }
-        else
-        {
-            currentTurnIdx = (currentTurnIdx - 1 + count) % count;
-        }
-
-        currentPlayerTurn = GetPlayers()[currentTurnIdx];
-
-        // notify player that it is their turn
-        currentPlayerTurn.BeginCardTurn();
-        beginPlayerTurn.Invoke(currentPlayerTurn);
     }
 
 
-    public void PlayerCardPlayed(BaseCharacter player, Card cardPlayed)
+    public void PlayerPlayedCard(BaseCharacter player, Card cardPlayed)
     {
         if (player == currentPlayerTurn)
         {
@@ -193,7 +177,25 @@ public class CardGameManager : MonoBehaviour
     {
         if (player == currentPlayerTurn)
         {
-            Debug.Log("Player turn end event received");
+            Debug.Log("Player " + player.playerId + " turn end event received. Cards: " + player.GetOwnedCardsCount());
+            Debug.Log("Draw deck: " + deck.GetCardCount() + ", discard pile: " + discardPile.GetCardCount());
+            int count = GetPlayers().Count;
+
+            // Move onto the next player by checking if reversed first
+            if (!reversed)
+            {
+                currentTurnIdx = (currentTurnIdx + 1) % count;
+
+            }
+            else
+            {
+                currentTurnIdx = (currentTurnIdx - 1 + count) % count;
+            }
+
+            currentPlayerTurn = GetPlayers()[currentTurnIdx];
+
+            // notify player that it is their turn
+            beginPlayerTurn.Invoke(currentPlayerTurn);
         }
         else
         {
@@ -266,7 +268,6 @@ public class CardGameManager : MonoBehaviour
         ProgressTurnOrder();
         // Notify player it's their turn
         // May want to send an event to the player here? But that can come when the logic is more fleshed out and animations are a bit furtehr developed.
-        currentPlayerTurn.BeginCardTurn();
     }
 
     public CardSuit GetCurrSuit()
@@ -280,17 +281,10 @@ public class CardGameManager : MonoBehaviour
     }
 
     // Checks if card can be played or not. True if playable else it can't be.
-    public bool CanPlayCard(Card card)
+    public bool CanPlayCard(Card candidateCard)
     {
-        // If 8, then playable
-        if (card.rank == CardRank.Eight)
-            return true;
-
-        // If same rank or same suit, then playable
-        if (card.suit == currSuit || card.rank == currRank)
-            return true;
-
-        return false;
+        Card topCard = discardPile.PeekTop();
+        return topCard.IsValidMatch(candidateCard);
     }
 
     // This handles scenarios in which 
@@ -387,11 +381,9 @@ public class CardGameManager : MonoBehaviour
             currentTurnIdx = (currentTurnIdx - 1 + count) % count;
 
         currentPlayerTurn = GetPlayers()[currentTurnIdx];
-        currentPlayerTurn.BeginCardTurn();
+
+        beginPlayerTurn.Invoke(currentPlayerTurn);
     }
-
-
-
 
 }
 

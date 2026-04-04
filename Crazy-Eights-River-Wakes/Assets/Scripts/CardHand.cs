@@ -12,6 +12,11 @@ public class MainSocketFilter : MonoBehaviour, IXRHoverFilter
 
     public List<Card> filterList;
 
+    public void Awake()
+    {
+        filterList = new List<Card>();
+    }
+
     public void UpdateFilterList(List<Card> filterList)
     {
         this.filterList = filterList;
@@ -32,40 +37,23 @@ public class MainSocketFilter : MonoBehaviour, IXRHoverFilter
 public class CardHand : MonoBehaviour
 {
     public GameObject socketPrefab;
-    public int playerId = 0;
-    public int maxHandSize = 5;
-
+    public int maxHandSize = 20;
     public float fanSpread = 2.0f;
-
     private BaseCharacter owner;
-
     private Transform lastKnownSocketPosition;
-
     private MainSocketFilter filter;
-
     private List<Card> heldCards;
-    
     private Transform fallDetector;
-
     private Transform sockets;
     private XRSocketInteractor currentSocket;
-
     private XRSocketInteractor mainSocket;
-
     private List<XRSocketInteractor> activeSockets;
-
     private Stack<XRSocketInteractor> inactiveSockets;
-    
     private List<(XRSocketInteractor, Card)> socketCardPairs;
-
     private Rigidbody rb;
-
-    public Transform cardAnchor;
-
     private Transform cardContainer;
 
     public UnityEvent<Card> cardAdded;
-
     public UnityEvent<Card> cardRemoved;
 
     void Awake()
@@ -73,7 +61,7 @@ public class CardHand : MonoBehaviour
         InitializeHand();
     }
 
-    private void InitializeHand()
+    public void InitializeHand()
     {
         heldCards = new List<Card>();
 
@@ -84,33 +72,14 @@ public class CardHand : MonoBehaviour
         mainSocket = cardContainer.GetChild(0).GetComponent<XRSocketInteractor>();
         filter = new MainSocketFilter();
 
-        mainSocket.hoverFilters.Add(filter);
+        //mainSocket.hoverFilters.Add(filter);
         filter.UpdateFilterList(heldCards);
-
-        // mainSocket
 
         activeSockets = new List<XRSocketInteractor>();
         inactiveSockets = new Stack<XRSocketInteractor>();
         socketCardPairs = new List<(XRSocketInteractor, Card)>();
 
         mainSocket.selectEntered.AddListener(delegate {AttachCardFromMainSocket();});
-
-        /*
-        for (int i=0; i<maxHandSize; i++)
-        {
-            var newSocket = Instantiate(socketPrefab);
-            newSocket.transform.parent = sockets;
-            newSocket.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            newSocket.transform.localPosition += new Vector3(-0.04f * i, 0.0f, 0.01f * i);
-            XRSocketInteractor interactor = newSocket.GetComponent<XRSocketInteractor>();
-            interactor.selectEntered.AddListener(delegate {AttachCardToHand(interactor);});
-            interactor.selectExited.AddListener(delegate {PopCardFromHand(interactor);});
-            inactiveSockets.Push(interactor);
-            newSocket.SetActive(false);
-        }
-
-        UpdateCurrentSocket();
-        */
     }
 
     public void SetOwner(BaseCharacter owner)
@@ -123,42 +92,76 @@ public class CardHand : MonoBehaviour
         
     }
 
+    public List<Card> GetHeldCards()
+    {
+        return heldCards;
+    }
+
+    public bool HasCardInHand(Card targetCard)
+    {
+        return heldCards.Contains(targetCard);
+    }
+
+    public void AddCardToHand(Card targetCard)
+    {
+        mainSocket.enabled = false;
+        targetCard.transform.SetParent(cardContainer);
+        targetCard.DisablePhysics();
+        heldCards.Add(targetCard);
+
+        targetCard.GetComponent<XRGrabInteractable>().selectEntered.AddListener(delegate {CardGrabbedFromHand(targetCard);});
+
+        filter.UpdateFilterList(heldCards);
+        MakeCardFan();
+        mainSocket.enabled = true;
+
+        cardAdded.Invoke(targetCard);
+    }
+
+    public void RemoveCardFromHand(Card targetCard)
+    {
+        mainSocket.enabled = false;
+        targetCard.GetComponent<XRGrabInteractable>().selectEntered.RemoveAllListeners();
+        heldCards.Remove(targetCard);
+        targetCard.transform.SetParent(null);
+
+        filter.UpdateFilterList(heldCards);
+        MakeCardFan();
+        mainSocket.enabled = true;
+
+        cardRemoved.Invoke(targetCard);
+    }
+
     public void AttachCardFromMainSocket()
     {
-
         Debug.Log("Card attached to hand.");
         var selected = mainSocket.GetOldestInteractableSelected();
         if (selected != null)
         {
-            mainSocket.enabled = false;
-            Card addedCard = selected.transform.gameObject.GetComponent<Card>();
-            addedCard.transform.SetParent(cardContainer);
-            addedCard.DisablePhysics();
-            heldCards.Add(addedCard);
-            cardAdded.Invoke(addedCard);
-            socketCardPairs.Add((currentSocket, addedCard));
-            addedCard.GetComponent<XRGrabInteractable>().selectEntered.AddListener(delegate {CardGrabbedFromHand(addedCard);});
+            Card targetCard = selected.transform.gameObject.GetComponent<Card>();
+            AddCardToHand(targetCard);
         }
-
-        filter.UpdateFilterList(heldCards);
-        MakeCardFan();
-        mainSocket.enabled = true;
     }
 
-    public void CardGrabbedFromHand(Card selectedCard)
+    public void CardGrabbedFromHand(Card targetCard)
     {
-        mainSocket.enabled = false;
-        if (selectedCard != null)
+        if (targetCard != null)
         {
-            selectedCard.GetComponent<XRGrabInteractable>().selectEntered.RemoveAllListeners();
-            heldCards.Remove(selectedCard);
-            selectedCard.EnablePhysics();
-            selectedCard.transform.SetParent(null);
+            RemoveCardFromHand(targetCard);
+            targetCard.EnablePhysics();
         }
+    }
 
-        filter.UpdateFilterList(heldCards);
-        MakeCardFan();
-        mainSocket.enabled = true;
+    public void OnFallbackWarpTriggered(Card targetCard)
+    {
+        if (!heldCards.Contains(targetCard) && owner.HasCard(targetCard))
+        {
+            
+        }
+        else
+        {
+            targetCard.fallbackWarpTriggered.RemoveListener(OnFallbackWarpTriggered);
+        }
     }
 
     public void AttachCardToHand(XRSocketInteractor eventSocket = null)
@@ -191,14 +194,16 @@ public class CardHand : MonoBehaviour
         }
     }
 
+    public void AddCardFromTeleport(Card targetCard)
+    {
+        AddCardToHand(targetCard);
+    }
+
     // "Summon" the card to the hand
     public void SummonCardToHand(Card targetCard)
     {
-        XRGrabInteractable targetGrab = targetCard.gameObject.GetComponent<XRGrabInteractable>();
         targetCard.DisablePhysics();
-        targetGrab.enabled = false;
-        targetCard.gameObject.transform.position = currentSocket.transform.position;
-        targetGrab.enabled = true;
+        targetCard.gameObject.transform.position = mainSocket.transform.position;
     }
 
     public void PopCardFromHand(XRSocketInteractor eventSocket = null)
@@ -229,9 +234,9 @@ public class CardHand : MonoBehaviour
     
     public void MakeCardFan()
     {
-        foreach (Transform cardTransform in cardAnchor)
+        foreach (Transform cardTransform in cardContainer)
         {
-            continue;
+            cardTransform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         }
     }
 }

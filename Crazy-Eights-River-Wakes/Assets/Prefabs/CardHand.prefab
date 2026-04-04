@@ -136,10 +136,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   socketPrefab: {fileID: 8274621342219377245, guid: 823acfcb152c1b348ad59344555d79d5, type: 3}
-  playerId: 0
   maxHandSize: 20
   fanSpread: 2
-  cardAnchor: {fileID: 27349154858912574}
   cardAdded:
     m_PersistentCalls:
       m_Calls: []
@@ -305,7 +303,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8050446387428765273}
   m_Layer: 0
-  m_Name: HeldCards
+  m_Name: CardContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

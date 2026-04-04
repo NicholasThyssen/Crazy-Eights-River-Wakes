@@ -4,8 +4,8 @@ using UnityEngine.Events;
 
 public abstract class BaseCharacter : MonoBehaviour
 {
+    public GameObject cardHandPrefab;
     protected Animator animator;
-    protected CardDeck cardDeck;
 
     // The list of the player's OWNED cards (i.e. those in their hand + any loose cards).
     protected List<Card> ownedCards;
@@ -17,14 +17,17 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public int playerId = -1;
 
+    public UnityEvent<BaseCharacter, Card> playerPlayedCard;
+
     public UnityEvent<BaseCharacter> playerTurnEnded;
 
+    protected List<Card> queue;
 
-    private void Awake()
+
+    void Awake()
     {
         animator = GetComponent<Animator>();
         Initialize();
-        SpawnCardDeck();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -47,8 +50,11 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public void CreateHand()
     {
-        playerHand = new GameObject("CardHand").GetComponent<CardHand>();
+        GameObject playerHandObject = Instantiate(cardHandPrefab);
+        playerHand = playerHandObject.GetComponent<CardHand>();
+        playerHand.InitializeHand();
         playerHand.SetOwner(this);
+        playerHandObject.transform.SetParent(this.transform);
         //playerHand.gameObject.transform.SetParent(this.deckAttach.transform);
         // playerHand.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         
@@ -57,7 +63,10 @@ public abstract class BaseCharacter : MonoBehaviour
     public void AssignListeners()
     {
         CardGameManager cgm = CardGameManager.instance;
+        // Assign listeners to our own signal
+        playerPlayedCard.AddListener(cgm.PlayerPlayedCard);
         playerTurnEnded.AddListener(cgm.PlayerTurnEnded);
+        // Listen to the manager's signals
         cgm.beginPlayerTurn.AddListener(BeginPlayerTurn);
     }
 
@@ -71,14 +80,12 @@ public abstract class BaseCharacter : MonoBehaviour
     }
 
     // This should handle what happens when CardManager notifies this player that it is their turn
-    public abstract void BeginCardTurn();
 
     public abstract void BeginPlayerTurn(BaseCharacter player);
 
     public void EndTurn(Card cardPlayed) {
         playedThisTurn = false;
         playerTurnEnded.Invoke(this);
-        CardGameManager.instance.EndTurn(this, cardPlayed);
     }
 
     public List<Card> GetOwnedCards()
@@ -89,6 +96,11 @@ public abstract class BaseCharacter : MonoBehaviour
     public int GetOwnedCardsCount()
     {
         return ownedCards.Count;
+    }
+
+    public bool HasCard(Card targetCard)
+    {
+        return ownedCards.Contains(targetCard);
     }
 
     public void SetOwnedCards(List<Card> newOwnedCards)
@@ -111,27 +123,38 @@ public abstract class BaseCharacter : MonoBehaviour
     public void RemoveCardFromOwned(Card targetCard)
     {
         ownedCards.Remove(targetCard);
+        if (playerHand.HasCardInHand(targetCard))
+        {
+            playerHand.RemoveCardFromHand(targetCard);
+        }
     }
 
     public void TeleportNewCardToHand(Card targetCard, bool flying = false)
     {
         AddCardToOwned(targetCard);
+        playerHand.AddCardFromTeleport(targetCard);
         // playerHand.SummonCardToHand(targetCard);
     }
 
     public void PullCardToHandObject(Card targetCard, Transform handObject, bool flying = false)
     {
-        if (flying)
+        if (playerHand.HasCardInHand(targetCard))
         {
+            playerHand.RemoveCardFromHand(targetCard);
+            if (flying)
+            {
             
+            }
+            else
+            {
+                targetCard.gameObject.transform.SetParent(handObject);
+                targetCard.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            }
         }
-        else
-        {
-            
-        }
+
     }
 
-    public void PlaceCardOnDeck(Card targetCard, CardDeck targetDeck, bool flying = false)
+    public void PlayCardToDeck(Card targetCard, CardDeck targetDeck, bool flying = false)
     {
         RemoveCardFromOwned(targetCard);
         if (flying)
@@ -140,7 +163,7 @@ public abstract class BaseCharacter : MonoBehaviour
         }
         else
         {
-            
+            targetDeck.PlayCardToDeck(targetCard);
         }
     }
 
@@ -186,18 +209,4 @@ public abstract class BaseCharacter : MonoBehaviour
         // This depends on your existing UI system
     }
 
-
-
-    // Spawns the card deck at a given location. For AI characters this is overridden to use the deckAttach object as parent 
-    protected virtual void SpawnCardDeck()
-    {
-        GameObject cardDeckGameObj = new GameObject("CardDeck");
-        this.cardDeck = cardDeckGameObj.AddComponent<CardDeck>();
-        /*the 2 lines below are from AICharacter. They don't work here since we don't have deckAttach
-        I left them for reference as a guide
-        */
-        
-        // cardDeck.transform.SetParent(this.deckAttach.transform);
-        // cardDeck.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-    }
 }

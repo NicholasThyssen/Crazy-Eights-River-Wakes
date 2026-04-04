@@ -74,6 +74,11 @@ public class CardDeck : MonoBehaviour
         return this.cards;
     }
 
+    public int GetCardCount()
+    {
+        return cards.Count;
+    }
+
     // Returns the card at the top of the deck AND removes it from the deck
     public Card Pop()
     {
@@ -225,6 +230,12 @@ public class CardDeck : MonoBehaviour
         
         UpdateCardBlob();
         Debug.Log("Currently have # of cards:" + cards.Count);
+    }
+
+    public void PlayCardToDeck(Card card)
+    {
+        AddCard(card);
+        cardPlayedToDeck.Invoke(card);
     }
 
     public void RemoveCard(Card card)

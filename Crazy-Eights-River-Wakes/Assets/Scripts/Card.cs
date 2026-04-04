@@ -10,7 +10,7 @@ public class Card : MonoBehaviour
     protected Rigidbody rb;
     protected BoxCollider collider;
 
-    public UnityEvent<Card> grabEvent;
+    public UnityEvent<Card> fallbackWarpTriggered;
 
     void Awake()
     {
@@ -50,11 +50,6 @@ public class Card : MonoBehaviour
     public void DisableGrab()
     {
         
-    }
-
-    public void OnGrab()
-    {
-        grabEvent.Invoke(this);
     }
 
     public bool IsValidMatch(Card rhs)

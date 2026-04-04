@@ -489,7 +489,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba255d5d0e545f84699c25f5209df04a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardHandPrefab: {fileID: 1817799340}
   playerId: -1
+  playerPlayedCard:
+    m_PersistentCalls:
+      m_Calls: []
   playerTurnEnded:
     m_PersistentCalls:
       m_Calls: []
@@ -902,7 +906,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba255d5d0e545f84699c25f5209df04a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardHandPrefab: {fileID: 1817799340}
   playerId: -1
+  playerPlayedCard:
+    m_PersistentCalls:
+      m_Calls: []
   playerTurnEnded:
     m_PersistentCalls:
       m_Calls: []
@@ -1635,7 +1643,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba255d5d0e545f84699c25f5209df04a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardHandPrefab: {fileID: 1817799340}
   playerId: -1
+  playerPlayedCard:
+    m_PersistentCalls:
+      m_Calls: []
   playerTurnEnded:
     m_PersistentCalls:
       m_Calls: []
