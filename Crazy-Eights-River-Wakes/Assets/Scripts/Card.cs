@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class Card : MonoBehaviour
@@ -8,6 +9,8 @@ public class Card : MonoBehaviour
 
     protected Rigidbody rb;
     protected BoxCollider collider;
+
+    public UnityEvent<Card> grabEvent;
 
     void Awake()
     {
@@ -47,6 +50,11 @@ public class Card : MonoBehaviour
     public void DisableGrab()
     {
         
+    }
+
+    public void OnGrab()
+    {
+        grabEvent.Invoke(this);
     }
 
     public bool IsValidMatch(Card rhs)

@@ -11,6 +11,8 @@ public class CardDeck : MonoBehaviour
     private Transform respawnAnchor;
     private Transform cardBlob;
 
+    private Transform cardContainer;
+
     private XRSocketInteractor acceptSocket;
 
     public bool faceDownDeck = false;
@@ -24,19 +26,18 @@ public class CardDeck : MonoBehaviour
 
     public void Awake()
     {
+        // Initialize card list
+        cards = new List<Card>(GetComponentsInChildren<Card>());
         if (transform.childCount > 0)
         {
             cardBlob = transform.GetChild(0);
             acceptSocket = transform.GetChild(1).GetComponent<XRSocketInteractor>();
+            cardContainer = transform.GetChild(2);
         }
         // Spawn cards if necessary
         if (spawnCardsOnAwake)
         {
             SpawnCards();
-        }
-        // Otherwise, initialize card list
-        else {
-        cards = new List<Card>(GetComponentsInChildren<Card>());
         }
     }
 
@@ -58,7 +59,7 @@ public class CardDeck : MonoBehaviour
         this.cards = cardsList;
         foreach(var card in cards)
         {
-            card.gameObject.transform.SetParent(this.transform);
+            card.gameObject.transform.SetParent(cardContainer);
         }
     }
 
@@ -163,6 +164,13 @@ public class CardDeck : MonoBehaviour
     {
         Vector3 localForward = transform.worldToLocalMatrix.MultiplyVector(transform.forward);
         Vector3 topOffset = 0.001f * cards.Count * localForward;
+        Card topCard = PeekTop();
+
+        if (topCard == null)
+        {
+            return;
+        }
+
         // If <3 cards, hide completely
         if (cards.Count < 3)
         {
@@ -171,7 +179,6 @@ public class CardDeck : MonoBehaviour
                 cardBlob.gameObject.SetActive(false);
             }
 
-            Card topCard = PeekTop();
             if (cards.Count == 2) {
                 cards[0].gameObject.SetActive(false);
             }
@@ -182,7 +189,6 @@ public class CardDeck : MonoBehaviour
         // Otherwise, show card blob expanding/shrinking
         else
         {
-            Card topCard = PeekTop();
             cards[cards.Count - 2].gameObject.SetActive(false);
             topCard.gameObject.SetActive(true);
             topCard.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
@@ -203,12 +209,9 @@ public class CardDeck : MonoBehaviour
     public void AddCard(Card card)
     {
         cards.Add(card);
-        card.transform.SetParent(this.transform);
+        card.transform.SetParent(cardContainer);
         card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-        Debug.Log(
- $"AddCard called. card={(card == null ? "NULL" : card.name)}, cardsList={(cards == null ? "NULL" : "OK")}",
- this
-);
+        //Debug.Log("AddCard called. card={(card == null ? "NULL" : card.name)}, cardsList={(cards == null ? "NULL" : "OK")}", this);
 
         if (faceDownDeck)
         {
@@ -221,6 +224,13 @@ public class CardDeck : MonoBehaviour
         card.gameObject.transform.localPosition += offset;
         
         UpdateCardBlob();
+        Debug.Log("Currently have # of cards:" + cards.Count);
+    }
+
+    public void RemoveCard(Card card)
+    {
+        this.cards.Remove(card);
+        UpdateCardBlob();
     }
 
     public void CardAcceptedBySocket()
@@ -232,10 +242,19 @@ public class CardDeck : MonoBehaviour
 
     public void DrawCardToPlayer(BaseCharacter target, bool autoAdd = false)
     {
+        Card nextCard = Pop();
+        if (nextCard == null)
+        {
+            return;
+        }
 
         if (autoAdd)
         {
-            
+            target.TeleportNewCardToHand(nextCard);
+        }
+        else
+        {
+            // Animate card flying to target's hand
         }
     }
 
@@ -251,9 +270,5 @@ public class CardDeck : MonoBehaviour
         
     }
 
-    public void RemoveCard(Card card)
-    {
-        this.cards.Remove(card);
-        UpdateCardBlob();
-    }
+
 }

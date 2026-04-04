@@ -9,5 +9,13 @@ public class HumanPlayer : BaseCharacter
         // TEST
     }
 
+    public override void BeginPlayerTurn(BaseCharacter player)
+    {
+        if (player == this)
+        {
+            Debug.Log("Player begin turn event received!");
+        }
+        
+    }
 }
 

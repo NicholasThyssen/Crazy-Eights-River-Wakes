@@ -21,6 +21,8 @@ public class CardGameManager : MonoBehaviour
     public SuitSelectionUI suitUI;
     public SwapSelectionUI swapUI;
 
+    public UnityEvent<BaseCharacter> beginPlayerTurn;
+
     void Awake()
     {
         instance = this;
@@ -77,7 +79,25 @@ public class CardGameManager : MonoBehaviour
         Debug.Log("Beginning pre-round actions...");
        // start off at player 0's turn
         currentTurnIdx = 0;
+        List<BaseCharacter> players = SetupPlayers();
+
+        if (players != null && players.Count > 0)
+        {
+            Debug.Log("First player starts their turn.");
+            currentPlayerTurn = players[currentTurnIdx];
+            currentPlayerTurn.BeginCardTurn();  // notify player that it is their turn
+            beginPlayerTurn.Invoke(currentPlayerTurn);
+        }        
+    }
+
+    private List<BaseCharacter> SetupPlayers()
+    {
+        Debug.Log("Performing card setup...");
         List<BaseCharacter> players = GetPlayers();
+        foreach (BaseCharacter player in players)
+        {
+            player.AssignListeners();
+        }
 
         Debug.Log("Drawing cards for each player...");
 
@@ -87,16 +107,10 @@ public class CardGameManager : MonoBehaviour
             for(int i = 0; i < 5; i++)
             {
                 character.AddCard(deck.Pop());
-            }
-            
+            }  
         }
 
-        if (players != null && players.Count > 0)
-        {
-            Debug.Log("First player starts their turn.");
-            currentPlayerTurn = players[currentTurnIdx];
-            currentPlayerTurn.BeginCardTurn();  // notify player that it is their turn
-        }        
+        return players;
     }
 
     private List<BaseCharacter> GetPlayers()
@@ -150,6 +164,41 @@ public class CardGameManager : MonoBehaviour
 
         // notify player that it is their turn
         currentPlayerTurn.BeginCardTurn();
+        beginPlayerTurn.Invoke(currentPlayerTurn);
+    }
+
+
+    public void PlayerCardPlayed(BaseCharacter player, Card cardPlayed)
+    {
+        if (player == currentPlayerTurn)
+        {
+            if (cardPlayed != null)
+            {
+                //currRank = cardPlayed.rank;
+                if (cardPlayed.suit != CardSuit.None)
+                {
+                    currSuit = cardPlayed.suit;
+                }
+
+                HandleCardEffects(player, cardPlayed);
+            }
+        }
+        else
+        {
+            throw new System.Exception("PlayerCardPlayed was called by a player while it was not their turn");
+        }
+    }
+
+    public void PlayerTurnEnded(BaseCharacter player)
+    {
+        if (player == currentPlayerTurn)
+        {
+            Debug.Log("Player turn end event received");
+        }
+        else
+        {
+            throw new System.Exception("PlayerTurnEnded was called by a player while it was not their turn");
+        }
     }
 
     // Draw a single card from the main deck and add it to the XR hand the player is using to draw from the deck in addition to the player's card hand.
@@ -285,15 +334,15 @@ public class CardGameManager : MonoBehaviour
         }
     }
 
-    // Will wit until they choose
+    // Will wait until they choose
     public void RequestSuitChoice(BaseCharacter player)
     {
-        suitUI.Show(player);
+        //suitUI.Show(player);
     }
 
     public void RequestSwapChoice(BaseCharacter player)
     {
-        swapUI.Show(player, GetPlayers());
+        //swapUI.Show(player, GetPlayers());
     }
 
     public void OnSuitChosen(CardSuit chosenSuit)

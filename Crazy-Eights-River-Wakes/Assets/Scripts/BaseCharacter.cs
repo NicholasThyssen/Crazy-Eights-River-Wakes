@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public abstract class BaseCharacter : MonoBehaviour
 {
@@ -14,12 +15,16 @@ public abstract class BaseCharacter : MonoBehaviour
 
     protected bool playedThisTurn = false;
 
+    public int playerId = -1;
+
+    public UnityEvent<BaseCharacter> playerTurnEnded;
+
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
         Initialize();
-        //SpawnCardDeck();
+        SpawnCardDeck();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -37,6 +42,23 @@ public abstract class BaseCharacter : MonoBehaviour
     public void Initialize()
     {
         ownedCards = new List<Card>();
+        CreateHand();
+    }
+
+    public void CreateHand()
+    {
+        playerHand = new GameObject("CardHand").GetComponent<CardHand>();
+        playerHand.SetOwner(this);
+        //playerHand.gameObject.transform.SetParent(this.deckAttach.transform);
+        // playerHand.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        
+    }
+
+    public void AssignListeners()
+    {
+        CardGameManager cgm = CardGameManager.instance;
+        playerTurnEnded.AddListener(cgm.PlayerTurnEnded);
+        cgm.beginPlayerTurn.AddListener(BeginPlayerTurn);
     }
 
     public void AddCard(Card card)
@@ -51,9 +73,12 @@ public abstract class BaseCharacter : MonoBehaviour
     // This should handle what happens when CardManager notifies this player that it is their turn
     public abstract void BeginCardTurn();
 
+    public abstract void BeginPlayerTurn(BaseCharacter player);
+
     public void EndTurn(Card cardPlayed) {
-        CardGameManager.instance.EndTurn(this, cardPlayed);
         playedThisTurn = false;
+        playerTurnEnded.Invoke(this);
+        CardGameManager.instance.EndTurn(this, cardPlayed);
     }
 
     public List<Card> GetOwnedCards()
@@ -74,24 +99,49 @@ public abstract class BaseCharacter : MonoBehaviour
         ownedCards = newOwnedCards;
         foreach (Card c in ownedCards)
         {
-            TeleportCardToHand(c);
+            TeleportNewCardToHand(c, false);
         }
     }
 
     public void AddCardToOwned(Card targetCard)
     {
-        ownedCards.Add(targetCard);
-        
+        ownedCards.Add(targetCard);   
     }
 
-    public void ClearCardFromOwned(Card targetCard)
+    public void RemoveCardFromOwned(Card targetCard)
     {
         ownedCards.Remove(targetCard);
     }
 
-    public void TeleportCardToHand(Card targetCard)
+    public void TeleportNewCardToHand(Card targetCard, bool flying = false)
     {
-        playerHand.SummonCardToHand(targetCard);
+        AddCardToOwned(targetCard);
+        // playerHand.SummonCardToHand(targetCard);
+    }
+
+    public void PullCardToHandObject(Card targetCard, Transform handObject, bool flying = false)
+    {
+        if (flying)
+        {
+            
+        }
+        else
+        {
+            
+        }
+    }
+
+    public void PlaceCardOnDeck(Card targetCard, CardDeck targetDeck, bool flying = false)
+    {
+        RemoveCardFromOwned(targetCard);
+        if (flying)
+        {
+            
+        }
+        else
+        {
+            
+        }
     }
 
 

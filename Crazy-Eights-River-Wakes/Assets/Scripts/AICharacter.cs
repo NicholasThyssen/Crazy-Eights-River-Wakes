@@ -8,9 +8,19 @@ public class AICharacter : BaseCharacter
 {
     public GameObject deckAttach;
     public GameObject cardAttach;
+
     public override void BeginCardTurn()
     {
         StartCoroutine(HandleCardTurn());
+    }
+
+    public override void BeginPlayerTurn(BaseCharacter player)
+    {
+        if (player == this)
+        {
+            Debug.Log("Player begin turn event received!");
+        }
+        
     }
 
     IEnumerator HandleCardTurn()
@@ -54,6 +64,26 @@ public class AICharacter : BaseCharacter
 
         // End the turn
         EndTurn(cardToPlay);
+    }
+
+    public void CreateHand()
+    {
+        playerHand = new GameObject("CardHand").GetComponent<CardHand>();
+        playerHand.gameObject.transform.SetParent(deckAttach.transform);
+        playerHand.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        playerHand.SetOwner(this);
+    }
+
+
+    private void AIPlayerDrawCard()
+    {
+        Card drawnCard = CardGameManager.instance.deck.Pop();
+        TeleportNewCardToHand(drawnCard);
+    }
+
+    private void AIPlayerPlayCard(Card selectedCard)
+    {
+        PlaceCardOnDeck(selectedCard, CardGameManager.instance.discardPile);
     }
 
     // this represents drawing a NEW card from the main deck

@@ -4,6 +4,29 @@ using System.Collections.Generic;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Filtering;
+
+public class MainSocketFilter : MonoBehaviour, IXRHoverFilter
+{
+    public bool canProcess => isActiveAndEnabled;
+
+    public List<Card> filterList;
+
+    public void UpdateFilterList(List<Card> filterList)
+    {
+        this.filterList = filterList;
+    }
+
+    public bool Process(IXRHoverInteractor interactor, IXRHoverInteractable interactable)
+    {
+        Card interactorCard = interactable.transform.gameObject.GetComponent<Card>();
+        if (interactorCard == null)
+        {
+            return false;
+        }
+        return !filterList.Contains(interactorCard);
+    }
+}
 
 // A physical card hand for holding cards. NOT the actual metaphorical hand that the characters use.
 public class CardHand : MonoBehaviour
@@ -18,12 +41,16 @@ public class CardHand : MonoBehaviour
 
     private Transform lastKnownSocketPosition;
 
+    private MainSocketFilter filter;
+
     private List<Card> heldCards;
     
     private Transform fallDetector;
 
     private Transform sockets;
     private XRSocketInteractor currentSocket;
+
+    private XRSocketInteractor mainSocket;
 
     private List<XRSocketInteractor> activeSockets;
 
@@ -35,14 +62,14 @@ public class CardHand : MonoBehaviour
 
     public Transform cardAnchor;
 
+    private Transform cardContainer;
+
     public UnityEvent<Card> cardAdded;
 
     public UnityEvent<Card> cardRemoved;
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        sockets = transform.GetChild(1);
         InitializeHand();
     }
 
@@ -50,12 +77,25 @@ public class CardHand : MonoBehaviour
     {
         heldCards = new List<Card>();
 
+        rb = GetComponent<Rigidbody>();
+        sockets = transform.GetChild(1);
         fallDetector = transform.GetChild(2);
+        cardContainer = transform.GetChild(3);
+        mainSocket = cardContainer.GetChild(0).GetComponent<XRSocketInteractor>();
+        filter = new MainSocketFilter();
+
+        mainSocket.hoverFilters.Add(filter);
+        filter.UpdateFilterList(heldCards);
+
+        // mainSocket
 
         activeSockets = new List<XRSocketInteractor>();
         inactiveSockets = new Stack<XRSocketInteractor>();
         socketCardPairs = new List<(XRSocketInteractor, Card)>();
 
+        mainSocket.selectEntered.AddListener(delegate {AttachCardFromMainSocket();});
+
+        /*
         for (int i=0; i<maxHandSize; i++)
         {
             var newSocket = Instantiate(socketPrefab);
@@ -70,11 +110,55 @@ public class CardHand : MonoBehaviour
         }
 
         UpdateCurrentSocket();
+        */
+    }
+
+    public void SetOwner(BaseCharacter owner)
+    {
+        this.owner = owner;
     }
 
     public void Clear()
     {
         
+    }
+
+    public void AttachCardFromMainSocket()
+    {
+
+        Debug.Log("Card attached to hand.");
+        var selected = mainSocket.GetOldestInteractableSelected();
+        if (selected != null)
+        {
+            mainSocket.enabled = false;
+            Card addedCard = selected.transform.gameObject.GetComponent<Card>();
+            addedCard.transform.SetParent(cardContainer);
+            addedCard.DisablePhysics();
+            heldCards.Add(addedCard);
+            cardAdded.Invoke(addedCard);
+            socketCardPairs.Add((currentSocket, addedCard));
+            addedCard.GetComponent<XRGrabInteractable>().selectEntered.AddListener(delegate {CardGrabbedFromHand(addedCard);});
+        }
+
+        filter.UpdateFilterList(heldCards);
+        MakeCardFan();
+        mainSocket.enabled = true;
+    }
+
+    public void CardGrabbedFromHand(Card selectedCard)
+    {
+        mainSocket.enabled = false;
+        if (selectedCard != null)
+        {
+            selectedCard.GetComponent<XRGrabInteractable>().selectEntered.RemoveAllListeners();
+            heldCards.Remove(selectedCard);
+            selectedCard.EnablePhysics();
+            selectedCard.transform.SetParent(null);
+        }
+
+        filter.UpdateFilterList(heldCards);
+        MakeCardFan();
+        mainSocket.enabled = true;
     }
 
     public void AttachCardToHand(XRSocketInteractor eventSocket = null)
@@ -107,23 +191,14 @@ public class CardHand : MonoBehaviour
         }
     }
 
-    // "Summon" the card to the hand, e.g.
-    public void SummonCardToHand(Card targetCard, bool instant = false)
+    // "Summon" the card to the hand
+    public void SummonCardToHand(Card targetCard)
     {
         XRGrabInteractable targetGrab = targetCard.gameObject.GetComponent<XRGrabInteractable>();
         targetCard.DisablePhysics();
         targetGrab.enabled = false;
-        if (instant)
-        {
-            targetCard.gameObject.transform.position = currentSocket.transform.position;
-            targetGrab.enabled = true;
-        }
-        else
-        {
-            targetCard.gameObject.transform.position = currentSocket.transform.position;
-            targetGrab.enabled = true;
-        }
-
+        targetCard.gameObject.transform.position = currentSocket.transform.position;
+        targetGrab.enabled = true;
     }
 
     public void PopCardFromHand(XRSocketInteractor eventSocket = null)

@@ -139,6 +139,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TestCard (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 4378521283812266844, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4526017047159654632, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -381,6 +385,11 @@ MonoBehaviour:
       m_Calls: []
   deck: {fileID: 1231830571}
   discardPile: {fileID: 1525630507}
+  suitUI: {fileID: 0}
+  swapUI: {fileID: 0}
+  beginPlayerTurn:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &124516746
 Transform:
   m_ObjectHideFlags: 0
@@ -480,6 +489,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba255d5d0e545f84699c25f5209df04a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerId: -1
+  playerTurnEnded:
+    m_PersistentCalls:
+      m_Calls: []
   deckAttach: {fileID: 1981830505}
   cardAttach: {fileID: 2108889255}
 --- !u!1 &360466473
@@ -532,6 +545,10 @@ PrefabInstance:
     - target: {fileID: 4378521283812266844, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
       propertyPath: m_Name
       value: TestCard (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4378521283812266844, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4526017047159654632, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
       propertyPath: m_Enabled
@@ -885,6 +902,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba255d5d0e545f84699c25f5209df04a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerId: -1
+  playerTurnEnded:
+    m_PersistentCalls:
+      m_Calls: []
   deckAttach: {fileID: 1852244123}
   cardAttach: {fileID: 181473103}
 --- !u!4 &763678689 stripped
@@ -955,6 +976,10 @@ PrefabInstance:
     - target: {fileID: 4378521283812266844, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
       propertyPath: m_Name
       value: TestCard (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4378521283812266844, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4526017047159654632, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
       propertyPath: m_Enabled
@@ -1310,37 +1335,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1497388737}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!1 &1140122830
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1140122831}
-  m_Layer: 0
-  m_Name: GrabAttach
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1140122831
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1140122830}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.0634, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1231830577}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &1207996836
 GameObject:
   m_ObjectHideFlags: 0
@@ -1460,7 +1454,7 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
-  m_AttachTransform: {fileID: 1140122831}
+  m_AttachTransform: {fileID: 0}
   m_SecondaryAttachTransform: {fileID: 0}
   m_UseDynamicAttach: 0
   m_MatchAttachPosition: 1
@@ -1558,11 +1552,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.1, y: 0.14, z: 0.02}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!4 &1231830577 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 162226413662461514, guid: 5c353bb0b3c05c04f81b2296da254aa1, type: 3}
-  m_PrefabInstance: {fileID: 1174794550818116096}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1285862291
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1646,6 +1635,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba255d5d0e545f84699c25f5209df04a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerId: -1
+  playerTurnEnded:
+    m_PersistentCalls:
+      m_Calls: []
   deckAttach: {fileID: 1462227295}
   cardAttach: {fileID: 378540497}
 --- !u!1 &1462227295
@@ -1696,7 +1689,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &1497388735
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2008,7 +2001,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1908411519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2111,6 +2104,10 @@ PrefabInstance:
     - target: {fileID: 4378521283812266844, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
       propertyPath: m_Name
       value: TestCard
+      objectReference: {fileID: 0}
+    - target: {fileID: 4378521283812266844, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4526017047159654632, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
       propertyPath: m_Enabled
@@ -3261,10 +3258,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 162226413662461514, guid: 5c353bb0b3c05c04f81b2296da254aa1, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1140122831}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3752634199209364589, guid: 5c353bb0b3c05c04f81b2296da254aa1, type: 3}
       insertIndex: -1
@@ -5226,6 +5220,10 @@ PrefabInstance:
     - target: {fileID: 4412261983161512068, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
       propertyPath: m_Name
       value: CardHand
+      objectReference: {fileID: 0}
+    - target: {fileID: 4412261983161512068, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4570015644982977350, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
       propertyPath: m_LocalPosition.x
