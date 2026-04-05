@@ -84,6 +84,7 @@ public class CardGameManager : MonoBehaviour
         
     }
 
+    // Getter function to see all players
     private List<BaseCharacter> GetPlayers()
     {
         return GameManager.instance.characters;
@@ -92,12 +93,13 @@ public class CardGameManager : MonoBehaviour
     // Call this from BaseCharacter when done drawing
     public void EndTurn(BaseCharacter player, Card cardPlayed)
     {
+
         if (player != currentPlayerTurn)
         {
             throw new System.Exception("EndTurn was called by a player while it was not their turn");
         }
 
-        // update curr suit/rank
+        // update curr suit/rank on top of stack
         if (cardPlayed != null)
         {
             currRank = cardPlayed.rank;
@@ -106,6 +108,8 @@ public class CardGameManager : MonoBehaviour
                 currSuit = cardPlayed.suit;
             } 
         }
+
+        CheckWin(player); // If they win they win and game is over!
 
         // Looks at card played to see its effects on the game
         HandleCardEffects(player, cardPlayed);
@@ -153,7 +157,7 @@ public class CardGameManager : MonoBehaviour
         return false;
     }
 
-    // This handles scenarios in which 
+    // This handles different card scenarios
     private void HandleCardEffects(BaseCharacter player, Card cardPlayed)
     {
         if (cardPlayed == null)
@@ -248,6 +252,21 @@ public class CardGameManager : MonoBehaviour
 
         currentPlayerTurn = GetPlayers()[currentTurnIdx];
         currentPlayerTurn.BeginCardTurn();
+    }
+
+    void CheckWin(BaseCharacter player)
+    {
+        if (player.hand.Count == 0)
+        {
+            Debug.Log(player.name + " WINS!");
+            // optionally stop game
+            enabled = false;
+        }
+    }
+
+    public bool CurrentPlayerIs(BaseCharacter player)
+    {
+        return currentPlayerTurn == player;
     }
 
 
