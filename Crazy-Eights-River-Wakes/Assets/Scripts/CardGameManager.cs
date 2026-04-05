@@ -333,6 +333,8 @@ public class CardGameManager : MonoBehaviour
                 Debug.Log("Hands swapped!");
                 return;
         }
+
+        cardPlayResolved.Invoke(player);
     }
 
     // Will wait until they choose
