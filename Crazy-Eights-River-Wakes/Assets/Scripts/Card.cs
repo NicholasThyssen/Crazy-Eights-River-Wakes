@@ -57,13 +57,6 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         originalLocalPos = transform.localPosition;
     }
-    void Update()
-    {
-        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
-        {
-            Debug.Log("Raycast hit: " + hit.collider.name);
-        }
-    }
 
     public void SetOwner(BaseCharacter owner)
     {
@@ -72,7 +65,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void EnablePhysics()
     {
-        rb.isKinematic = false;
+        //rb.isKinematic = false;
         //collider.enabled = true;
     }
 
@@ -84,13 +77,19 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void EnableGrab()
     {
-        grab = gameObject.GetComponent<XRGrabInteractable>();
+        if (grab == null)
+        {
+            grab = gameObject.GetComponent<XRGrabInteractable>();
+        }
         grab.enabled = true;
     }
 
     public void DisableGrab()
     {
-        grab = gameObject.GetComponent<XRGrabInteractable>();
+        if (grab == null)
+        {
+            grab = gameObject.GetComponent<XRGrabInteractable>();
+        }
         grab.enabled = false;
     }
 

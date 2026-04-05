@@ -28,8 +28,6 @@ public class CardHand : MonoBehaviour
 
     private bool useSocketInteractions = true;
 
-    private Coroutine socketThrashingCoroutine;
-
     void Awake()
     {
         InitializeHand();
@@ -127,8 +125,15 @@ public class CardHand : MonoBehaviour
             RemoveCardFromHand(targetCard);
             targetCard.EnablePhysics();
             targetCard.GetComponent<XRGrabInteractable>().selectExited.AddListener(delegate {CardGrabExited(targetCard);});
+            //StartCoroutine(reactivateSocket());
             mainSocket.socketActive = true;
         }
+    }
+
+    IEnumerator reactivateSocket()
+    {
+        yield return new WaitForSeconds(0.2f);
+        mainSocket.socketActive = true;
     }
 
     public void CardGrabExited(Card targetCard)
@@ -208,18 +213,13 @@ public class CardHand : MonoBehaviour
 
             // Position cards in an arc
             Vector3 offset = Quaternion.Euler(0, angle, 0) * (Vector3.forward * radius);
-            Vector3 worldPos = center + rotation * offset;
+            Vector3 localPos = rotation * offset * 0.5f;
 
             // IMPORTANT FIX: rotate inward, not outward
             Quaternion cardRot = rotation * Quaternion.Euler(tilt, -angle, 0f);
 
-            heldCards[i].transform.position = worldPos;
+            heldCards[i].transform.localPosition = localPos;
             heldCards[i].transform.rotation = cardRot;
-
-            //TESTING
-            heldCards[i].transform.localPosition = heldCards[i].transform.localPosition;
-            heldCards[i].GetComponent<Card>().StoreOriginalPosition();
-
         }
     }
 }

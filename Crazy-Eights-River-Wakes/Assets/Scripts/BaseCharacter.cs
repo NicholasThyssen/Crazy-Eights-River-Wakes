@@ -56,9 +56,6 @@ public abstract class BaseCharacter : MonoBehaviour
         playerHand.SetOwner(this);
         playerHandObject.transform.SetParent(this.transform);
         playerHandObject.SetActive(true);
-        //playerHand.gameObject.transform.SetParent(this.deckAttach.transform);
-        // playerHand.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-        
     }
 
     public void AssignListeners()

@@ -33,17 +33,26 @@ public class HumanPlayer : BaseCharacter
         }
     }*/
 
+    void Awake()
+    {
+        Initialize();
+    }
+
+    public void Initialize()
+    {
+        ownedCards = new List<Card>();
+        CreateHand();
+    }
+
     public void CreateHand()
     {
         GameObject playerHandObject = Instantiate(cardHandPrefab);
-        playerHand.InitializeHand();
         playerHand = playerHandObject.GetComponent<CardHand>();
         playerHand.SetOwner(this);
         if (!usingPhysicalHand)
         {
             playerHand.DisableSocketInteractions();
         }
-        //playerHand.DisableSocketInteractions();
         playerHandObject.transform.SetParent(handAttach);
         playerHandObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         playerHandObject.SetActive(true);
@@ -70,7 +79,7 @@ public class HumanPlayer : BaseCharacter
         if (player == this)
         {
             
-            Debug.Log("Player begin turn event received!");
+            Debug.Log("Human player (" + playerId + ")'s begin turn event received!");
             ShowPlayableCards();
         }
     }
@@ -94,11 +103,13 @@ public class HumanPlayer : BaseCharacter
     // Example method to highlight playable cards
     private void ShowPlayableCards()
     {
-        foreach (var card in GetHand())
-        {
-            bool canPlay = CardGameManager.instance.CanPlayCard(card);
-            // Update your card UI to enable/disable selection based on canPlay
-            // (Implementation depends on your UI system)
+        if (!usingPhysicalHand) {
+            foreach (var card in GetHand())
+            {
+                bool canPlay = CardGameManager.instance.CanPlayCard(card);
+                // Update your card UI to enable/disable selection based on canPlay
+                // (Implementation depends on your UI system)
+            }
         }
     }
 

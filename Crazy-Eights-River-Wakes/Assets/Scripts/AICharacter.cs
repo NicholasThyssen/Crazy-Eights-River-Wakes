@@ -15,10 +15,28 @@ public class AICharacter : BaseCharacter
         Initialize();
     }
 
+    public void Initialize()
+    {
+        ownedCards = new List<Card>();
+        CreateHand();
+    }
+
+    public void CreateHand()
+    {
+        GameObject playerHandObject = Instantiate(cardHandPrefab);
+        playerHand = playerHandObject.GetComponent<CardHand>();
+        playerHand.SetOwner(this);
+        playerHand.DisableSocketInteractions();
+        playerHandObject.transform.SetParent(deckAttach.transform);
+        playerHandObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        playerHandObject.SetActive(true);
+    }
+
     public override void BeginPlayerTurn(BaseCharacter player)
     {
         if (player == this)
         {
+            Debug.Log("AI player (" + playerId + ")'s begin turn event received!");
             StartCoroutine(HandlePlayerTurn());
         }
         
@@ -70,18 +88,6 @@ public class AICharacter : BaseCharacter
     public List<Card> GetPlayableCards()
     {
         return playerHand.GetHeldCards().Where(x => CardGameManager.instance.CanPlayCard(x)).ToList();
-    }
-
-    public void CreateHand()
-    {
-        GameObject playerHandObject = Instantiate(cardHandPrefab);
-        playerHand.InitializeHand();
-        playerHand = playerHandObject.GetComponent<CardHand>();
-        playerHand.SetOwner(this);
-        playerHand.DisableSocketInteractions();
-        playerHandObject.transform.SetParent(deckAttach.transform);
-        playerHandObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-        playerHandObject.SetActive(true);
     }
 
 
