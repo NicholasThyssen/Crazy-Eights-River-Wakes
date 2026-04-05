@@ -15,6 +15,8 @@ public class HumanPlayer : BaseCharacter
 
     public bool usingPhysicalHand = true;
 
+    private int cardsDrawnThisRound = 0;
+
     //TESTING ONLY
     /*void Start()
     {
@@ -66,11 +68,11 @@ public class HumanPlayer : BaseCharacter
         playerTurnEnded.AddListener(cgm.PlayerTurnEnded);
         // Listen to the manager's signals
         cgm.beginPlayerTurn.AddListener(BeginPlayerTurn);
+        cgm.cardPlayResolved.AddListener(FinishPlayerTurn);
         // Connect to the discard pile
-        if (usingPhysicalHand) {
-            CardDeck pile = cgm.discardPile;
-            pile.cardPlayedToDeck.AddListener(PlayedToDiscardPile);
-        }
+        CardDeck pile = cgm.discardPile;
+        pile.cardPlayedToDeck.AddListener(PlayedToDiscardPile);
+        
     }
 
 
@@ -78,8 +80,8 @@ public class HumanPlayer : BaseCharacter
     {
         if (player == this)
         {
-            
             Debug.Log("Human player (" + playerId + ")'s begin turn event received!");
+            cardsDrawnThisRound = 0;
             ShowPlayableCards();
         }
     }
@@ -89,7 +91,13 @@ public class HumanPlayer : BaseCharacter
         if (player == this)
         {
             EndTurn();
+            cardsDrawnThisRound = 0;
         }
+    }
+
+    public bool CanDraw()
+    {
+        return cardsDrawnThisRound <= 0;
     }
 
     public void PlayedToDiscardPile(BaseCharacter player, Card card)

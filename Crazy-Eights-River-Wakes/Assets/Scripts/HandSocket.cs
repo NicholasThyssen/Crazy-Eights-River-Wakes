@@ -8,6 +8,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 public class HandSocket : XRSocketInteractor
 {
     public CardHand cardHand;
+    public CardDeck cardDeck;
     public override bool CanHover(IXRHoverInteractable interactable)
     {
         Card targetCard = interactable.transform.gameObject.GetComponent<Card>();
@@ -15,11 +16,24 @@ public class HandSocket : XRSocketInteractor
         {
             return false;
         }
-        if (targetCard == cardHand.socketIgnoreCard)
+        if (cardHand != null)
         {
-            return false;
+            if (targetCard == cardHand.socketIgnoreCard)
+            {
+                return false;
+            }
+            return !cardHand.HasCardInHand(targetCard);
         }
-        return !cardHand.HasCardInHand(targetCard);
+        else if (cardDeck != null)
+        {
+            CardGameManager cgm = CardGameManager.instance;
+            if (cgm.IsPlayerTurn(targetCard.owner))
+            {
+                bool isValid = cgm.CanPlayCard(targetCard);
+                return isValid;
+            } 
+        }
+        return false;
     }
 
     public override bool CanSelect(IXRSelectInteractable interactable)
@@ -29,10 +43,25 @@ public class HandSocket : XRSocketInteractor
         {
             return false;
         }
-        if (targetCard == cardHand.socketIgnoreCard)
+        if (cardHand != null)
         {
-            return false;
+            Debug.Log("Trying to socket with Card Hand");
+            if (targetCard == cardHand.socketIgnoreCard)
+            {
+                return false;
+            }
+            return !cardHand.HasCardInHand(targetCard);
         }
-        return !cardHand.HasCardInHand(targetCard);
+        else if (cardDeck != null)
+        {
+            Debug.Log("Trying to socket with Card Deck");
+            CardGameManager cgm = CardGameManager.instance;
+            if (cgm.IsPlayerTurn(targetCard.owner))
+            {
+                bool isValid = cgm.CanPlayCard(targetCard);
+                return isValid;
+            }
+        }
+        return false;
     }
 }

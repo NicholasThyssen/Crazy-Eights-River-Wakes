@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
@@ -17,15 +18,12 @@ public class CardDeck : MonoBehaviour
 
     private XRSocketInteractor acceptSocket;
 
-    private XRGrabInteractable grabInteraction;
-
     public bool faceDownDeck = false;
     public bool spawnCardsOnAwake = false;
     public GameObject cardPrefab;
 
     public UnityEvent<string> deckShuffled;
     public UnityEvent<bool> deckRespawned;
-
     public UnityEvent<BaseCharacter, Card> cardPlayedToDeck;
 
 
@@ -33,7 +31,7 @@ public class CardDeck : MonoBehaviour
     {
         // Initialize card list
         cards = new List<Card>(GetComponentsInChildren<Card>());
-        grabInteraction = GetComponent<XRGrabInteractable>();
+        // interactable = GetComponent<XRSimpleInteractable>();
         if (transform.childCount > 0)
         {
             cardBlob = transform.GetChild(0);
@@ -60,7 +58,7 @@ public class CardDeck : MonoBehaviour
 
     public void EnableActivateDraw()
     {
-        grabInteraction.activated.AddListener(delegate {DrawCardFromActivate();});
+        //interactable.selectEntered.AddListener(DrawCardFromSelect);
     }
 
     public void EnableAcceptSocket()
@@ -166,6 +164,8 @@ public class CardDeck : MonoBehaviour
     // Spawn a full set of cards (animate this later?)
     public void SpawnCards()
     {
+        acceptSocket.enabled = false;
+
         if (cards == null)
         {
             cards = new List<Card>();
@@ -193,6 +193,8 @@ public class CardDeck : MonoBehaviour
         }
 
         ShuffleDeck();
+
+        acceptSocket.enabled = true;
     }
 
     private void SetFaceTexture(CardSuit suit, CardRank rank)
@@ -274,8 +276,10 @@ public class CardDeck : MonoBehaviour
         {
             acceptSocket.interactionManager.SelectExit(acceptSocket, selected);
             Card targetCard = selected.transform.gameObject.GetComponent<Card>();
+            BaseCharacter owner = targetCard.owner;
             AddCard(targetCard);
-            cardPlayedToDeck.Invoke(targetCard.owner, targetCard);
+            Debug.Log("Card played to socket successfully! Telling the game manager");
+            owner.playerPlayedCard.Invoke(owner, targetCard);
         }
     }
 
@@ -285,18 +289,14 @@ public class CardDeck : MonoBehaviour
         cardPlayedToDeck.Invoke(card.owner, card);
     }
 
-    public void DrawCardFromActivate()
+    public void DrawCardFromActivate(ActivateEventArgs action)
     {
-        // TODO: Draw a card to the player's hand by activating the deck
-        // Assign the player as the owner + add to their owned cards
-        
-        // deck.Pop();
-    }
-
-    public void DrawCardFromActivate(IXRActivateInteractable interactable, IXRActivateInteractor interactor)
-    {
-        bool socketEnabled = acceptSocket.gameObject.activeSelf;
+        Debug.Log(action);
+        var interactor = action.interactorObject;
         HumanPlayer firingUser = interactor.transform.GetComponentInParent<HumanPlayer>();
+        Debug.Log(firingUser);
+        bool socketEnabled = acceptSocket.gameObject.activeSelf;
+        
         CardGameManager cgm = CardGameManager.instance;
         if (firingUser != cgm.IsPlayerTurn(firingUser))
         {

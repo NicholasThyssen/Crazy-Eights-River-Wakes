@@ -46,7 +46,6 @@ public class CardGameManager : MonoBehaviour
         if (discardPile != null)
         {
             discardPile.AddCard(firstCard);
-            discardPile.EnableAcceptSocket();
         }
         currRank = firstCard.rank;
         currSuit = firstCard.suit;
@@ -95,6 +94,10 @@ public class CardGameManager : MonoBehaviour
 
         if (players != null && players.Count > 0)
         {
+            // Enable XR interactions for draw and discard decks
+            deck.EnableActivateDraw();
+            discardPile.EnableAcceptSocket();
+
             Debug.Log("First player starts their turn.");
             currentPlayerTurn = players[currentTurnIdx];
             beginPlayerTurn.Invoke(currentPlayerTurn);
