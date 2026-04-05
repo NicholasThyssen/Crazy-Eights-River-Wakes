@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.EventSystems;
 
-public class Card : MonoBehaviour
+public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public CardSuit suit;
     public CardRank rank;
@@ -21,27 +22,47 @@ public class Card : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody>();
         collider = gameObject.GetComponent<BoxCollider>();
         grab = gameObject.GetComponent<XRGrabInteractable>();
-        grab = gameObject.GetComponent<XRGrabInteractable>();
-        grab = gameObject.GetComponent<XRGrabInteractable>();
-        grab = gameObject.GetComponent<XRGrabInteractable>();
-        grab = gameObject.GetComponent<XRGrabInteractable>();
-        grab = gameObject.GetComponent<XRGrabInteractable>();
-        grab = gameObject.GetComponent<XRGrabInteractable>();
-        grab = gameObject.GetComponent<XRGrabInteractable>();
-        grab = gameObject.GetComponent<XRGrabInteractable>();
-        grab = gameObject.GetComponent<XRGrabInteractable>();
     }
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private Vector3 originalLocalPos;
+    private bool isHovered = false;
+
     void Start()
     {
-        
+        originalLocalPos = transform.localPosition;
     }
 
-    // Update is called once per frame
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Debug.Log("Hover ENTER on card: " + name);
+
+        if (isHovered) return;
+        isHovered = true;
+
+        transform.localPosition = originalLocalPos + new Vector3(0, 0.05f, -0.1f);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        Debug.Log("Hover EXIT on card: " + name);
+
+        if (!isHovered) return;
+        isHovered = false;
+
+        transform.localPosition = originalLocalPos;
+    }
+
+    public void StoreOriginalPosition()
+    {
+        originalLocalPos = transform.localPosition;
+    }
     void Update()
     {
-        
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
+        {
+            Debug.Log("Raycast hit: " + hit.collider.name);
+        }
     }
 
     public void SetOwner(BaseCharacter owner)
@@ -90,6 +111,7 @@ public class Card : MonoBehaviour
     }
 
 }
+
 
 public enum CardSuit
 {

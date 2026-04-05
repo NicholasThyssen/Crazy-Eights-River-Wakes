@@ -135,6 +135,7 @@ public class CardGameManager : MonoBehaviour
         Debug.Log("Cards dealt. # of remaining cards in draw deck: " + deck.GetCardCount());
     }
 
+    // Getter function to see all players
     private List<BaseCharacter> GetPlayers()
     {
         if (GameManager.instance.characters.Count > 0) {
@@ -295,7 +296,7 @@ public class CardGameManager : MonoBehaviour
         return topCard.IsValidMatch(candidateCard);
     }
 
-    // This handles scenarios in which 
+    // This handles different card scenarios
     private void HandleCardEffects(BaseCharacter player, Card cardPlayed)
     {
         if (cardPlayed == null)
@@ -395,6 +396,21 @@ public class CardGameManager : MonoBehaviour
         currentPlayerTurn = GetPlayers()[currentTurnIdx];
 
         beginPlayerTurn.Invoke(currentPlayerTurn);
+    }
+
+    void CheckWin(BaseCharacter player)
+    {
+        if (player.hand.Count == 0)
+        {
+            Debug.Log(player.name + " WINS!");
+            // optionally stop game
+            enabled = false;
+        }
+    }
+
+    public bool CurrentPlayerIs(BaseCharacter player)
+    {
+        return currentPlayerTurn == player;
     }
 
 }

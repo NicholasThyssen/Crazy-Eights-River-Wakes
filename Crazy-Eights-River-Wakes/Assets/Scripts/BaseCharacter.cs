@@ -79,6 +79,7 @@ public abstract class BaseCharacter : MonoBehaviour
         hand.Add(card);
         card.transform.SetParent(this.transform); // or a hand anchor
                                                   // optionally position it here
+        FanOutHand();
     }
 
     // This should handle what happens when CardManager notifies this player that it is their turn
@@ -174,26 +175,27 @@ public abstract class BaseCharacter : MonoBehaviour
 
 
     // List of player's hand
-    private List<Card> hand = new List<Card>();
+    public List<Card> hand = new List<Card>();
 
     // We remove card from hand
     public void RemoveCard(Card card)
     {
         hand.Remove(card);
-        // update visuals if needed
+        FanOutHand(); // visual for card fan
     }
 
     // We get their hand
     public List<Card> GetHand()
     {
         return hand;
+
     }
 
     // Set hand to something new
     public void SetHand(List<Card> newHand)
     {
         hand = newHand;
-        // update visuals if needed
+        FanOutHand();
     }
 
     // Lets player see UI to choose suit to change (after playing an 8)
@@ -214,4 +216,10 @@ public abstract class BaseCharacter : MonoBehaviour
         // This depends on your existing UI system
     }
 
+    // Needed just so that user can fan out hand
+    protected virtual void FanOutHand()
+    {
+        // Default implementation does nothing.
+        // HumanPlayer will override this to visually fan out cards.
+    }
 }
