@@ -10,7 +10,9 @@ public class CardDeck : MonoBehaviour
 
     private Transform respawnAnchor;
     private Transform cardBlob;
-
+    private GameObject faceObject;
+    private Material faceMaterial;
+    private GameObject backObject;
     private Transform cardContainer;
 
     private XRSocketInteractor acceptSocket;
@@ -38,12 +40,21 @@ public class CardDeck : MonoBehaviour
             acceptSocket = transform.GetChild(1).GetComponent<XRSocketInteractor>();
             cardContainer = transform.GetChild(2);
             acceptSocket.selectEntered.AddListener(delegate {PlayCardFromSocket();});
-            
+            faceObject = cardBlob.GetChild(0).gameObject;
+            faceMaterial = faceObject.GetComponent<MeshRenderer>().material;
+            backObject = cardBlob.GetChild(1).gameObject;
         }
         // Spawn cards if necessary
         if (spawnCardsOnAwake)
         {
             SpawnCards();
+        }
+        if (faceDownDeck)
+        {
+            Quaternion swapRot = backObject.transform.localRotation;
+            Vector3 swapPos = backObject.transform.localPosition;
+            backObject.transform.SetLocalPositionAndRotation(faceObject.transform.localPosition, faceObject.transform.localRotation);
+            faceObject.transform.SetLocalPositionAndRotation(swapPos, swapRot);
         }
     }
 
@@ -122,6 +133,7 @@ public class CardDeck : MonoBehaviour
         // remove from deck
         RemoveCard(drawnCard);
         drawnCard.transform.SetParent(null);
+        drawnCard.gameObject.SetActive(true);
 
         return drawnCard;
     }
@@ -183,10 +195,15 @@ public class CardDeck : MonoBehaviour
         ShuffleDeck();
     }
 
+    private void SetFaceTexture(CardSuit suit, CardRank rank)
+    {
+        faceMaterial.SetFloat("Suit", (int)suit);
+        faceMaterial.SetFloat("Rank", (int)rank);
+    }
+
     public void UpdateCardBlob()
     {
         Vector3 localForward = transform.worldToLocalMatrix.MultiplyVector(transform.forward);
-        Vector3 topOffset = 0.001f * cards.Count * localForward;
         Card topCard = PeekTop();
 
         if (topCard == null)
@@ -194,36 +211,33 @@ public class CardDeck : MonoBehaviour
             return;
         }
 
-        // If <3 cards, hide completely
-        if (cards.Count < 3)
+        // If no cards, hide completely
+        if (cards.Count == 0)
         {
             if (cardBlob != null)
             {
                 cardBlob.gameObject.SetActive(false);
+                faceObject.SetActive(false);
+                backObject.SetActive(false);
             }
-
-            if (cards.Count == 2) {
-                cards[0].gameObject.SetActive(false);
-            }
-            topCard.gameObject.SetActive(true);
-            topCard.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            topCard.gameObject.transform.localPosition += topOffset;
         }
         // Otherwise, show card blob expanding/shrinking
         else
         {
-            cards[cards.Count - 2].gameObject.SetActive(false);
-            topCard.gameObject.SetActive(true);
-            topCard.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            topCard.gameObject.transform.localPosition += topOffset;
-
             if (cardBlob != null)
             {
-                Vector3 blobOffset = 0.001f * cards.Count * localForward;
+                faceObject.SetActive(true);
+                backObject.SetActive(true);
                 cardBlob.gameObject.SetActive(true);
+
+                Vector3 blobOffset = 0.001f * cards.Count * localForward;
+                Vector3 scaledBlobOffset = new Vector3(blobOffset.x / 2.0f, blobOffset.y / 2.0f, blobOffset.z / 2.0f);
+
+                SetFaceTexture(topCard.suit, topCard.rank);
+
                 cardBlob.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-                cardBlob.localPosition = new Vector3(blobOffset.x / 2.0f, blobOffset.y / 2.0f, blobOffset.z / 2.0f); // Why the hell does Unity not natively support dividing vectors by scalars (another point in Godot's favor)
-                cardBlob.localScale = new Vector3(1.0f, 1.0f, 1.0f * cards.Count - 2);
+                cardBlob.localPosition = scaledBlobOffset; // Why the hell does Unity not natively support dividing vectors by scalars (another point in Godot's favor)
+                cardBlob.localScale = new Vector3(1.0f, 1.0f, 1.0f * cards.Count);
             }
         }
     }
@@ -245,9 +259,9 @@ public class CardDeck : MonoBehaviour
         Vector3 localForward = transform.worldToLocalMatrix.MultiplyVector(transform.forward);
         Vector3 offset = 0.001f * cards.Count * localForward;
         card.gameObject.transform.localPosition += offset;
-
+        card.SetOwner(null);
         card.DisablePhysics();
-        //card.DisableGrab();
+        card.gameObject.SetActive(false);
         
         UpdateCardBlob();
         Debug.Log("Currently have # of cards:" + cards.Count);

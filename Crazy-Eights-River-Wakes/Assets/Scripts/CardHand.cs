@@ -218,6 +218,8 @@ public class CardHand : MonoBehaviour
             // IMPORTANT FIX: rotate inward, not outward
             Quaternion cardRot = rotation * Quaternion.Euler(tilt, -angle, 0f);
 
+            // TODO: Make the card fan not be awkwardly offset from the origin
+
             heldCards[i].transform.localPosition = localPos;
             heldCards[i].transform.rotation = cardRot;
         }

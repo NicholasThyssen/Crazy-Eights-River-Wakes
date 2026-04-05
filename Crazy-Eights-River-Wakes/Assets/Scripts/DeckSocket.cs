@@ -14,6 +14,7 @@ public class DeckSocket : XRSocketInteractor
         {
             return false;
         }
+        Debug.Log(interactable);
         if (!cgm.IsPlayerTurn(targetCard.owner))
         {
             return false;

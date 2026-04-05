@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4462768587367848181}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Attach
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 2853888835201102618}
   - component: {fileID: 1724829850032998809}
   - component: {fileID: 5960458881383751978}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Face
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   - component: {fileID: 7500737420451017705}
   - component: {fileID: 3258893282827549166}
   - component: {fileID: 8417242090570895709}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: HiddenFace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 2241563169377384438}
   - component: {fileID: 3402207149334506664}
   - component: {fileID: 2122794869756117702}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: TestCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -351,10 +351,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 6144
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -378,10 +378,10 @@ Rigidbody:
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 6144
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
@@ -522,7 +522,7 @@ GameObject:
   - component: {fileID: 5045202976408262531}
   - component: {fileID: 4581492534103123694}
   - component: {fileID: 5919640343067509310}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -608,7 +608,7 @@ GameObject:
   - component: {fileID: 3761045766068027344}
   - component: {fileID: 119340402301068377}
   - component: {fileID: 1572568537759173013}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -694,7 +694,7 @@ GameObject:
   - component: {fileID: 6150169993095646586}
   - component: {fileID: 7216584380168687811}
   - component: {fileID: 3174101831208023146}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

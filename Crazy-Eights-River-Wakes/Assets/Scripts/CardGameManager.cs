@@ -128,6 +128,7 @@ public class CardGameManager : MonoBehaviour
             foreach(BaseCharacter player in players)
             {
                 Card topCard = deck.Pop();
+                topCard.SetOwner(player);
                 player.TeleportNewCardToHand(topCard);
             }     
         }
