@@ -138,6 +138,7 @@ MonoBehaviour:
   socketPrefab: {fileID: 8274621342219377245, guid: 823acfcb152c1b348ad59344555d79d5, type: 3}
   maxHandSize: 20
   fanSpread: 2
+  socketIgnoreCard: {fileID: 0}
   cardAdded:
     m_PersistentCalls:
       m_Calls: []

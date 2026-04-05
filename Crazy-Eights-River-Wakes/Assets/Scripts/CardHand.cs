@@ -27,6 +27,8 @@ public class CardHand : MonoBehaviour
     public UnityEvent<Card> cardAdded;
     public UnityEvent<Card> cardRemoved;
 
+    private bool useSocketInteractions = true;
+
     private Coroutine socketThrashingCoroutine;
 
     void Awake()
@@ -45,6 +47,12 @@ public class CardHand : MonoBehaviour
         mainSocket = cardContainer.GetChild(0).GetComponent<HandSocket>();
 
         mainSocket.selectEntered.AddListener(delegate {AttachCardFromMainSocket();});
+    }
+
+    public void DisableSocketInteractions()
+    {
+        mainSocket.gameObject.SetActive(false);
+        useSocketInteractions = false;
     }
 
     public void SetOwner(BaseCharacter owner)
@@ -69,6 +77,7 @@ public class CardHand : MonoBehaviour
 
     public void AddCardToHand(Card targetCard)
     {
+        targetCard.gameObject.SetActive(true);
         targetCard.DisablePhysics();
         heldCards.Add(targetCard);
         StartCoroutine(DelayedEnableGrabInteractions(targetCard));

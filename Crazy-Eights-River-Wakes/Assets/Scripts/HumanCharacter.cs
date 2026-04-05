@@ -36,6 +36,7 @@ public class HandSocketFilter : MonoBehaviour, IXRHoverFilter
 public class HumanPlayer : BaseCharacter
 {
     private bool canAct = false;
+
     public void AssignListeners()
     {
         CardGameManager cgm = CardGameManager.instance;
@@ -44,6 +45,9 @@ public class HumanPlayer : BaseCharacter
         playerTurnEnded.AddListener(cgm.PlayerTurnEnded);
         // Listen to the manager's signals
         cgm.beginPlayerTurn.AddListener(BeginPlayerTurn);
+        // Connect to the discard pile
+        CardDeck pile = cgm.discardPile;
+        pile.cardPlayedToDeck.AddListener(PlayedToDiscardPile);
     }
 
 
@@ -54,7 +58,23 @@ public class HumanPlayer : BaseCharacter
             Debug.Log("Player begin turn event received!");
             canAct = true;
         }
-        
+    }
+
+    public override void FinishPlayerTurn(BaseCharacter player)
+    {
+        if (player == this)
+        {
+            canAct = false;
+            EndTurn();
+        }
+    }
+
+    public void PlayedToDiscardPile(BaseCharacter player, Card card)
+    {
+        if (player == this)
+        {
+            playerPlayedCard.Invoke(this, card);
+        }
     }
 }
 

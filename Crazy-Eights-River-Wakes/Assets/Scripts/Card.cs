@@ -7,8 +7,10 @@ public class Card : MonoBehaviour
     public CardSuit suit;
     public CardRank rank;
 
+    public BaseCharacter owner;
     protected Rigidbody rb;
     protected BoxCollider collider;
+    protected XRGrabInteractable grab;
 
     public UnityEvent<Card> fallbackWarpTriggered;
 
@@ -18,6 +20,16 @@ public class Card : MonoBehaviour
     {
         rb = gameObject.GetComponent<Rigidbody>();
         collider = gameObject.GetComponent<BoxCollider>();
+        grab = gameObject.GetComponent<XRGrabInteractable>();
+        grab = gameObject.GetComponent<XRGrabInteractable>();
+        grab = gameObject.GetComponent<XRGrabInteractable>();
+        grab = gameObject.GetComponent<XRGrabInteractable>();
+        grab = gameObject.GetComponent<XRGrabInteractable>();
+        grab = gameObject.GetComponent<XRGrabInteractable>();
+        grab = gameObject.GetComponent<XRGrabInteractable>();
+        grab = gameObject.GetComponent<XRGrabInteractable>();
+        grab = gameObject.GetComponent<XRGrabInteractable>();
+        grab = gameObject.GetComponent<XRGrabInteractable>();
     }
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -30,6 +42,11 @@ public class Card : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void SetOwner(BaseCharacter owner)
+    {
+        this.owner = owner;
     }
 
     public void EnablePhysics()
@@ -46,12 +63,14 @@ public class Card : MonoBehaviour
 
     public void EnableGrab()
     {
-        
+        grab = gameObject.GetComponent<XRGrabInteractable>();
+        grab.enabled = true;
     }
 
     public void DisableGrab()
     {
-        
+        grab = gameObject.GetComponent<XRGrabInteractable>();
+        grab.enabled = false;
     }
 
     public bool IsValidMatch(Card rhs)

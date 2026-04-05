@@ -22,7 +22,7 @@ public class CardDeck : MonoBehaviour
     public UnityEvent<string> deckShuffled;
     public UnityEvent<bool> deckRespawned;
 
-    public UnityEvent<Card> cardPlayedToDeck;
+    public UnityEvent<BaseCharacter, Card> cardPlayedToDeck;
 
     public void Awake()
     {
@@ -39,6 +39,11 @@ public class CardDeck : MonoBehaviour
         {
             SpawnCards();
         }
+    }
+
+    public void EnableAcceptSocket()
+    {
+        acceptSocket.gameObject.SetActive(true);
     }
 
     public void SetRespawnAnchor(Transform respawnAnchor)
@@ -87,6 +92,8 @@ public class CardDeck : MonoBehaviour
         {
             RemoveCard(cardAtTop);
         }
+        cardAtTop.gameObject.SetActive(true);
+        cardAtTop.EnableGrab();
         return cardAtTop;
     }
 
@@ -227,15 +234,38 @@ public class CardDeck : MonoBehaviour
         Vector3 localForward = transform.worldToLocalMatrix.MultiplyVector(transform.forward);
         Vector3 offset = 0.001f * cards.Count * localForward;
         card.gameObject.transform.localPosition += offset;
+
+        card.DisablePhysics();
+        //card.DisableGrab();
         
         UpdateCardBlob();
         Debug.Log("Currently have # of cards:" + cards.Count);
     }
 
+    public void PlayCardFromSocket()
+    {   
+        var selected = acceptSocket.GetOldestInteractableSelected();
+        if (selected != null)
+        {
+            acceptSocket.interactionManager.SelectExit(acceptSocket, selected);
+            Card targetCard = selected.transform.gameObject.GetComponent<Card>();
+            AddCard(targetCard);
+            cardPlayedToDeck.Invoke(targetCard.owner, targetCard);
+        }
+    }
+
     public void PlayCardToDeck(Card card)
     {
         AddCard(card);
-        cardPlayedToDeck.Invoke(card);
+        cardPlayedToDeck.Invoke(card.owner, card);
+    }
+
+    public void DrawCardFromActivate()
+    {
+        // TODO: Draw a card to the player's hand by activating the deck
+        // Assign the player as the owner + add to their owned cards
+        
+        // deck.Pop();
     }
 
     public void RemoveCard(Card card)
@@ -249,6 +279,8 @@ public class CardDeck : MonoBehaviour
         // Get the card and add it to the deck
         // Send an event afterward that the game manager picks up on
         Card newCard = new Card();
+        acceptSocket.socketActive = false;
+        acceptSocket.socketActive = true;
     }
 
     public void DrawCardToPlayer(BaseCharacter target, bool autoAdd = false)

@@ -1,39 +1,38 @@
 using UnityEngine;
 using UnityEngine.Events;
-using System.Collections.Generic;
-using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
-using UnityEngine.XR.Interaction.Toolkit.Filtering;
 
-public class HandSocket : XRSocketInteractor
+public class DeckSocket : XRSocketInteractor
 {
-    public CardHand cardHand;
+    public CardDeck cardDeck;
     public override bool CanHover(IXRHoverInteractable interactable)
     {
+        CardGameManager cgm = CardGameManager.instance;
         Card targetCard = interactable.transform.gameObject.GetComponent<Card>();
         if (targetCard == null)
         {
             return false;
         }
-        if (targetCard == cardHand.socketIgnoreCard)
+        if (!cgm.IsPlayerTurn(targetCard.owner))
         {
             return false;
         }
-        return !cardHand.HasCardInHand(targetCard);
+        return cgm.CanPlayCard(targetCard);
     }
 
     public override bool CanSelect(IXRSelectInteractable interactable)
     {
+        CardGameManager cgm = CardGameManager.instance;
         Card targetCard = interactable.transform.gameObject.GetComponent<Card>();
         if (targetCard == null)
         {
             return false;
         }
-        if (targetCard == cardHand.socketIgnoreCard)
+        if (!cgm.IsPlayerTurn(targetCard.owner))
         {
             return false;
         }
-        return !cardHand.HasCardInHand(targetCard);
+        return cgm.CanPlayCard(targetCard);
     }
 }

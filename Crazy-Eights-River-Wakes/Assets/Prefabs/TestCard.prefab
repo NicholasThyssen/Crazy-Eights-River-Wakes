@@ -336,6 +336,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suit: 0
   rank: 0
+  owner: {fileID: 0}
+  fallbackWarpTriggered:
+    m_PersistentCalls:
+      m_Calls: []
+  currentlyHeld: 0
 --- !u!65 &2241563169377384438
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -468,7 +473,7 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
-  m_AttachTransform: {fileID: 0}
+  m_AttachTransform: {fileID: 4462768587367848181}
   m_SecondaryAttachTransform: {fileID: 0}
   m_UseDynamicAttach: 0
   m_MatchAttachPosition: 1

@@ -26,6 +26,8 @@ public class CardGameManager : MonoBehaviour
 
     public UnityEvent<BaseCharacter> beginPlayerTurn;
 
+    public UnityEvent<BaseCharacter> cardPlayResolved;
+
     void Awake()
     {
         instance = this;
@@ -280,6 +282,11 @@ public class CardGameManager : MonoBehaviour
         return this.currRank;
     }
 
+    public bool IsPlayerTurn(BaseCharacter player)
+    {
+        return currentPlayerTurn == player;
+    }
+
     // Checks if card can be played or not. True if playable else it can't be.
     public bool CanPlayCard(Card candidateCard)
     {
@@ -316,7 +323,7 @@ public class CardGameManager : MonoBehaviour
             // For now simply adds one card to next player but could make it so if next player has +1 they could play it
             case CardRank.PlusOne:
                 BaseCharacter next = GetPlayers()[(currentTurnIdx + 1) % GetPlayers().Count];
-                next.AddCard(deck.DrawRandomCard());
+                next.AddCard(deck.Pop());
                 Debug.Log("Next player draws +1");
                 break;
 
@@ -332,11 +339,13 @@ public class CardGameManager : MonoBehaviour
     public void RequestSuitChoice(BaseCharacter player)
     {
         //suitUI.Show(player);
+        cardPlayResolved.Invoke(player);
     }
 
     public void RequestSwapChoice(BaseCharacter player)
     {
         //swapUI.Show(player, GetPlayers());
+        cardPlayResolved.Invoke(player);
     }
 
     public void OnSuitChosen(CardSuit chosenSuit)

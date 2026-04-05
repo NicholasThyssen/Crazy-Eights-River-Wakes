@@ -55,11 +55,16 @@ public class AICharacter : BaseCharacter
         else
         {
             yield return new WaitForSeconds(0.5f);
+            EndTurn();
+        }  
+    }
+
+    public override void FinishPlayerTurn(BaseCharacter player)
+    {
+        if (player == this)
+        {
+            EndTurn();
         }
-
-        Debug.Log("Player ending turn with cards: " + GetOwnedCardsCount());
-
-        EndTurn(selectedCard);
     }
 
     public List<Card> GetPlayableCards()
@@ -73,9 +78,10 @@ public class AICharacter : BaseCharacter
         playerHand.InitializeHand();
         playerHand = playerHandObject.GetComponent<CardHand>();
         playerHand.SetOwner(this);
-
+        playerHand.DisableSocketInteractions();
         playerHand.gameObject.transform.SetParent(deckAttach.transform);
         playerHand.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        playerHandObject.SetActive(true);
     }
 
 

@@ -55,6 +55,7 @@ public abstract class BaseCharacter : MonoBehaviour
         playerHand.InitializeHand();
         playerHand.SetOwner(this);
         playerHandObject.transform.SetParent(this.transform);
+        playerHandObject.SetActive(true);
         //playerHand.gameObject.transform.SetParent(this.deckAttach.transform);
         // playerHand.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         
@@ -68,6 +69,7 @@ public abstract class BaseCharacter : MonoBehaviour
         playerTurnEnded.AddListener(cgm.PlayerTurnEnded);
         // Listen to the manager's signals
         cgm.beginPlayerTurn.AddListener(BeginPlayerTurn);
+        cgm.cardPlayResolved.AddListener(FinishPlayerTurn);
     }
 
     public void AddCard(Card card)
@@ -83,7 +85,9 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public abstract void BeginPlayerTurn(BaseCharacter player);
 
-    public void EndTurn(Card cardPlayed) {
+    public abstract void FinishPlayerTurn(BaseCharacter player);
+
+    public void EndTurn() {
         playedThisTurn = false;
         playerTurnEnded.Invoke(this);
     }
@@ -117,6 +121,7 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public void AddCardToOwned(Card targetCard)
     {
+        targetCard.SetOwner(this);
         ownedCards.Add(targetCard);   
     }
 
