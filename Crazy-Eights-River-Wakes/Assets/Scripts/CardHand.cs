@@ -189,12 +189,37 @@ public class CardHand : MonoBehaviour
     
     public void MakeCardFan()
     {
-        float x = 0.0f;
-        foreach (Transform cardTransform in cardContainer)
+        int cardCount = heldCards.Count;
+        if (cardCount == 0 || cardContainer == null) return;
+
+        float fanAngle = 55f;
+        float radius = 0.45f;
+        float tilt = 15f;
+
+        Vector3 center = cardContainer.position;
+        Quaternion rotation = cardContainer.rotation;
+
+        float startAngle = -fanAngle / 2f;
+        float angleStep = cardCount > 1 ? fanAngle / (cardCount - 1) : 0;
+
+        for (int i = 0; i < cardCount; i++)
         {
-            cardTransform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            cardTransform.position = new Vector3(x, 0.0f, 0.0f);
-            x += 0.05f;
+            float angle = startAngle + angleStep * i;
+
+            // Position cards in an arc
+            Vector3 offset = Quaternion.Euler(0, angle, 0) * (Vector3.forward * radius);
+            Vector3 worldPos = center + rotation * offset;
+
+            // IMPORTANT FIX: rotate inward, not outward
+            Quaternion cardRot = rotation * Quaternion.Euler(tilt, -angle, 0f);
+
+            heldCards[i].transform.position = worldPos;
+            heldCards[i].transform.rotation = cardRot;
+
+            //TESTING
+            heldCards[i].transform.localPosition = heldCards[i].transform.localPosition;
+            heldCards[i].GetComponent<Card>().StoreOriginalPosition();
+
         }
     }
 }
