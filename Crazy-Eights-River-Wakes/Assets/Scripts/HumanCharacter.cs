@@ -100,6 +100,16 @@ public class HumanPlayer : BaseCharacter
         return cardsDrawnThisRound <= 0;
     }
 
+    public bool CanSkip()
+    {
+        return cardsDrawnThisRound > 0;
+    }
+
+    public void IncrementCardDraws()
+    {
+        cardsDrawnThisRound++;
+    }
+
     public void PlayedToDiscardPile(BaseCharacter player, Card card)
     {
         if (player == this)

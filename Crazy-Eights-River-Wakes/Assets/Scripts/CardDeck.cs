@@ -18,6 +18,8 @@ public class CardDeck : MonoBehaviour
 
     private XRSocketInteractor acceptSocket;
 
+    private XRGrabInteractable interactable;
+
     public bool faceDownDeck = false;
     public bool spawnCardsOnAwake = false;
     public GameObject cardPrefab;
@@ -31,7 +33,7 @@ public class CardDeck : MonoBehaviour
     {
         // Initialize card list
         cards = new List<Card>(GetComponentsInChildren<Card>());
-        // interactable = GetComponent<XRSimpleInteractable>();
+        interactable = GetComponent<XRGrabInteractable>();
         if (transform.childCount > 0)
         {
             cardBlob = transform.GetChild(0);
@@ -58,7 +60,7 @@ public class CardDeck : MonoBehaviour
 
     public void EnableActivateDraw()
     {
-        //interactable.selectEntered.AddListener(DrawCardFromSelect);
+        interactable.activated.AddListener(DrawCardFromActivate);
     }
 
     public void EnableAcceptSocket()
@@ -291,14 +293,12 @@ public class CardDeck : MonoBehaviour
 
     public void DrawCardFromActivate(ActivateEventArgs action)
     {
-        Debug.Log(action);
         var interactor = action.interactorObject;
         HumanPlayer firingUser = interactor.transform.GetComponentInParent<HumanPlayer>();
-        Debug.Log(firingUser);
         bool socketEnabled = acceptSocket.gameObject.activeSelf;
         
         CardGameManager cgm = CardGameManager.instance;
-        if (firingUser != cgm.IsPlayerTurn(firingUser))
+        if (firingUser != cgm.IsPlayerTurn(firingUser) || !firingUser.CanDraw())
         {
             return;
         }
@@ -307,6 +307,7 @@ public class CardDeck : MonoBehaviour
             acceptSocket.gameObject.SetActive(false);
         }
         Card nextCard = Pop();
+        firingUser.IncrementCardDraws();
         firingUser.TeleportNewCardToHand(nextCard);
 
         if (socketEnabled)
