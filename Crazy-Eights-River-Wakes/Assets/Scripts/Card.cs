@@ -12,6 +12,8 @@ public class Card : MonoBehaviour
 
     public UnityEvent<Card> fallbackWarpTriggered;
 
+    public bool currentlyHeld = false;
+
     void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody>();
