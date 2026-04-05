@@ -15,6 +15,8 @@ public class CardDeck : MonoBehaviour
 
     private XRSocketInteractor acceptSocket;
 
+    private XRGrabInteractable grabInteraction;
+
     public bool faceDownDeck = false;
     public bool spawnCardsOnAwake = false;
     public GameObject cardPrefab;
@@ -24,21 +26,30 @@ public class CardDeck : MonoBehaviour
 
     public UnityEvent<BaseCharacter, Card> cardPlayedToDeck;
 
+
     public void Awake()
     {
         // Initialize card list
         cards = new List<Card>(GetComponentsInChildren<Card>());
+        grabInteraction = GetComponent<XRGrabInteractable>();
         if (transform.childCount > 0)
         {
             cardBlob = transform.GetChild(0);
             acceptSocket = transform.GetChild(1).GetComponent<XRSocketInteractor>();
             cardContainer = transform.GetChild(2);
+            acceptSocket.selectEntered.AddListener(delegate {PlayCardFromSocket();});
+            
         }
         // Spawn cards if necessary
         if (spawnCardsOnAwake)
         {
             SpawnCards();
         }
+    }
+
+    public void EnableActivateDraw()
+    {
+        grabInteraction.activated.AddListener(delegate {DrawCardFromActivate();});
     }
 
     public void EnableAcceptSocket()
@@ -267,6 +278,29 @@ public class CardDeck : MonoBehaviour
         
         // deck.Pop();
     }
+
+    public void DrawCardFromActivate(IXRActivateInteractable interactable, IXRActivateInteractor interactor)
+    {
+        bool socketEnabled = acceptSocket.gameObject.activeSelf;
+        HumanPlayer firingUser = interactor.transform.GetComponentInParent<HumanPlayer>();
+        CardGameManager cgm = CardGameManager.instance;
+        if (firingUser != cgm.IsPlayerTurn(firingUser))
+        {
+            return;
+        }
+        if (socketEnabled)
+        {
+            acceptSocket.gameObject.SetActive(false);
+        }
+        Card nextCard = Pop();
+        firingUser.TeleportNewCardToHand(nextCard);
+
+        if (socketEnabled)
+        {
+            acceptSocket.gameObject.SetActive(true);
+        }
+    }
+
 
     public void RemoveCard(Card card)
     {

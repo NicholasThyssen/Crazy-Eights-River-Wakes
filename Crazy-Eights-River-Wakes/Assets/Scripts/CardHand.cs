@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
-using UnityEngine.XR.Interaction.Toolkit.Filtering;
 
 // A physical card hand for holding cards. NOT the actual metaphorical hand that the characters use.
 public class CardHand : MonoBehaviour

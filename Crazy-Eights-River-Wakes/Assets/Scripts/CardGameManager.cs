@@ -46,6 +46,7 @@ public class CardGameManager : MonoBehaviour
         if (discardPile != null)
         {
             discardPile.AddCard(firstCard);
+            discardPile.EnableAcceptSocket();
         }
         currRank = firstCard.rank;
         currSuit = firstCard.suit;

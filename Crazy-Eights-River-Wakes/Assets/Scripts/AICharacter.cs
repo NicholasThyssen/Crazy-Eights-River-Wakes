@@ -79,8 +79,8 @@ public class AICharacter : BaseCharacter
         playerHand = playerHandObject.GetComponent<CardHand>();
         playerHand.SetOwner(this);
         playerHand.DisableSocketInteractions();
-        playerHand.gameObject.transform.SetParent(deckAttach.transform);
-        playerHand.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        playerHandObject.transform.SetParent(deckAttach.transform);
+        playerHandObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         playerHandObject.SetActive(true);
     }
 
