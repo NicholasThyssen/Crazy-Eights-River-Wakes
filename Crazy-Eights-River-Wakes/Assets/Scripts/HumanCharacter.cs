@@ -9,8 +9,11 @@ using UnityEngine.XR.Interaction.Toolkit.Filtering;
 public class HumanPlayer : BaseCharacter
 {
 
+    public Transform handAttach;
     public Card cardPrefab;
     public Transform cardAnchor;
+
+    public bool usingPhysicalHand = true;
 
     //TESTING ONLY
     /*void Start()
@@ -30,6 +33,22 @@ public class HumanPlayer : BaseCharacter
         }
     }*/
 
+    public void CreateHand()
+    {
+        GameObject playerHandObject = Instantiate(cardHandPrefab);
+        playerHand.InitializeHand();
+        playerHand = playerHandObject.GetComponent<CardHand>();
+        playerHand.SetOwner(this);
+        if (!usingPhysicalHand)
+        {
+            playerHand.DisableSocketInteractions();
+        }
+        //playerHand.DisableSocketInteractions();
+        playerHandObject.transform.SetParent(handAttach);
+        playerHandObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        playerHandObject.SetActive(true);
+    }
+
     public void AssignListeners()
     {
         CardGameManager cgm = CardGameManager.instance;
@@ -39,8 +58,10 @@ public class HumanPlayer : BaseCharacter
         // Listen to the manager's signals
         cgm.beginPlayerTurn.AddListener(BeginPlayerTurn);
         // Connect to the discard pile
-        CardDeck pile = cgm.discardPile;
-        pile.cardPlayedToDeck.AddListener(PlayedToDiscardPile);
+        if (usingPhysicalHand) {
+            CardDeck pile = cgm.discardPile;
+            pile.cardPlayedToDeck.AddListener(PlayedToDiscardPile);
+        }
     }
 
 
@@ -107,6 +128,8 @@ public class HumanPlayer : BaseCharacter
 
     protected override void FanOutHand()
     {
+        playerHand.MakeCardFan();
+        /* 
         List<Card> hand = GetHand();
         int cardCount = hand.Count;
         if (cardCount == 0 || cardAnchor == null) return;
@@ -140,6 +163,7 @@ public class HumanPlayer : BaseCharacter
             hand[i].GetComponent<Card>().StoreOriginalPosition();
 
         }
+        */
     }
 
 
