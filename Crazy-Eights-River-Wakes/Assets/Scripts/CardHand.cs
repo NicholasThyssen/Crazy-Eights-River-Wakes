@@ -15,11 +15,11 @@ public class CardHand : MonoBehaviour
     private BaseCharacter owner;
     private Transform lastKnownSocketPosition;
     private List<Card> heldCards;
-    private Transform fallDetector;
     private Transform sockets;
     private HandSocket mainSocket;
     private Rigidbody rb;
     private Transform cardContainer;
+    private Transform respawnAnchor;
 
     public Card socketIgnoreCard;
 
@@ -39,8 +39,7 @@ public class CardHand : MonoBehaviour
 
         rb = GetComponent<Rigidbody>();
         sockets = transform.GetChild(1);
-        fallDetector = transform.GetChild(2);
-        cardContainer = transform.GetChild(3);
+        cardContainer = transform.GetChild(2);
         mainSocket = cardContainer.GetChild(0).GetComponent<HandSocket>();
 
         mainSocket.selectEntered.AddListener(delegate {AttachCardFromMainSocket();});
@@ -50,6 +49,11 @@ public class CardHand : MonoBehaviour
     {
         mainSocket.gameObject.SetActive(false);
         useSocketInteractions = false;
+    }
+
+    public void SetRespawnAnchor(Transform respawnAnchor)
+    {
+        this.respawnAnchor = respawnAnchor;
     }
 
     public void SetOwner(BaseCharacter owner)
@@ -143,18 +147,6 @@ public class CardHand : MonoBehaviour
         targetCard.transform.SetParent(null);
     }
 
-    public void OnFallbackWarpTriggered(Card targetCard)
-    {
-        if (!heldCards.Contains(targetCard) && owner.HasCard(targetCard))
-        {
-            
-        }
-        else
-        {
-            targetCard.fallbackWarpTriggered.RemoveListener(OnFallbackWarpTriggered);
-        }
-    }
-
     public void AttachCardToHand(XRSocketInteractor eventSocket = null)
     {
         Debug.Log("Card attached to hand.");
@@ -223,5 +215,11 @@ public class CardHand : MonoBehaviour
             heldCards[i].transform.localPosition = localPos;
             heldCards[i].transform.rotation = cardRot;
         }
+    }
+
+    public void Warpback()
+    {
+        transform.position = respawnAnchor.position;
+        transform.rotation = respawnAnchor.rotation;
     }
 }

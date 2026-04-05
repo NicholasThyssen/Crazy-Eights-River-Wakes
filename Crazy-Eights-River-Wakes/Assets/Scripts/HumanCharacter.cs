@@ -50,6 +50,7 @@ public class HumanPlayer : BaseCharacter
     {
         GameObject playerHandObject = Instantiate(cardHandPrefab);
         playerHand = playerHandObject.GetComponent<CardHand>();
+        playerHand.SetRespawnAnchor(handAttach);
         playerHand.SetOwner(this);
         if (!usingPhysicalHand)
         {

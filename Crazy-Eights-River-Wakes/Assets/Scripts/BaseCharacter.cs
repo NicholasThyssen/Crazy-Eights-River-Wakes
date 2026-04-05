@@ -213,6 +213,15 @@ public abstract class BaseCharacter : MonoBehaviour
         // This depends on your existing UI system
     }
 
+    public void WarpCardToHand(Card targetCard)
+    {
+        if (!HasCard(targetCard))
+        {
+            AddCardToOwned(targetCard);
+        }
+        playerHand.SummonCardToHand(targetCard);
+    }
+
     // Needed just so that user can fan out hand
     protected virtual void FanOutHand()
     {

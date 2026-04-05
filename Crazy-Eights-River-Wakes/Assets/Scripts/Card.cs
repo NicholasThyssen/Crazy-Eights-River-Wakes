@@ -109,6 +109,20 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
+    public void Warpback()
+    {
+        rb.velocity = Vector3.zero;
+        if (owner != null)
+        {
+            owner.WarpCardToHand(this);
+        }
+        else
+        {
+            CardGameManager cgm = CardGameManager.instance;
+            transform.position = cgm.deck.transform.position;
+            transform.rotation = cgm.deck.transform.rotation;
+        }
+    }
 }
 
 

@@ -15,6 +15,7 @@ public class CardDeck : MonoBehaviour
     private Material faceMaterial;
     private GameObject backObject;
     private Transform cardContainer;
+    protected Rigidbody rb;
 
     private XRSocketInteractor acceptSocket;
 
@@ -31,9 +32,11 @@ public class CardDeck : MonoBehaviour
 
     public void Awake()
     {
+        rb = gameObject.GetComponent<Rigidbody>();
         // Initialize card list
         cards = new List<Card>(GetComponentsInChildren<Card>());
         interactable = GetComponent<XRGrabInteractable>();
+        interactable.firstSelectEntered.AddListener(SetRespawnAnchorThroughFirstSocket);
         if (transform.childCount > 0)
         {
             cardBlob = transform.GetChild(0);
@@ -58,6 +61,13 @@ public class CardDeck : MonoBehaviour
         }
     }
 
+    public void SetRespawnAnchorThroughFirstSocket(SelectEnterEventArgs action)
+    {
+        var interactor = action.interactorObject;
+        SetRespawnAnchor(interactor.transform);
+        interactable.firstSelectEntered.RemoveAllListeners();
+    }
+
     public void EnableActivateDraw()
     {
         interactable.activated.AddListener(DrawCardFromActivate);
@@ -71,13 +81,6 @@ public class CardDeck : MonoBehaviour
     public void SetRespawnAnchor(Transform respawnAnchor)
     {
         this.respawnAnchor = respawnAnchor;
-    }
-
-    // When the deck need to respawn at its anchor (typically because it got tossed around), call this function and tell the anchor to play a particle effect.
-    public void RespawnAtAnchor()
-    {
-        transform.position = respawnAnchor.position;
-        transform.rotation = respawnAnchor.rotation;
     }
 
     // Shouldn't be needed; only used for testing purposes
@@ -362,5 +365,10 @@ public class CardDeck : MonoBehaviour
         
     }
 
-
+    public void Warpback()
+    {
+        rb.velocity = Vector3.zero;
+        transform.position = respawnAnchor.position;
+        transform.rotation = respawnAnchor.rotation;
+    }
 }
