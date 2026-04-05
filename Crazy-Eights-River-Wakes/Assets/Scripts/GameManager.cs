@@ -15,22 +15,10 @@ public class GameManager : MonoBehaviour
         var charactersArray = FindObjectsByType<BaseCharacter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
     public List<BaseCharacter> BuildCharactersArray()
     {
         var charactersArray = FindObjectsByType<BaseCharacter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         return new List<BaseCharacter>(charactersArray);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
 
