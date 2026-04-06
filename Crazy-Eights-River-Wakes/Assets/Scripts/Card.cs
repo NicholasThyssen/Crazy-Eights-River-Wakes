@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.EventSystems;
 
@@ -98,14 +99,10 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     {
         if (grab == null)
         {
-            
-        }
-        // TESTING: IS CARD BEING HOVERED OVER?
-        /*
-        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
-        {
             grab = gameObject.GetComponent<XRGrabInteractable>();
         }
+        // TESTING: IS CARD BEING HOVERED OVER?
+        //if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
         grab.enabled = true;
     }
 
@@ -132,7 +129,6 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         {
             return rank == rhs.rank || suit == rhs.suit;
         }
-        */
     }
 
     public void Warpback()

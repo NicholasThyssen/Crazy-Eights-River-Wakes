@@ -158,7 +158,7 @@ public class HumanPlayer : BaseCharacter
         // Optionally, check if the drawn card is playable and allow immediate play
     }
 
-    public override void TryPlayCard(Card card)
+    public override void TryPlayCard(Card selectedCard)
     {
         // Not your turn
         Debug.Log("Is it my turn? " + CardGameManager.instance.IsPlayerTurn(this));
@@ -167,7 +167,7 @@ public class HumanPlayer : BaseCharacter
             return;
 
         // Illegal move
-        if (!CardGameManager.instance.CanPlayCard(card))
+        if (!CardGameManager.instance.CanPlayCard(selectedCard))
             return;
 
         PlayCardToDeck(selectedCard, CardGameManager.instance.discardPile);

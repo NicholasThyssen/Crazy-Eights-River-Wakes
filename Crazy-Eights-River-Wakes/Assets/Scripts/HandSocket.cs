@@ -11,6 +11,10 @@ public class HandSocket : XRSocketInteractor
     public CardDeck cardDeck;
     public override bool CanHover(IXRHoverInteractable interactable)
     {
+        if (!base.CanHover(interactable))
+        {
+            return false;
+        }
         Card targetCard = interactable.transform.gameObject.GetComponent<Card>();
         if (targetCard == null)
         {
@@ -38,6 +42,10 @@ public class HandSocket : XRSocketInteractor
 
     public override bool CanSelect(IXRSelectInteractable interactable)
     {
+        if (!base.CanSelect(interactable))
+        {
+            return false;
+        }
         Card targetCard = interactable.transform.gameObject.GetComponent<Card>();
         if (targetCard == null)
         {
