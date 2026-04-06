@@ -156,6 +156,29 @@ public class HumanPlayer : BaseCharacter
         // Optionally, check if the drawn card is playable and allow immediate play
     }
 
+    public override void TryPlayCard(Card card)
+    {
+        // Not your turn
+        Debug.Log("Is it my turn? " + CardGameManager.instance.CurrentPlayerIs(this));
+
+        if (!CardGameManager.instance.CurrentPlayerIs(this))
+            return;
+
+        // Illegal move
+        if (!CardGameManager.instance.CanPlayCard(card))
+            return;
+
+        // Remove from hand
+        hand.Remove(card);
+
+        // Add to discard pile
+        CardGameManager.instance.discardPile.AddCard(card);
+
+        // Notify manager
+        CardGameManager.instance.EndTurn(this, card);
+    }
+
+
     protected override void FanOutHand()
     {
         playerHand.MakeCardFan();

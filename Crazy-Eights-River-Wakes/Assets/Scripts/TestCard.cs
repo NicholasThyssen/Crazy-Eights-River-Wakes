@@ -34,17 +34,15 @@ public class TestCard : Card
             SetFaceTexture(suit, rank);
         }
 
-        // Set text
-        if (text != null)
-        {
-            text.text = GetTextFromRank(rank);
-        }
+        // Fetch components here in case Awake hasn't run yet
+        if (rend == null) rend = GetComponent<Renderer>();
+        if (text == null) text = GetComponentInChildren<TextMeshPro>();
 
-        // Set cube color
+        if (text != null)
+            text.text = GetTextFromRank(rank);
+
         if (rend != null)
-        {
             rend.material.color = GetColorFromSuit(suit);
-        }
     }
 
     // Sets the face texture of the card.
@@ -106,25 +104,16 @@ public class TestCard : Card
     }
 
     private static Color GetColorFromSuit(CardSuit suit)
-{
-    switch (suit)
     {
-        case CardSuit.Hearts:
-            return Color.red;
-
-        case CardSuit.Diamonds:
-            return Color.yellow;
-
-        case CardSuit.Clubs:
-            return Color.cyan;
-
-        case CardSuit.Spades:
-            return Color.blue;
-
-        default:
-            return Color.white;
+        switch (suit)
+        {
+            case CardSuit.Hearts: return Color.red;
+            case CardSuit.Diamonds: return Color.yellow;
+            case CardSuit.Clubs: return Color.cyan;
+            case CardSuit.Spades: return Color.blue;
+            default: return Color.white;
+        }
     }
-}
 
     private static string GetTextFromRank(CardRank rank) => rank switch
     {

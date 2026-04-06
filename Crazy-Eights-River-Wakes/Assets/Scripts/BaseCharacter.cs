@@ -228,4 +228,11 @@ public abstract class BaseCharacter : MonoBehaviour
         // Default implementation does nothing.
         // HumanPlayer will override this to visually fan out cards.
     }
+
+    public virtual void TryPlayCard(Card card)
+    {
+        // Default behavior for AI or characters without custom logic
+        Debug.Log(name + " TryPlayCard called, but no override implemented.");
+    }
+
 }
