@@ -46,6 +46,6 @@ public class SwapSelectionUI : MonoBehaviour
     private void Choose(BaseCharacter target)
     {
         Hide();
-        CardGameManager.instance.OnSwapChosen(target);
+        requestingPlayer.swapSelected.Invoke(requestingPlayer, target);
     }
 }

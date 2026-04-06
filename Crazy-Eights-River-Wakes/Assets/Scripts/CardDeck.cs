@@ -78,10 +78,7 @@ public class CardDeck : MonoBehaviour
         acceptSocket.gameObject.SetActive(true);
     }
 
-    public void SetRespawnAnchor(Transform respawnAnchor)
-    {
-        this.respawnAnchor = respawnAnchor;
-    }
+    public void SetRespawnAnchor(Transform respawnAnchor) => this.respawnAnchor = respawnAnchor;
 
     // Shouldn't be needed; only used for testing purposes
     public void SetCards(List<Card> cardsList)
@@ -94,20 +91,11 @@ public class CardDeck : MonoBehaviour
     }
 
     // Returns the card at the top of the deck, but does not remove it from the deck
-    public Card PeekTop()
-    {
-        return cards.Count > 0 ? cards[cards.Count-1] : null;
-    }
+    public Card PeekTop() => cards.Count > 0 ? cards[cards.Count-1] : null;
 
-    public List<Card> GetCards()
-    {
-        return this.cards;
-    }
+    public List<Card> GetCards() => cards;
 
-    public int GetCardCount()
-    {
-        return cards.Count;
-    }
+    public int GetCardCount() => cards.Count;
 
     // Returns the card at the top of the deck AND removes it from the deck
     public Card Pop()

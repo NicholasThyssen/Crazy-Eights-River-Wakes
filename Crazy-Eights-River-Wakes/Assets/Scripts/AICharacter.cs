@@ -85,11 +85,7 @@ public class AICharacter : BaseCharacter
         }
     }
 
-    public List<Card> GetPlayableCards()
-    {
-        return playerHand.GetHeldCards().Where(x => CardGameManager.instance.CanPlayCard(x)).ToList();
-    }
-
+    public List<Card> GetPlayableCards() => playerHand.GetHeldCards().Where(x => CardGameManager.instance.CanPlayCard(x)).ToList();
 
     private void AIPlayerDrawCard()
     {
@@ -114,13 +110,50 @@ public class AICharacter : BaseCharacter
         return drawnCard;
     }
 
-    void Start()
+    protected override void HandleSuitRequest(BaseCharacter player, SuitSelectionUI suitUI)
     {
-
+        if (player == this)
+        {
+           // Choose a random suit that the AI player has
+            HashSet<CardSuit> possibleValues = new HashSet<CardSuit>();
+            CardSuit targetSuit = CardSuit.Hearts;
+            foreach (Card c in ownedCards)
+            {
+                if (c.suit != CardSuit.None) {
+                    possibleValues.Add(c.suit);
+                }
+            }
+            List<CardSuit> possibleList = possibleValues.ToList();
+            if (possibleList.Count > 0) {
+                int randomize = UnityEngine.Random.Range(0, possibleList.Count);
+                targetSuit = possibleList[randomize];
+            }
+        
+            suitSelected.Invoke(this, targetSuit);         
+        }
     }
 
-    void Update()
+    protected override void HandleSwapRequest(BaseCharacter player, SwapSelectionUI swapUI, List<BaseCharacter> players)
     {
+        if (player == this)
+        {
+            // Pick the player with the least amount of cards
+            CardGameManager cgm = CardGameManager.instance;
+            BaseCharacter target = players[0];
+            int lowest = 999;
+        
+            foreach(BaseCharacter candidate in players)
+            {
+                if (candidate == this) continue;
+                if (candidate.GetOwnedCardsCount() < lowest)
+                {
+                    lowest = candidate.GetOwnedCardsCount();
+                    target = candidate;
+                }
+            }
+
+            swapSelected.Invoke(this, target);
+        }
 
     }
 }

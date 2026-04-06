@@ -61,7 +61,6 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     {
         Debug.Log("Clicked card:" + name);
         CardGameManager.instance.OnCardClicked(this);
-
     }
 
 
@@ -78,14 +77,11 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         
     }
 
-    public void SetOwner(BaseCharacter owner)
-    {
-        this.owner = owner;
-    }
+    public void SetOwner(BaseCharacter owner) => this.owner = owner;
 
     public void EnablePhysics()
     {
-        //rb.isKinematic = false;
+        rb.isKinematic = false;
         //collider.enabled = true;
     }
 
@@ -140,6 +136,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         }
         else
         {
+            // Unowned cards shouldn't be falling out
             CardGameManager cgm = CardGameManager.instance;
             transform.position = cgm.deck.transform.position;
             transform.rotation = cgm.deck.transform.rotation;

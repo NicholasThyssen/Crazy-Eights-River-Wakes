@@ -30,6 +30,9 @@ public class CardGameManager : MonoBehaviour
     public UnityEvent<BaseCharacter> beginPlayerTurn;
     public UnityEvent<BaseCharacter> cardPlayResolved;
 
+    public UnityEvent<BaseCharacter, SuitSelectionUI> requestSuit;
+    public UnityEvent<BaseCharacter, SwapSelectionUI, List<BaseCharacter>> requestSwap;
+
     void Awake()
     {
         instance = this;
@@ -127,7 +130,7 @@ public class CardGameManager : MonoBehaviour
     }
 
     // Getter function to see all players
-    private List<BaseCharacter> GetPlayers()
+    public List<BaseCharacter> GetPlayers()
     {
         if (GameManager.instance.characters.Count > 0) {
             return GameManager.instance.characters;
@@ -266,7 +269,7 @@ public class CardGameManager : MonoBehaviour
 
             case CardRank.PlusOne:
                 BaseCharacter next = GetPlayers()[(currentTurnIdx + 1) % GetPlayers().Count];
-                next.AddCard(deck.Pop());
+                next.TeleportNewCardToHand(deck.Pop());
                 Debug.Log("Next player draws +1");
                 break;
 
@@ -280,23 +283,34 @@ public class CardGameManager : MonoBehaviour
         cardPlayResolved.Invoke(player);
     }
 
-    public void RequestSuitChoice(BaseCharacter player) => suitUI.Show(player);
-    public void RequestSwapChoice(BaseCharacter player) => swapUI.Show(player, GetPlayers());
-
-    public void OnSuitChosen(CardSuit chosenSuit)
-    {
-        currSuit = chosenSuit;
-        Debug.Log("Suit chosen: " + chosenSuit);
-        ContinueTurnAfterEffect();
+    public void RequestSuitChoice(BaseCharacter player) {
+        requestSuit.Invoke(player, suitUI);
     }
 
-    public void OnSwapChosen(BaseCharacter target)
+    public void RequestSwapChoice(BaseCharacter player)
     {
-        var temp = currentPlayerTurn.GetHand();
-        currentPlayerTurn.SetHand(target.GetHand());
-        target.SetHand(temp);
-        Debug.Log("Swapped hands with: " + target.name);
-        ContinueTurnAfterEffect();
+        requestSwap.Invoke(player, swapUI, GetPlayers());
+    }
+
+    public void OnSuitChosen(BaseCharacter player, CardSuit chosenSuit)
+    {
+        if (player == currentPlayerTurn)
+        {
+            currSuit = chosenSuit;
+            Debug.Log("Suit chosen: " + chosenSuit);
+            ContinueTurnAfterEffect();            
+        }
+
+    }
+
+    public void OnSwapChosen(BaseCharacter player, BaseCharacter target)
+    {
+        if (player == currentPlayerTurn)
+        {
+            currentPlayerTurn.SwapCardsWithPlayer(target);
+            Debug.Log("Swapped hands with: " + target.name);
+            ContinueTurnAfterEffect();
+        }
     }
 
     private void ReverseTurnOrder() => reversed = !reversed;
@@ -309,7 +323,7 @@ public class CardGameManager : MonoBehaviour
 
     void CheckWin(BaseCharacter player)
     {
-        if (player.hand.Count == 0)
+        if (player.GetOwnedCardsCount() == 0)
         {
             Debug.Log(player.name + " WINS!");
             enabled = false;
@@ -345,12 +359,12 @@ public class CardGameManager : MonoBehaviour
 
         // Find card in hand by instance ID to avoid reference mismatch
         int clickedID = card.GetInstanceID();
-        Card cardInHand = humanPlayer.hand.Find(c => c.GetInstanceID() == clickedID);
+        Card cardInHand = humanPlayer.GetHandCards().Find(c => c.GetInstanceID() == clickedID);
 
         if (cardInHand == null)
         {
-            Debug.Log($"Card {card.rank} of {card.suit} not found in hand. Hand has {humanPlayer.hand.Count} cards.");
-            foreach (var c in humanPlayer.hand)
+            Debug.Log($"Card {card.rank} of {card.suit} not found in hand. Hand has {humanPlayer.GetOwnedCardsCount()} cards.");
+            foreach (var c in humanPlayer.GetHandCards())
                 Debug.Log($"  Hand card: {c.rank} of {c.suit} (ID: {c.GetInstanceID()})");
             Debug.Log($"  Clicked card ID: {clickedID}");
             return;
