@@ -1,11 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-
-
 public class HumanPlayer : BaseCharacter
 {
 
+    // Card image and when in front of player we want to anchor card when they grab it
     public Card cardPrefab;
     public Transform cardAnchor;
 
@@ -27,6 +26,7 @@ public class HumanPlayer : BaseCharacter
         }
     }*/
 
+    // This is called by the game manager when it's this player's turn
     public override void BeginCardTurn()
     {
         Debug.Log("Human player's turn started: " + name);
@@ -34,8 +34,7 @@ public class HumanPlayer : BaseCharacter
         // 1. Highlight/select only playable cards in the UI
         ShowPlayableCards();
 
-        // 2. Wait for player input (e.g., card click or draw button)
-        // This part is typically handled by UI event handlers, not directly here.
+
     }
 
     // Example method to highlight playable cards
@@ -73,6 +72,29 @@ public class HumanPlayer : BaseCharacter
         AddCard(drawnCard);
         // Optionally, check if the drawn card is playable and allow immediate play
     }
+
+    public override void TryPlayCard(Card card)
+    {
+        // Not your turn
+        Debug.Log("Is it my turn? " + CardGameManager.instance.CurrentPlayerIs(this));
+
+        if (!CardGameManager.instance.CurrentPlayerIs(this))
+            return;
+
+        // Illegal move
+        if (!CardGameManager.instance.CanPlayCard(card))
+            return;
+
+        // Remove from hand
+        hand.Remove(card);
+
+        // Add to discard pile
+        CardGameManager.instance.discardPile.AddCard(card);
+
+        // Notify manager
+        CardGameManager.instance.EndTurn(this, card);
+    }
+
 
     protected override void FanOutHand()
     {

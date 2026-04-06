@@ -11,43 +11,34 @@ public class TestCard : Card
         rend = GetComponent<Renderer>();
         text = GetComponentInChildren<TextMeshPro>();
     }
+
     public void Initialize(CardSuit suit, CardRank rank)
     {
         this.suit = suit;
         this.rank = rank;
-        // Set text
-        if (text != null)
-        {
-            text.text = GetTextFromRank(rank);
-        }
 
-        // Set cube color
+        // Fetch components here in case Awake hasn't run yet
+        if (rend == null) rend = GetComponent<Renderer>();
+        if (text == null) text = GetComponentInChildren<TextMeshPro>();
+
+        if (text != null)
+            text.text = GetTextFromRank(rank);
+
         if (rend != null)
-        {
             rend.material.color = GetColorFromSuit(suit);
-        }
     }
 
     private static Color GetColorFromSuit(CardSuit suit)
-{
-    switch (suit)
     {
-        case CardSuit.Hearts:
-            return Color.red;
-
-        case CardSuit.Diamonds:
-            return Color.yellow;
-
-        case CardSuit.Clubs:
-            return Color.cyan;
-
-        case CardSuit.Spades:
-            return Color.blue;
-
-        default:
-            return Color.white;
+        switch (suit)
+        {
+            case CardSuit.Hearts: return Color.red;
+            case CardSuit.Diamonds: return Color.yellow;
+            case CardSuit.Clubs: return Color.cyan;
+            case CardSuit.Spades: return Color.blue;
+            default: return Color.white;
+        }
     }
-}
 
     private static string GetTextFromRank(CardRank rank) => rank switch
     {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public CardSuit suit;
     public CardRank rank;
@@ -14,6 +14,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         originalLocalPos = transform.localPosition;
     }
 
+    // When card is hovered, we bring it up and forward slightly
     public void OnPointerEnter(PointerEventData eventData)
     {
         Debug.Log("Hover ENTER on card: " + name);
@@ -24,6 +25,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         transform.localPosition = originalLocalPos + new Vector3(0, 0.05f, -0.1f);
     }
 
+    // When card stops being hovered, brough back to its place in fan
     public void OnPointerExit(PointerEventData eventData)
     {
         Debug.Log("Hover EXIT on card: " + name);
@@ -34,16 +36,30 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         transform.localPosition = originalLocalPos;
     }
 
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Debug.Log("Clicked card:" + name);
+        CardGameManager.instance.OnCardClicked(this);
+
+    }
+
+
+
+    // Call this when card is added to hand, so we can return to this position after hover
     public void StoreOriginalPosition()
     {
         originalLocalPos = transform.localPosition;
     }
     void Update()
     {
+        // TESTING: IS CARD BEING HOVERED OVER?
+        /*
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
         {
             Debug.Log("Raycast hit: " + hit.collider.name);
         }
+        */
     }
 
 }
