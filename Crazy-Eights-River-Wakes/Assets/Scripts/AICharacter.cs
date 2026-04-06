@@ -8,61 +8,99 @@ public class AICharacter : BaseCharacter
 {
     public GameObject deckAttach;
     public GameObject cardAttach;
-    public override void BeginCardTurn()
+
+    private void Awake()
     {
-        StartCoroutine(HandleCardTurn());
+        animator = GetComponent<Animator>();
+        Initialize();
     }
 
-    IEnumerator HandleCardTurn()
+    public void Initialize()
     {
-        yield return new WaitForSeconds(2f);
+        ownedCards = new List<Card>();
+        CreateHand();
+    }
 
-        // If player has a card that can be played (correct rank/suit), play it
-        List<Card> validCards = this.cardDeck.GetCards().Where(card=>card.suit == CardGameManager.instance.GetCurrSuit() || card.rank == CardGameManager.instance.GetCurrRank() || card.suit == CardSuit.None).ToList();
-        Card cardToPlay = null;
-        if (validCards.Count > 0)
+    public void CreateHand()
+    {
+        GameObject playerHandObject = Instantiate(cardHandPrefab);
+        playerHand = playerHandObject.GetComponent<CardHand>();
+        playerHand.SetOwner(this);
+        playerHand.DisableSocketInteractions();
+        playerHandObject.transform.SetParent(deckAttach.transform);
+        playerHandObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        playerHandObject.SetActive(true);
+    }
+
+    public override void BeginPlayerTurn(BaseCharacter player)
+    {
+        if (player == this)
         {
-            cardToPlay = ChooseRandomCard(validCards);
+            Debug.Log("AI player (" + playerId + ")'s begin turn event received!");
+            StartCoroutine(HandlePlayerTurn());
         }
-        else    // otherwise, draw one card from the deck. If it can be played, then play it. Otherwise, skip
+        
+    }
+
+    IEnumerator HandlePlayerTurn()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        List<Card> playableCards = GetPlayableCards();
+        Card selectedCard = null;
+
+        if (playableCards.Count > 0)
         {
-            DrawNewCard();
+            selectedCard = ChooseRandomCard(playableCards);
+        }
+        else
+        {
+            AIPlayerDrawCard();
             yield return new WaitForSeconds(1f);
-            validCards = this.cardDeck.GetCards().Where(card=>card.suit == CardGameManager.instance.GetCurrSuit() || card.rank == CardGameManager.instance.GetCurrRank() || card.suit == CardSuit.None).ToList();
-            if (validCards.Count > 0)
+            playableCards = GetPlayableCards();
+            if (playableCards.Count > 0)
             {
-                cardToPlay = ChooseRandomCard(validCards);
+                selectedCard = ChooseRandomCard(playableCards);
             }
         }
 
-
-        // move to right hand to signal that this card is about to be placed
-        if (cardToPlay != null)
+        if (selectedCard != null)
         {
-            cardToPlay.transform.SetParent(cardAttach.transform);
-            cardToPlay.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            PullCardToHandObject(selectedCard, cardAttach.transform);
+            yield return new WaitForSeconds(1.0f);
+            AIPlayerPlayCard(selectedCard);
         }
-        
-        yield return new WaitForSeconds(2.5f);
-
-        // play the card
-        if (cardToPlay != null)
+        else
         {
-            PlayCard(cardToPlay);
-            yield return new WaitForSeconds(1f);
-        }
-
-        // End the turn
-        EndTurn(cardToPlay);
+            yield return new WaitForSeconds(0.5f);
+            EndTurn();
+        }  
     }
 
-    // this represents drawing a NEW card from the main deck
-    private void DrawNewCard()
+    public override void FinishPlayerTurn(BaseCharacter player)
+    {
+        if (player == this)
+        {
+            EndTurn();
+        }
+    }
+
+    public List<Card> GetPlayableCards()
+    {
+        return playerHand.GetHeldCards().Where(x => CardGameManager.instance.CanPlayCard(x)).ToList();
+    }
+
+
+    private void AIPlayerDrawCard()
     {
         Card drawnCard = CardGameManager.instance.deck.Pop();
-        
-        // add the drawn card to our deck
-        this.cardDeck.AddCard(drawnCard);
+        TeleportNewCardToHand(drawnCard);
+    }
+
+    private void AIPlayerPlayCard(Card selectedCard)
+    {
+        PlayCardToDeck(selectedCard, CardGameManager.instance.discardPile);
+        playerPlayedCard.Invoke(this, selectedCard);
     }
 
     // Chooses a card that is valid 
@@ -84,21 +122,5 @@ public class AICharacter : BaseCharacter
     void Update()
     {
 
-    }
-
-    // this function is for placing a card down (in the discard pile)
-    private void PlayCard(Card cardToPlay)
-    {
-        // remove card from player's cards
-        this.cardDeck.RemoveCard(cardToPlay);
-        CardGameManager.instance.discardPile.AddCard(cardToPlay);
-    }
-
-    protected override void SpawnCardDeck()
-    {
-        GameObject cardDeckGameObj = new GameObject("CardDeck");
-        this.cardDeck = cardDeckGameObj.AddComponent<CardDeck>();
-        cardDeck.transform.SetParent(this.deckAttach.transform);
-        cardDeck.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 }

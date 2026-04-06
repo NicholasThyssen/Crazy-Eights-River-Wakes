@@ -5,49 +5,113 @@ public class TestCard : Card
 {
     private TextMeshPro text;
     private Renderer rend;
+    private Material faceMaterial;
 
     void Awake()
     {
+        rb = gameObject.GetComponent<Rigidbody>();
+        collider = gameObject.GetComponent<BoxCollider>();
+
         rend = GetComponent<Renderer>();
         text = GetComponentInChildren<TextMeshPro>();
+        faceMaterial = transform.GetChild(0).GetComponent<MeshRenderer>().material; // "Face" should always be the first child in the GameObject hierarchy
+
+        if (faceMaterial != null)
+        {
+            SetFaceTexture(suit, rank);
+        }
     }
+
     public void Initialize(CardSuit suit, CardRank rank)
     {
         this.suit = suit;
         this.rank = rank;
-        // Set text
-        if (text != null)
+        
+        if (faceMaterial != null)
         {
-            text.text = GetTextFromRank(rank);
+            SetFaceTexture(suit, rank);
         }
 
-        // Set cube color
+        // Fetch components here in case Awake hasn't run yet
+        if (rend == null) rend = GetComponent<Renderer>();
+        if (text == null) text = GetComponentInChildren<TextMeshPro>();
+
+        if (text != null)
+            text.text = GetTextFromRank(rank);
+
         if (rend != null)
-        {
             rend.material.color = GetColorFromSuit(suit);
+    }
+
+    // Sets the face texture of the card.
+    private void SetFaceTexture(CardSuit suit, CardRank rank)
+    {
+        if (rank != CardRank.Eight && rank != CardRank.Swap) {
+            faceMaterial.SetFloat("Suit", (int)suit);
         }
+        else if (rank == CardRank.Eight)
+        {
+            // Set the card to a blue 8 for now
+            faceMaterial.SetFloat("Suit", 0);
+            faceMaterial.SetFloat("Rank", 7);
+        }
+        else if (rank == CardRank.Swap)
+        {
+            // Set the card to a green 8 for now
+            faceMaterial.SetFloat("Suit", 1);
+            faceMaterial.SetFloat("Rank", 7);
+        }
+        faceMaterial.SetFloat("Rank", (int)rank);
+    }
+
+    public void PlaySpecialEffect(string effectName)
+    {
+        
+    }
+
+    // Returns a non-zero value if the card can be played to the current pile.
+    // I'd make this a boolean, but I don't know how wilds and swaps are planned to be handled.
+    private int IsValidPlayable(CardSuit suit, CardRank rank)
+    {
+        if (this.rank == CardRank.Eight)
+        {
+            // Eights are wild
+            return 2;
+        }
+        else if (this.rank == CardRank.Swap)
+        {
+            // Swap cards also don't care about suit
+            return 3;
+        }
+        else if (this.rank == rank || this.suit == suit)
+        {
+            // Otherwise, return a non-zero value if ranks or suits match
+            return 1;
+        }
+        return 0;
+    }
+
+    private void EnableXRInteractions()
+    {
+        
+    }
+
+    private void DisableXRInteractions()
+    {
+        
     }
 
     private static Color GetColorFromSuit(CardSuit suit)
-{
-    switch (suit)
     {
-        case CardSuit.Hearts:
-            return Color.red;
-
-        case CardSuit.Diamonds:
-            return Color.yellow;
-
-        case CardSuit.Clubs:
-            return Color.cyan;
-
-        case CardSuit.Spades:
-            return Color.blue;
-
-        default:
-            return Color.white;
+        switch (suit)
+        {
+            case CardSuit.Hearts: return Color.red;
+            case CardSuit.Diamonds: return Color.yellow;
+            case CardSuit.Clubs: return Color.cyan;
+            case CardSuit.Spades: return Color.blue;
+            default: return Color.white;
+        }
     }
-}
 
     private static string GetTextFromRank(CardRank rank) => rank switch
     {

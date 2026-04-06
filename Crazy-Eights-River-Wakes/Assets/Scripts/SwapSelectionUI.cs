@@ -14,7 +14,6 @@ public class SwapSelectionUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    // Shows the UI based on players available
     public void Show(BaseCharacter player, List<BaseCharacter> players)
     {
         requestingPlayer = player;
@@ -31,21 +30,18 @@ public class SwapSelectionUI : MonoBehaviour
             GameObject btnObj = Instantiate(playerButtonPrefab, buttonContainer);
             btnObj.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = p.name;
 
-            btnObj.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                Choose(p);
-            });
+            Button b = btnObj.GetComponent<Button>();
+            b.onClick.RemoveAllListeners(); // safety
+            b.onClick.AddListener(() => Choose(p));
         }
 
         gameObject.SetActive(true);
     }
 
-    // After they choose it hides the buttons
     public void Hide()
     {
         gameObject.SetActive(false);
     }
-
 
     private void Choose(BaseCharacter target)
     {
