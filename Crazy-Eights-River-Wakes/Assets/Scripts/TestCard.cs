@@ -7,8 +7,6 @@ public class TestCard : Card
     private Renderer rend;
     private Material faceMaterial;
 
-
-
     void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody>();

@@ -22,14 +22,13 @@ public class CardGameManager : MonoBehaviour
 
     private CardSuit currSuit;
     private CardRank currRank;
+    private bool reversed = false;
 
     public SuitSelectionUI suitUI;
     public SwapSelectionUI swapUI;
 
     public UnityEvent<BaseCharacter> beginPlayerTurn;
-
     public UnityEvent<BaseCharacter> cardPlayResolved;
-    private bool reversed = false;
 
     void Awake()
     {
@@ -157,6 +156,7 @@ public class CardGameManager : MonoBehaviour
                 {
                     currSuit = cardPlayed.suit;
                 }
+                currRank = cardPlayed.rank;
 
                 HandleCardEffects(player, cardPlayed);
             }
@@ -365,9 +365,7 @@ public class CardGameManager : MonoBehaviour
 
         // Remove from hand, add to discard, end turn
         Debug.Log($"Playing {cardInHand.rank} of {cardInHand.suit}.");
-        humanPlayer.RemoveCard(cardInHand);
-        discardPile.AddCard(cardInHand);
-        PlayerPlayedCard(humanPlayer, cardInHand);
+        humanPlayer.OnCardSelected(cardInHand);
     }
 }
 

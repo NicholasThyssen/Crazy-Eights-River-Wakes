@@ -9,10 +9,12 @@ using UnityEngine.XR.Interaction.Toolkit.Filtering;
 public class HumanPlayer : BaseCharacter
 {
 
+    [Tooltip("The position where the player's hand should be stored.")]
     public Transform handAttach;
+    [Tooltip("The Prefab object that is used for cards.")]
     public Card cardPrefab;
-    public Transform cardAnchor;
 
+    [Tooltip("When enabled, this player will use XR interactions to interact with the cards and decks.")]
     public bool usingPhysicalHand = true;
 
     private int cardsDrawnThisRound = 0;
@@ -159,23 +161,17 @@ public class HumanPlayer : BaseCharacter
     public override void TryPlayCard(Card card)
     {
         // Not your turn
-        Debug.Log("Is it my turn? " + CardGameManager.instance.CurrentPlayerIs(this));
+        Debug.Log("Is it my turn? " + CardGameManager.instance.IsPlayerTurn(this));
 
-        if (!CardGameManager.instance.CurrentPlayerIs(this))
+        if (!CardGameManager.instance.IsPlayerTurn(this))
             return;
 
         // Illegal move
         if (!CardGameManager.instance.CanPlayCard(card))
             return;
 
-        // Remove from hand
-        hand.Remove(card);
-
-        // Add to discard pile
-        CardGameManager.instance.discardPile.AddCard(card);
-
-        // Notify manager
-        CardGameManager.instance.EndTurn(this, card);
+        PlayCardToDeck(selectedCard, CardGameManager.instance.discardPile);
+        playerPlayedCard.Invoke(this, selectedCard);
     }
 
 

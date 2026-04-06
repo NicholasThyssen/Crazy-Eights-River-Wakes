@@ -71,6 +71,12 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         originalLocalPos = transform.localPosition;
     }
 
+    // Alternative idea: perform an activation interaction on cards to play them when in XR mode
+    public void OnActivated(ActivateEventArgs activateEvent)
+    {
+        
+    }
+
     public void SetOwner(BaseCharacter owner)
     {
         this.owner = owner;
