@@ -21,6 +21,10 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public UnityEvent<BaseCharacter> playerTurnEnded;
 
+    public UnityEvent<BaseCharacter, CardSuit> suitSelected;
+
+    public UnityEvent<BaseCharacter, BaseCharacter> swapSelected;
+
     protected List<Card> queue;
 
 
@@ -28,18 +32,6 @@ public abstract class BaseCharacter : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         Initialize();
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void Initialize()
@@ -58,25 +50,21 @@ public abstract class BaseCharacter : MonoBehaviour
         playerHandObject.SetActive(true);
     }
 
+    public List<Card> GetHandCards() => playerHand.GetHeldCards();
+    public CardHand GetHandObject() => playerHand;
     public void AssignListeners()
     {
         CardGameManager cgm = CardGameManager.instance;
         // Assign listeners to our own signal
         playerPlayedCard.AddListener(cgm.PlayerPlayedCard);
         playerTurnEnded.AddListener(cgm.PlayerTurnEnded);
+        suitSelected.AddListener(cgm.OnSuitChosen);
+        swapSelected.AddListener(cgm.OnSwapChosen);
         // Listen to the manager's signals
         cgm.beginPlayerTurn.AddListener(BeginPlayerTurn);
         cgm.cardPlayResolved.AddListener(FinishPlayerTurn);
-    }
-
-    public void AddCard(Card card)
-    {
-        if (card == null) return;
-
-        hand.Add(card);
-        card.transform.SetParent(this.transform); // or a hand anchor
-                                                  // optionally position it here
-        FanOutHand();
+        cgm.requestSuit.AddListener(HandleSuitRequest);
+        cgm.requestSwap.AddListener(HandleSwapRequest);
     }
 
     // This should handle what happens when CardManager notifies this player that it is their turn
@@ -90,20 +78,11 @@ public abstract class BaseCharacter : MonoBehaviour
         playerTurnEnded.Invoke(this);
     }
 
-    public List<Card> GetOwnedCards()
-    {
-        return ownedCards;
-    }
+    public List<Card> GetOwnedCards() => ownedCards;
 
-    public int GetOwnedCardsCount()
-    {
-        return ownedCards.Count;
-    }
+    public int GetOwnedCardsCount() => ownedCards.Count;
 
-    public bool HasCard(Card targetCard)
-    {
-        return ownedCards.Contains(targetCard);
-    }
+    public bool HasCard(Card targetCard) => ownedCards.Contains(targetCard);
 
     public void SetOwnedCards(List<Card> newOwnedCards)
     {
@@ -170,29 +149,14 @@ public abstract class BaseCharacter : MonoBehaviour
         }
     }
 
-
-    // List of player's hand
-    public List<Card> hand = new List<Card>();
-
-    // We remove card from hand
-    public void RemoveCard(Card card)
+    public void SwapCardsWithPlayer(BaseCharacter other)
     {
-        hand.Remove(card);
-        FanOutHand(); // visual for card fan
-    }
+        CardHand otherHand = other.GetHandObject();
+        List<Card> myCards = playerHand.PopAllCards();
+        List<Card> otherCards = otherHand.PopAllCards();
 
-    // We get their hand
-    public List<Card> GetHand()
-    {
-        return hand;
-
-    }
-
-    // Set hand to something new
-    public void SetHand(List<Card> newHand)
-    {
-        hand = newHand;
-        FanOutHand();
+        SetOwnedCards(otherCards);
+        other.SetOwnedCards(myCards);
     }
 
     // Lets player see UI to choose suit to change (after playing an 8)
@@ -233,6 +197,17 @@ public abstract class BaseCharacter : MonoBehaviour
     {
         // Default behavior for AI or characters without custom logic
         Debug.Log(name + " TryPlayCard called, but no override implemented.");
+    }
+
+    protected virtual void HandleSuitRequest(BaseCharacter player, SuitSelectionUI suitUI)
+    {
+        
+    }
+
+
+    protected virtual void HandleSwapRequest(BaseCharacter player, SwapSelectionUI suitUI, List<BaseCharacter> players)
+    {
+        
     }
 
 }

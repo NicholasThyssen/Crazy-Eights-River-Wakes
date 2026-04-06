@@ -50,6 +50,6 @@ public class SuitSelectionUI : MonoBehaviour
     private void Choose(CardSuit suit)
     {
         Hide();
-        CardGameManager.instance.OnSuitChosen(suit);
+        requestingPlayer.suitSelected.Invoke(requestingPlayer, suit);
     }
 }

@@ -51,31 +51,33 @@ public class CardHand : MonoBehaviour
         useSocketInteractions = false;
     }
 
-    public void SetRespawnAnchor(Transform respawnAnchor)
-    {
-        this.respawnAnchor = respawnAnchor;
-    }
+    public void SetRespawnAnchor(Transform respawnAnchor) => this.respawnAnchor = respawnAnchor;
 
-    public void SetOwner(BaseCharacter owner)
+    public void SetOwner(BaseCharacter owner) => this.owner = owner;
+    public List<Card> PopAllCards()
     {
-        this.owner = owner;
-    }
-
-    public void Clear()
-    {
+        mainSocket.enabled = false;
+        List<Card> replacedCards = new List<Card>(heldCards);
+        foreach (Card c in replacedCards)
+        {
+            RemoveCardFromHand(c);
+        }
+        heldCards.Clear();
         
+        StartCoroutine(reenableSocket());
+
+        return replacedCards;
     }
 
-    public List<Card> GetHeldCards()
+    IEnumerator reenableSocket()
     {
-        return heldCards;
+        yield return new WaitForSeconds(0.2f);
+        mainSocket.enabled = true;
     }
 
-    public bool HasCardInHand(Card targetCard)
-    {
-        return heldCards.Contains(targetCard);
-    }
+    public List<Card> GetHeldCards() => heldCards;
 
+    public bool HasCardInHand(Card targetCard) => heldCards.Contains(targetCard);
     public void AddCardToHand(Card targetCard)
     {
         targetCard.gameObject.SetActive(true);
@@ -89,6 +91,14 @@ public class CardHand : MonoBehaviour
         cardAdded.Invoke(targetCard);
     }
 
+    public void BulkAddCards(List<Card> cardsToAdd)
+    {
+        foreach (Card c in cardsToAdd)
+        {
+            AddCardToHand(c);
+        }
+    }
+
     IEnumerator DelayedEnableGrabInteractions(Card targetCard)
     {
         yield return new WaitForSeconds(0.2f);
@@ -97,11 +107,9 @@ public class CardHand : MonoBehaviour
 
     public void RemoveCardFromHand(Card targetCard)
     {
-        mainSocket.socketActive = false;
         targetCard.GetComponent<XRGrabInteractable>().selectEntered.RemoveAllListeners();
         heldCards.Remove(targetCard);
         targetCard.transform.SetParent(null);
-        
 
         MakeCardFan();
 

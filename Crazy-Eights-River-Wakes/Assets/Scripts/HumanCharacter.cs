@@ -98,15 +98,9 @@ public class HumanPlayer : BaseCharacter
         }
     }
 
-    public bool CanDraw()
-    {
-        return cardsDrawnThisRound <= 0;
-    }
+    public bool CanDraw() => cardsDrawnThisRound <= 0;
 
-    public bool CanSkip()
-    {
-        return cardsDrawnThisRound > 0;
-    }
+    public bool CanSkip() => cardsDrawnThisRound > 0;
 
     public void IncrementCardDraws()
     {
@@ -125,7 +119,7 @@ public class HumanPlayer : BaseCharacter
     private void ShowPlayableCards()
     {
         if (!usingPhysicalHand) {
-            foreach (var card in GetHand())
+            foreach (var card in GetHandCards())
             {
                 bool canPlay = CardGameManager.instance.CanPlayCard(card);
                 // Update your card UI to enable/disable selection based on canPlay
@@ -215,6 +209,20 @@ public class HumanPlayer : BaseCharacter
         */
     }
 
+    protected override void HandleSuitRequest(BaseCharacter player, SuitSelectionUI suitUI)
+    {
+        if (player == this)
+        {
+            suitUI.Show(this);
+        }
+    }
 
+    protected override void HandleSwapRequest(BaseCharacter player, SwapSelectionUI swapUI, List<BaseCharacter> players)
+    {
+        if (player == this)
+        {
+            swapUI.Show(this, players);
+        }
+    }
 }
 
