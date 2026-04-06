@@ -8,6 +8,7 @@ using System;
 using UnityEngine.Events;
 
 // TODO : WILL NEED TO FIX THIS TO ENSURE IT WORKS AS INTENDED
+// TODO : Check to make sure that the merge commit didn't shatter anything.
 public class CardGameManager : MonoBehaviour
 {
     public UnityEvent<int> currentPlayerChanged;
