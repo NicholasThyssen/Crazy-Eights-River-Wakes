@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_LayerNames:
   - Default
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Grabbable
+  - Socketable Card
+  - Card
+  - Hand
+  - Draw Deck
+  - Discard Deck
   - 
   - 
   - 

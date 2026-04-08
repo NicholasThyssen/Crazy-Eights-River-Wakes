@@ -2,8 +2,12 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - Draw Deck Respawn Anchor
+  - Discard Deck Respawn Anchor
+  - Table Respawn Anchor
+  - Card
   layers:
   - Default
   - TransparentFX
@@ -15,17 +19,17 @@ TagManager:
   - 
   - 
   - 
+  - Grabbable
+  - Draw Deck
+  - Discard Deck
+  - Card
   - 
   - 
   - 
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Fall Teleport
   - 
   - 
   - 
@@ -50,27 +54,3 @@ TagManager:
   - Light Layer 5
   - Light Layer 6
   - Light Layer 7
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
