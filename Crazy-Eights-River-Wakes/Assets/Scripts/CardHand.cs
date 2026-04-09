@@ -186,7 +186,7 @@ public class CardHand : MonoBehaviour
 
     public void ReturnHandToPlayer()
     {
-        rb.velocity = new Vector3(0.0f, 0.0f, 0.0f);
+        rb.linearVelocity = new Vector3(0.0f, 0.0f, 0.0f);
         // Play smoke effect?
         transform.position = lastKnownSocketPosition.position;
         transform.rotation = lastKnownSocketPosition.rotation;

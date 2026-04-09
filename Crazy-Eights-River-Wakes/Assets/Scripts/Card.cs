@@ -129,7 +129,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void Warpback()
     {
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         if (owner != null)
         {
             owner.WarpCardToHand(this);

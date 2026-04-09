@@ -355,7 +355,7 @@ public class CardDeck : MonoBehaviour
 
     public void Warpback()
     {
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         transform.position = respawnAnchor.position;
         transform.rotation = respawnAnchor.rotation;
     }
