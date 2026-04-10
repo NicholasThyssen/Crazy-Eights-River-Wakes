@@ -213,6 +213,12 @@ public class CardGameManager : MonoBehaviour
         return nextCard;
     }
 
+    public BaseCharacter GetCurrentPlayer()
+    {
+        return currentPlayerTurn;
+    }
+
+
     public void SwapHands()
     {
         // Perform a swap action here with animations        

@@ -198,16 +198,10 @@ public class CardDeck : MonoBehaviour
 
     public void UpdateCardBlob()
     {
-        Vector3 localForward = transform.worldToLocalMatrix.MultiplyVector(transform.forward);
         Card topCard = PeekTop();
 
-        if (topCard == null)
-        {
-            return;
-        }
-
-        // If no cards, hide completely
-        if (cards.Count == 0)
+        // If no cards, hide blob and return
+        if (topCard == null || cards.Count == 0)
         {
             if (cardBlob != null)
             {
@@ -215,27 +209,34 @@ public class CardDeck : MonoBehaviour
                 faceObject.SetActive(false);
                 backObject.SetActive(false);
             }
+            return;
         }
-        // Otherwise, show card blob expanding/shrinking
-        else
+
+        // ? IMPORTANT: Make the top card active and grabbable
+        topCard.gameObject.SetActive(true);
+        topCard.EnableGrab();
+
+        // Show the blob visuals
+        if (cardBlob != null)
         {
-            if (cardBlob != null)
-            {
-                faceObject.SetActive(true);
-                backObject.SetActive(true);
-                cardBlob.gameObject.SetActive(true);
+            faceObject.SetActive(true);
+            backObject.SetActive(true);
+            cardBlob.gameObject.SetActive(true);
 
-                Vector3 blobOffset = 0.001f * cards.Count * localForward;
-                Vector3 scaledBlobOffset = new Vector3(blobOffset.x / 2.0f, blobOffset.y / 2.0f, blobOffset.z / 2.0f);
+            // Update face texture to match top card
+            SetFaceTexture(topCard.suit, topCard.rank);
 
-                SetFaceTexture(topCard.suit, topCard.rank);
+            // Offset blob based on deck size
+            Vector3 localForward = transform.worldToLocalMatrix.MultiplyVector(transform.forward);
+            Vector3 blobOffset = 0.001f * cards.Count * localForward;
+            Vector3 scaledBlobOffset = blobOffset * 0.5f;
 
-                cardBlob.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-                cardBlob.localPosition = scaledBlobOffset; // Why the hell does Unity not natively support dividing vectors by scalars (another point in Godot's favor)
-                cardBlob.localScale = new Vector3(1.0f, 1.0f, 1.0f * cards.Count);
-            }
+            cardBlob.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            cardBlob.localPosition = scaledBlobOffset;
+            cardBlob.localScale = new Vector3(1f, 1f, 1f * cards.Count);
         }
     }
+
 
     // add a card to the deck. todo: add animation?
     public void AddCard(Card card)
@@ -323,23 +324,24 @@ public class CardDeck : MonoBehaviour
         acceptSocket.socketActive = true;
     }
 
-    public void DrawCardToPlayer(BaseCharacter target, bool autoAdd = false)
+    public void DrawCardToPlayer(BaseCharacter target, bool autoAdd = true)
     {
-        Card nextCard = Pop();
+        Card nextCard = Pop();   // ? Correct: CardDeck.Pop()
+
         if (nextCard == null)
-        {
             return;
-        }
+
+        nextCard.SetOwner(target);
 
         if (autoAdd)
         {
             target.TeleportNewCardToHand(nextCard);
-        }
-        else
-        {
-            // Animate card flying to target's hand
+            nextCard.StoreOriginalPosition();
+            nextCard.DisableGrab();
         }
     }
+
+
 
     public bool EvaluateSelection(Card candidateCard)
     {

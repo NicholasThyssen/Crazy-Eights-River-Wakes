@@ -18,7 +18,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public bool currentlyHeld = false;
 
-    void Awake()
+    protected virtual void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody>();
         collider = gameObject.GetComponent<BoxCollider>();
@@ -34,10 +34,55 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         originalLocalPos = transform.localPosition;
     }
 
-    // When card is hovered, we bring it up and forward slightly
+    private bool forcePhysics = false;
+
+    public void ForcePhysicsMode()
+    {
+        forcePhysics = true;
+        rb.isKinematic = false;
+        rb.useGravity = true;
+        transform.SetParent(null, true);
+    }
+
+    public void StopPhysicsMode()
+    {
+        forcePhysics = false;
+
+        rb.isKinematic = true;
+        rb.useGravity = false;
+
+        // Once back in the fan, scripts are allowed to move it again
+        transform.hasChanged = false;
+    }
+
+    private void Update()
+    {
+        // If card falls too far, warp back to hand
+        if (transform.position.y < -1.0f) // adjust threshold as needed
+        {
+            Warpback();
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (forcePhysics)
+        {
+            // Override ANY script trying to move the card
+            rb.isKinematic = false;
+            rb.useGravity = true;
+
+            // Prevent ANY transform override
+            transform.hasChanged = false;
+        }
+    }
+
+
+
+
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("Hover ENTER on card: " + name);
+        if (!rb.isKinematic) return; // physics mode ? do NOT override transform
 
         if (isHovered) return;
         isHovered = true;
@@ -45,16 +90,16 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         transform.localPosition = originalLocalPos + new Vector3(0, 0.05f, -0.1f);
     }
 
-    // When card stops being hovered, brough back to its place in fan
     public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log("Hover EXIT on card: " + name);
+        if (!rb.isKinematic) return; // physics mode ? do NOT override transform
 
         if (!isHovered) return;
         isHovered = false;
 
         transform.localPosition = originalLocalPos;
     }
+
 
 
     public void OnPointerClick(PointerEventData eventData)
@@ -81,15 +126,20 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void EnablePhysics()
     {
+        Debug.Log("EnablePhysics CALLED on " + name);
+        Debug.Log("EnablePhysics: parent=" + transform.parent);
         rb.isKinematic = false;
-        //collider.enabled = true;
+        rb.useGravity = true;
     }
+
 
     public void DisablePhysics()
     {
+        Debug.Log("DisablePhysics CALLED on " + name);
         rb.isKinematic = true;
-        //collider.enabled = false;
+        rb.useGravity = false;
     }
+
 
     public void EnableGrab()
     {
@@ -142,6 +192,45 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
             transform.rotation = cgm.deck.transform.rotation;
         }
     }
+
+
+    protected void OnEnable()
+    {
+        if (grab == null)
+            grab = GetComponent<XRGrabInteractable>();
+
+        grab.selectEntered.AddListener(OnCardGrabbed);
+    }
+
+    protected void OnDisable()
+    {
+        if (grab != null)
+            grab.selectEntered.RemoveListener(OnCardGrabbed);
+    }
+
+    private void OnCardGrabbed(SelectEnterEventArgs args)
+    {
+        // If the card has no owner, it's coming from the deck
+        if (owner == null)
+        {
+            Debug.Log("Card grabbed from deck: " + name);
+
+            BaseCharacter current = CardGameManager.instance.GetCurrentPlayer();
+
+            // Remove THIS card from the deck
+            CardGameManager.instance.deck.RemoveCard(this);
+
+            current.TeleportNewCardToHand(this);  // handles owner + hand placement
+
+
+            // Store hover origin
+            StoreOriginalPosition();
+
+            // Disable grabbing so it stays in the hand
+            DisableGrab();
+        }
+    }
+
 }
 
 

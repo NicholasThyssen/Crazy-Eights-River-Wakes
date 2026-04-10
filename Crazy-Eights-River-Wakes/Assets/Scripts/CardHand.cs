@@ -111,7 +111,7 @@ public class CardHand : MonoBehaviour
         heldCards.Remove(targetCard);
         targetCard.transform.SetParent(null);
 
-        MakeCardFan();
+        //MakeCardFan();
 
         cardRemoved.Invoke(targetCard);
     }
@@ -130,17 +130,23 @@ public class CardHand : MonoBehaviour
 
     public void CardGrabbedFromHand(Card targetCard)
     {
-        if (targetCard != null)
-        {
-            mainSocket.socketActive = false;
-            socketIgnoreCard = targetCard;
-            RemoveCardFromHand(targetCard);
-            targetCard.EnablePhysics();
-            targetCard.GetComponent<XRGrabInteractable>().selectExited.AddListener(delegate {CardGrabExited(targetCard);});
-            //StartCoroutine(reactivateSocket());
-            mainSocket.socketActive = true;
-        }
+        if (targetCard == null) return;
+
+        Debug.Log("CardGrabbedFromHand: " + targetCard.name);
+
+        // 1. Remove it from the hand list, but DO NOT fan or touch other cards yet
+        heldCards.Remove(targetCard);
+
+        // 2. Make sure it’s not parented to the hand
+        targetCard.transform.SetParent(null);
+
+        // 3. Turn physics fully on
+        targetCard.ForcePhysicsMode();
+
+        // 4. (Optional) Listen for release
+        targetCard.GetComponent<XRGrabInteractable>().selectExited.AddListener(delegate { CardGrabExited(targetCard); });
     }
+
 
     IEnumerator reactivateSocket()
     {
@@ -180,9 +186,22 @@ public class CardHand : MonoBehaviour
     // "Summon" the card to the hand
     public void SummonCardToHand(Card targetCard)
     {
+        // Disable physics so it doesn't fall again
         targetCard.DisablePhysics();
-        targetCard.gameObject.transform.position = mainSocket.transform.position;
+
+        // Reparent to hand
+        targetCard.transform.SetParent(cardContainer, false);
+
+        // Add back to hand list if missing
+        if (!heldCards.Contains(targetCard))
+            heldCards.Add(targetCard);
+
+        // Collapse or fan depending on your design
+        MakeCardFan(); // or MakeCardFan()
+
+        targetCard.StoreOriginalPosition();
     }
+
 
     public void ReturnHandToPlayer()
     {

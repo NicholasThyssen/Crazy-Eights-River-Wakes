@@ -7,14 +7,13 @@ public class TestCard : Card
     private Renderer rend;
     private Material faceMaterial;
 
-    void Awake()
+    protected override void Awake()
     {
-        rb = gameObject.GetComponent<Rigidbody>();
-        collider = gameObject.GetComponent<BoxCollider>();
+        base.Awake(); // ? REQUIRED
 
         rend = GetComponent<Renderer>();
         text = GetComponentInChildren<TextMeshPro>();
-        faceMaterial = transform.GetChild(0).GetComponent<MeshRenderer>().material; // "Face" should always be the first child in the GameObject hierarchy
+        faceMaterial = transform.GetChild(0).GetComponent<MeshRenderer>().material;
 
         if (faceMaterial != null)
         {
