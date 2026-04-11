@@ -1161,10 +1161,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8b64f71feda88f44884e126e1247f9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clubsBtn: {fileID: 4748369984467876679}
-  diamondsBtn: {fileID: 4500096275293116961}
   heartsBtn: {fileID: 4108582626763128273}
+  clubsBtn: {fileID: 4748369984467876679}
   spadesBtn: {fileID: 2096439827821978352}
+  diamondsBtn: {fileID: 4500096275293116961}
 --- !u!1 &6858877114198846919
 GameObject:
   m_ObjectHideFlags: 0
@@ -1240,8 +1240,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7589241dd473fa4085cbf20f01704a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buttonPrefab: {fileID: 0}
   buttonContainer: {fileID: 143148617598637604}
-  playerButtonPrefab: {fileID: 7441912972474897476, guid: 8f18476614f59f548854773a278e1cd2, type: 3}
 --- !u!1 &7854989220239804016
 GameObject:
   m_ObjectHideFlags: 0

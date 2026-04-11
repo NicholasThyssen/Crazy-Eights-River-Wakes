@@ -3,6 +3,8 @@ using UnityEngine;
 public class MenuManager : MonoBehaviour
 {
     public GameObject menuUI;
+    public GameObject settingsUI;
+    public GameObject gameSetupUI;
     public Transform boat;
     public CameraLook cameraLook;
 
