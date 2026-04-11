@@ -7,21 +7,23 @@ public class CameraLook : MonoBehaviour
     float xRotation = 0f;
     float yRotation = 0f;
 
+    public bool isGameMode = false;
+
     void Update()
     {
-        if (Input.GetMouseButton(1))
+        if (!isGameMode)
         {
-       
-
-            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
-
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -45f, 45f);
-
-            yRotation += mouseX;
-
-            transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
+            if (!Input.GetMouseButton(1)) return;
         }
+
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -45f, 45f);
+
+        yRotation += mouseX;
+
+        transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
     }
 }

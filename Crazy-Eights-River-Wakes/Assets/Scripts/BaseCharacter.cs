@@ -1,68 +1,162 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public abstract class BaseCharacter : MonoBehaviour
 {
+    public GameObject cardHandPrefab;
     protected Animator animator;
-    protected CardDeck cardDeck;
+
+    // The list of the player's OWNED cards (i.e. those in their hand + any loose cards).
+    protected List<Card> ownedCards;
+
+    // The physical representation of a player's hand.
+    protected CardHand playerHand;
+
+    protected bool playedThisTurn = false;
+
+    public int playerId = -1;
+
+    public UnityEvent<BaseCharacter, Card> playerPlayedCard;
+
+    public UnityEvent<BaseCharacter> playerTurnEnded;
+
+    public UnityEvent<BaseCharacter, CardSuit> suitSelected;
+
+    public UnityEvent<BaseCharacter, BaseCharacter> swapSelected;
+
+    protected List<Card> queue;
 
 
-    private void Awake()
+    void Awake()
     {
         animator = GetComponent<Animator>();
-        //SpawnCardDeck();
+        Initialize();
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void Initialize()
     {
-        
+        ownedCards = new List<Card>();
+        CreateHand();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void CreateHand()
     {
-        
+        GameObject playerHandObject = Instantiate(cardHandPrefab);
+        playerHand = playerHandObject.GetComponent<CardHand>();
+        playerHand.InitializeHand();
+        playerHand.SetOwner(this);
+        playerHandObject.transform.SetParent(this.transform);
+        playerHandObject.SetActive(true);
     }
 
-    public void AddCard(Card card)
+    public List<Card> GetHandCards() => playerHand.GetHeldCards();
+    public CardHand GetHandObject() => playerHand;
+    public void AssignListeners()
     {
-        if (card == null) return;
-
-        hand.Add(card);
-        card.transform.SetParent(this.transform); // or a hand anchor
-                                                  // optionally position it here
+        CardGameManager cgm = CardGameManager.instance;
+        // Assign listeners to our own signal
+        playerPlayedCard.AddListener(cgm.PlayerPlayedCard);
+        playerTurnEnded.AddListener(cgm.PlayerTurnEnded);
+        suitSelected.AddListener(cgm.OnSuitChosen);
+        swapSelected.AddListener(cgm.OnSwapChosen);
+        // Listen to the manager's signals
+        cgm.beginPlayerTurn.AddListener(BeginPlayerTurn);
+        cgm.cardPlayResolved.AddListener(FinishPlayerTurn);
+        cgm.requestSuit.AddListener(HandleSuitRequest);
+        cgm.requestSwap.AddListener(HandleSwapRequest);
     }
 
     // This should handle what happens when CardManager notifies this player that it is their turn
-    public abstract void BeginCardTurn();
 
-    public void EndTurn(Card cardPlayed) {
-        CardGameManager.instance.EndTurn(this, cardPlayed);
+    public abstract void BeginPlayerTurn(BaseCharacter player);
+
+    public abstract void FinishPlayerTurn(BaseCharacter player);
+
+    public void EndTurn() {
+        playedThisTurn = false;
+        playerTurnEnded.Invoke(this);
     }
 
+    public List<Card> GetOwnedCards() => ownedCards;
 
-    // List of player's hand
-    private List<Card> hand = new List<Card>();
+    public int GetOwnedCardsCount() => ownedCards.Count;
 
-    // We remove card from hand
-    public void RemoveCard(Card card)
+    public bool HasCard(Card targetCard) => ownedCards.Contains(targetCard);
+
+    public void SetOwnedCards(List<Card> newOwnedCards)
     {
-        hand.Remove(card);
-        // update visuals if needed
+        ownedCards.Clear();
+        //playerHand.Clear();
+        //playerHand.ClearHeldCards();
+        ownedCards = newOwnedCards;
+        foreach (Card c in ownedCards)
+        {
+            TeleportNewCardToHand(c, false);
+        }
     }
 
-    // We get their hand
-    public List<Card> GetHand()
+    public void AddCardToOwned(Card targetCard)
     {
-        return hand;
+        targetCard.SetOwner(this);
+        ownedCards.Add(targetCard);   
     }
 
-    // Set hand to something new
-    public void SetHand(List<Card> newHand)
+    public void RemoveCardFromOwned(Card targetCard)
     {
-        hand = newHand;
-        // update visuals if needed
+        ownedCards.Remove(targetCard);
+        if (playerHand.HasCardInHand(targetCard))
+        {
+            playerHand.RemoveCardFromHand(targetCard);
+        }
+    }
+
+    public void TeleportNewCardToHand(Card targetCard, bool flying = false)
+    {
+        AddCardToOwned(targetCard);
+        playerHand.AddCardFromTeleport(targetCard);
+        // playerHand.SummonCardToHand(targetCard);
+    }
+
+    public void PullCardToHandObject(Card targetCard, Transform handObject, bool flying = false)
+    {
+        if (playerHand.HasCardInHand(targetCard))
+        {
+            playerHand.RemoveCardFromHand(targetCard);
+            if (flying)
+            {
+            
+            }
+            else
+            {
+                targetCard.gameObject.transform.SetParent(handObject);
+                targetCard.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            }
+        }
+
+    }
+
+    public void PlayCardToDeck(Card targetCard, CardDeck targetDeck, bool flying = false)
+    {
+        RemoveCardFromOwned(targetCard);
+        if (flying)
+        {
+            
+        }
+        else
+        {
+            targetDeck.PlayCardToDeck(targetCard);
+        }
+    }
+
+    public void SwapCardsWithPlayer(BaseCharacter other)
+    {
+        CardHand otherHand = other.GetHandObject();
+        List<Card> myCards = playerHand.PopAllCards();
+        List<Card> otherCards = otherHand.PopAllCards();
+
+        SetOwnedCards(otherCards);
+        other.SetOwnedCards(myCards);
     }
 
     // Lets player see UI to choose suit to change (after playing an 8)
@@ -83,18 +177,37 @@ public abstract class BaseCharacter : MonoBehaviour
         // This depends on your existing UI system
     }
 
-
-
-    // Spawns the card deck at a given location. For AI characters this is overridden to use the deckAttach object as parent 
-    protected virtual void SpawnCardDeck()
+    public void WarpCardToHand(Card targetCard)
     {
-        GameObject cardDeckGameObj = new GameObject("CardDeck");
-        this.cardDeck = cardDeckGameObj.AddComponent<CardDeck>();
-        /*the 2 lines below are from AICharacter. They don't work here since we don't have deckAttach
-        I left them for reference as a guide
-        */
-        
-        // cardDeck.transform.SetParent(this.deckAttach.transform);
-        // cardDeck.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        if (!HasCard(targetCard))
+        {
+            AddCardToOwned(targetCard);
+        }
+        playerHand.SummonCardToHand(targetCard);
     }
+
+    // Needed just so that user can fan out hand
+    protected virtual void FanOutHand()
+    {
+        // Default implementation does nothing.
+        // HumanPlayer will override this to visually fan out cards.
+    }
+
+    public virtual void TryPlayCard(Card card)
+    {
+        // Default behavior for AI or characters without custom logic
+        Debug.Log(name + " TryPlayCard called, but no override implemented.");
+    }
+
+    protected virtual void HandleSuitRequest(BaseCharacter player, SuitSelectionUI suitUI)
+    {
+        
+    }
+
+
+    protected virtual void HandleSwapRequest(BaseCharacter player, SwapSelectionUI suitUI, List<BaseCharacter> players)
+    {
+        
+    }
+
 }
