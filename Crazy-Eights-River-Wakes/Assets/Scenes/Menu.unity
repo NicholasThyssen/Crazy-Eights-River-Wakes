@@ -7916,7 +7916,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 82135099}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 530601483}
+        m_TargetAssemblyTypeName: GameSetupMenu, Assembly-CSharp
+        m_MethodName: DecrementStartingCards
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &82135099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48149,6 +48161,7 @@ GameObject:
   - component: {fileID: 530601480}
   - component: {fileID: 530601482}
   - component: {fileID: 530601481}
+  - component: {fileID: 530601483}
   m_Layer: 5
   m_Name: GameSetupPanel
   m_TagString: Untagged
@@ -48222,6 +48235,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 530601479}
   m_CullTransparentMesh: 1
+--- !u!114 &530601483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 530601479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adb54fc85780a1c4897965770cc3836e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minusCardsButton: {fileID: 82135098}
+  plusCardsButton: {fileID: 913030551}
+  cardsLabel: {fileID: 0}
+  botRadioButton1: {fileID: 1364837522}
+  botRadioButton2: {fileID: 911096454}
+  botRadioButton3: {fileID: 1547334943}
 --- !u!4 &530605269 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 879944238067146593, guid: 5004846703f903542bde3cbeaf9e5d2d, type: 3}
@@ -82799,7 +82830,7 @@ GameObject:
   - component: {fileID: 882138468}
   - component: {fileID: 882138467}
   m_Layer: 5
-  m_Name: 1BotLabel (1)
+  m_Name: 2BotLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85310,7 +85341,7 @@ GameObject:
   - component: {fileID: 911096455}
   - component: {fileID: 911096454}
   m_Layer: 5
-  m_Name: 1BotButton (1)
+  m_Name: 2BotButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85378,7 +85409,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 911096455}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 530601483}
+        m_TargetAssemblyTypeName: GameSetupMenu, Assembly-CSharp
+        m_MethodName: SetBotCount
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &911096455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85650,7 +85693,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 913030552}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 530601483}
+        m_TargetAssemblyTypeName: GameSetupMenu, Assembly-CSharp
+        m_MethodName: IncrementStartingCards
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &913030552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92581,7 +92636,7 @@ GameObject:
   - component: {fileID: 998851987}
   - component: {fileID: 998851986}
   m_Layer: 5
-  m_Name: 1BotLabel (2)
+  m_Name: 3BotLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -123761,7 +123816,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1364837523}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 530601483}
+        m_TargetAssemblyTypeName: GameSetupMenu, Assembly-CSharp
+        m_MethodName: SetBotCount
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1364837523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139859,7 +139926,7 @@ GameObject:
   - component: {fileID: 1547334944}
   - component: {fileID: 1547334943}
   m_Layer: 5
-  m_Name: 1BotButton (2)
+  m_Name: 3BotButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -139927,7 +139994,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1547334944}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 530601483}
+        m_TargetAssemblyTypeName: GameSetupMenu, Assembly-CSharp
+        m_MethodName: SetBotCount
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 3
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1547334944
 MonoBehaviour:
   m_ObjectHideFlags: 0
