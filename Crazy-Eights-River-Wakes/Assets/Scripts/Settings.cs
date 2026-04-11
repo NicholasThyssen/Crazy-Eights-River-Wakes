@@ -4,16 +4,29 @@ using UnityEngine;
 
 public static class SettingsData
 {
+
+
+
+    /* VOLUME */
     private static float cardSfxVolume = 100.0f;
     private static float envSfxVolume = 100.0f;
-
-    private static int startingCards = 5;
-    private static bool selectWithXRController = false;
-
     public static float GetCardSfxVolume() => cardSfxVolume;
     public static void SetCardSfxVolume(float _cardSfxVolume) => cardSfxVolume = _cardSfxVolume;
     public static float GetEnvSfxVolume() => envSfxVolume;
     public static void SetEnvSfxVolume(float _envSfxVolume) => envSfxVolume = _envSfxVolume;
+
+    /* XR MODE CONTROLS */
+
+    private static bool selectWithXRController = false;
+
+    public static bool GetSelectWithXRController() => selectWithXRController;
+    public static void SetSelectWithXRController(bool _selectWithXRController) => selectWithXRController = _selectWithXRController;
+
+    /* GAME SETUP */
+    private static int startingCards = 5;
+    private static int botCount = 3;
     public static int GetStartingCards() => startingCards;
-    public static float SetStartingcards(int _startingCards) => startingCards = _startingCards;
+    public static void SetStartingCards(int _startingCards) => startingCards = _startingCards;
+    public static int GetBotCount() => botCount;
+    public static void SetBotCount(int _botCount) => botCount = _botCount;
 }
