@@ -1,12 +1,10 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 // Don't put the SettingsData on a component. Static classes shouldn't be instanced.
 
 public static class SettingsData
 {
-
-
-
     /* VOLUME */
     private static float cardSfxVolume = 100.0f;
     private static float envSfxVolume = 100.0f;
@@ -15,8 +13,7 @@ public static class SettingsData
     public static float GetEnvSfxVolume() => envSfxVolume;
     public static void SetEnvSfxVolume(float _envSfxVolume) => envSfxVolume = _envSfxVolume;
 
-    /* XR MODE CONTROLS */
-
+    /* XR MODE CONTROL OPTIONS */
     private static bool selectWithXRController = false;
 
     public static bool GetSelectWithXRController() => selectWithXRController;
