@@ -268,9 +268,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ce13797793cbad42856774802cb2c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hand: []
+  cardHandPrefab: {fileID: 0}
+  playerId: -1
+  playerPlayedCard:
+    m_PersistentCalls:
+      m_Calls: []
+  playerTurnEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  suitSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  swapSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  handAttach: {fileID: 0}
   cardPrefab: {fileID: 8913118846334742726, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
-  cardAnchor: {fileID: 0}
+  usingPhysicalHand: 1
 --- !u!1 &363577036 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6065098463516266849, guid: cc7ea3cf6a52ae940983b185b26bc02a, type: 3}
@@ -288,9 +302,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ce13797793cbad42856774802cb2c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hand: []
+  cardHandPrefab: {fileID: 0}
+  playerId: -1
+  playerPlayedCard:
+    m_PersistentCalls:
+      m_Calls: []
+  playerTurnEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  suitSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  swapSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  handAttach: {fileID: 0}
   cardPrefab: {fileID: 8913118846334742726, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
-  cardAnchor: {fileID: 0}
+  usingPhysicalHand: 1
 --- !u!1 &400907921
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,6 +363,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dca2e229a7c9b43498189a912641097d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  faceDownDeck: 0
+  spawnCardsOnAwake: 0
+  cardPrefab: {fileID: 0}
+  deckShuffled:
+    m_PersistentCalls:
+      m_Calls: []
+  deckRespawned:
+    m_PersistentCalls:
+      m_Calls: []
+  cardPlayedToDeck:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &496919017 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8913118846334742726, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
@@ -541,9 +581,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ce13797793cbad42856774802cb2c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hand: []
+  cardHandPrefab: {fileID: 0}
+  playerId: -1
+  playerPlayedCard:
+    m_PersistentCalls:
+      m_Calls: []
+  playerTurnEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  suitSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  swapSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  handAttach: {fileID: 0}
   cardPrefab: {fileID: 8913118846334742726, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
-  cardAnchor: {fileID: 1124889931}
+  usingPhysicalHand: 1
 --- !u!4 &1052343544 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6872596692803767259, guid: cc7ea3cf6a52ae940983b185b26bc02a, type: 3}
@@ -624,6 +678,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dca2e229a7c9b43498189a912641097d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  faceDownDeck: 0
+  spawnCardsOnAwake: 0
+  cardPrefab: {fileID: 0}
+  deckShuffled:
+    m_PersistentCalls:
+      m_Calls: []
+  deckRespawned:
+    m_PersistentCalls:
+      m_Calls: []
+  cardPlayedToDeck:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &1197255882
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -687,9 +753,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4378521283812266844, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1975686421}
-    - targetCorrespondingSourceObject: {fileID: 8205806456620298959, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
 --- !u!1001 &1232017349
 PrefabInstance:
@@ -940,9 +1003,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4378521283812266844, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2085786921}
-    - targetCorrespondingSourceObject: {fileID: 8205806456620298959, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
 --- !u!1 &1878279102
 GameObject:
@@ -973,10 +1033,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f5b4c03fbd97cc4ca6d81a9043acd50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentPlayerChanged:
+    m_PersistentCalls:
+      m_Calls: []
   deck: {fileID: 400907923}
   discardPile: {fileID: 1170402208}
   suitUI: {fileID: 0}
   swapUI: {fileID: 0}
+  beginPlayerTurn:
+    m_PersistentCalls:
+      m_Calls: []
+  cardPlayResolved:
+    m_PersistentCalls:
+      m_Calls: []
+  requestSuit:
+    m_PersistentCalls:
+      m_Calls: []
+  requestSwap:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &1878279104
 Transform:
   m_ObjectHideFlags: 0
@@ -1011,6 +1086,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suit: 0
   rank: 0
+  owner: {fileID: 0}
+  fallbackWarpTriggered:
+    m_PersistentCalls:
+      m_Calls: []
+  currentlyHeld: 0
 --- !u!1 &1976804147
 GameObject:
   m_ObjectHideFlags: 0
@@ -1107,9 +1187,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ce13797793cbad42856774802cb2c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hand: []
+  cardHandPrefab: {fileID: 0}
+  playerId: -1
+  playerPlayedCard:
+    m_PersistentCalls:
+      m_Calls: []
+  playerTurnEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  suitSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  swapSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  handAttach: {fileID: 0}
   cardPrefab: {fileID: 8913118846334742726, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
-  cardAnchor: {fileID: 1555941935}
+  usingPhysicalHand: 1
 --- !u!4 &2025968761 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6872596692803767259, guid: cc7ea3cf6a52ae940983b185b26bc02a, type: 3}
@@ -1194,6 +1288,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suit: 0
   rank: 0
+  owner: {fileID: 0}
+  fallbackWarpTriggered:
+    m_PersistentCalls:
+      m_Calls: []
+  currentlyHeld: 0
 --- !u!1001 &2139865627
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -325,6 +325,9 @@ MonoBehaviour:
   deckRespawned:
     m_PersistentCalls:
       m_Calls: []
+  cardPlayedToDeck:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &326963462
 Transform:
   m_ObjectHideFlags: 0
@@ -378,6 +381,9 @@ MonoBehaviour:
   deckRespawned:
     m_PersistentCalls:
       m_Calls: []
+  cardPlayedToDeck:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &880156180
 Transform:
   m_ObjectHideFlags: 0
@@ -427,6 +433,20 @@ MonoBehaviour:
       m_Calls: []
   deck: {fileID: 880156179}
   discardPile: {fileID: 326963461}
+  suitUI: {fileID: 0}
+  swapUI: {fileID: 0}
+  beginPlayerTurn:
+    m_PersistentCalls:
+      m_Calls: []
+  cardPlayResolved:
+    m_PersistentCalls:
+      m_Calls: []
+  requestSuit:
+    m_PersistentCalls:
+      m_Calls: []
+  requestSwap:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &944281099
 Transform:
   m_ObjectHideFlags: 0
@@ -667,6 +687,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba255d5d0e545f84699c25f5209df04a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardHandPrefab: {fileID: 0}
+  playerId: -1
+  playerPlayedCard:
+    m_PersistentCalls:
+      m_Calls: []
+  playerTurnEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  suitSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  swapSelected:
+    m_PersistentCalls:
+      m_Calls: []
   deckAttach: {fileID: 1693089577}
   cardAttach: {fileID: 216758076}
 --- !u!1001 &1394565832436751011
@@ -790,10 +824,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8205806456620298959, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6c0dad74a3caa4af2a830657320bbd88, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
