@@ -88,10 +88,10 @@ public abstract class BaseCharacter : MonoBehaviour
     public void SetOwnedCards(List<Card> newOwnedCards)
     {
         ownedCards.Clear();
-        //playerHand.Clear();
-        //playerHand.ClearHeldCards();
-        ownedCards = newOwnedCards;
-        foreach (Card c in ownedCards)
+        // Make a copy first to avoid modifying the list we're iterating
+        List<Card> copy = new List<Card>(newOwnedCards);
+        ownedCards = new List<Card>();
+        foreach (Card c in copy)
         {
             TeleportNewCardToHand(c, false);
         }
@@ -154,8 +154,8 @@ public abstract class BaseCharacter : MonoBehaviour
     public void SwapCardsWithPlayer(BaseCharacter other)
     {
         CardHand otherHand = other.GetHandObject();
-        List<Card> myCards = playerHand.PopAllCards();
-        List<Card> otherCards = otherHand.PopAllCards();
+        List<Card> myCards = new List<Card>(playerHand.PopAllCards());   // ? copy
+        List<Card> otherCards = new List<Card>(otherHand.PopAllCards()); // ? copy
 
         SetOwnedCards(otherCards);
         other.SetOwnedCards(myCards);

@@ -109,17 +109,32 @@ public class CardHand : MonoBehaviour
     IEnumerator DelayedEnableGrabInteractions(Card targetCard)
     {
         yield return new WaitForSeconds(0.2f);
-        targetCard.EnableGrab(); // ? ADD THIS � re-enables the XRGrabInteractable component
-        targetCard.GetComponent<XRGrabInteractable>().selectEntered.AddListener(delegate { CardGrabbedFromHand(targetCard); });
+
+        targetCard.EnableGrab();
+        targetCard.ReRegisterGrabListeners(); // ? re-adds OnCardGrabbed + clears stale listeners
+
+        var grabInteractable = targetCard.GetComponent<XRGrabInteractable>();
+        grabInteractable.selectEntered.AddListener(delegate { CardGrabbedFromHand(targetCard); });
     }
 
     public void RemoveCardFromHand(Card targetCard)
     {
-        targetCard.GetComponent<XRGrabInteractable>().selectEntered.RemoveAllListeners();
+        var grabInteractable = targetCard.GetComponent<XRGrabInteractable>();
+        if (grabInteractable != null)
+            grabInteractable.selectEntered.RemoveAllListeners();
+
         heldCards.Remove(targetCard);
         targetCard.transform.SetParent(null);
+        targetCard.gameObject.SetActive(false); // ? hide the card visually
 
-        //MakeCardFan();
+        // Reset socket
+        if (mainSocket != null && mainSocket.gameObject.activeSelf)
+        {
+            mainSocket.gameObject.SetActive(false);
+            mainSocket.gameObject.SetActive(true);
+        }
+
+        MakeCardFan(); // ? refresh fan after removal
 
         cardRemoved.Invoke(targetCard);
     }
@@ -142,17 +157,18 @@ public class CardHand : MonoBehaviour
 
         Debug.Log("CardGrabbedFromHand: " + targetCard.name);
 
-        // 1. Remove it from the hand list, but DO NOT fan or touch other cards yet
         heldCards.Remove(targetCard);
 
-        // 2. Make sure it�s not parented to the hand
-        targetCard.transform.SetParent(null);
+        // Unparent BEFORE XR moves it so it's free in world space
+        targetCard.transform.SetParent(null, true);
+        targetCard.StopPhysicsMode();
 
-        // 3. Turn physics fully on
-        targetCard.ForcePhysicsMode();
+        // Re-enable physics so card can be thrown/dropped naturally
+        targetCard.EnablePhysics();
 
-        // 4. (Optional) Listen for release
-        targetCard.GetComponent<XRGrabInteractable>().selectExited.AddListener(delegate { CardGrabExited(targetCard); });
+        var grabInteractable = targetCard.GetComponent<XRGrabInteractable>();
+        grabInteractable.selectEntered.RemoveAllListeners(); // clear hand listener
+        grabInteractable.selectExited.AddListener(delegate { CardGrabExited(targetCard); });
     }
 
 
@@ -164,9 +180,9 @@ public class CardHand : MonoBehaviour
 
     public void CardGrabExited(Card targetCard)
     {
-        socketIgnoreCard = null;
         targetCard.GetComponent<XRGrabInteractable>().selectExited.RemoveAllListeners();
-        targetCard.transform.SetParent(null);
+        targetCard.transform.SetParent(null, true);
+        // Remove EnablePhysics() call � Force Gravity On Detach handles this now
     }
 
     public void AttachCardToHand(XRSocketInteractor eventSocket = null)

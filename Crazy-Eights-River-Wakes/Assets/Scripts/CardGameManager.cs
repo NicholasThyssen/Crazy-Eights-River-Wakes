@@ -91,7 +91,33 @@ public class CardGameManager : MonoBehaviour
             Debug.Log("L pressed, gameOverUI = " + gameOverUI);
             TriggerGameOver(false);
         }
-        
+
+        // Add this with your other test keys
+        if (Keyboard.current.digit5Key.wasPressedThisFrame)
+        {
+            HumanPlayer human = null;
+            foreach (BaseCharacter p in GetPlayers())
+            {
+                if (p is HumanPlayer h) { human = h; break; }
+            }
+            if (human != null)
+            {
+                // Clear hand properly through CardHand so both lists are emptied
+                List<Card> cards = new List<Card>(human.GetHandCards());
+                foreach (Card c in cards)
+                {
+                    human.RemoveCardFromOwned(c); // removes from ownedCards AND CardHand
+                }
+                Debug.Log("Human cards cleared — hand: " + human.GetHandCards().Count + " owned: " + human.GetOwnedCardsCount());
+                CheckGameOver();
+            }
+        }
+        /*if (Keyboard.current.digit6Key.wasPressedThisFrame)
+        {
+            Debug.Log("Testing suit display update — setting suit to Hearts");
+            discardPile.UpdateTopCardSuitDisplay(CardSuit.Hearts);
+        }*/
+
     }
 
     private void BeginFirstTurn()
@@ -172,12 +198,13 @@ public class CardGameManager : MonoBehaviour
         {
             if (cardPlayed != null)
             {
-                //currRank = cardPlayed.rank;
                 if (cardPlayed.suit != CardSuit.None)
-                {
                     currSuit = cardPlayed.suit;
-                }
                 currRank = cardPlayed.rank;
+
+                // Check win immediately after card is played
+                CheckGameOver();      // ? ADD
+                if (!enabled) return; // ? ADD — stop if game over
 
                 HandleCardEffects(player, cardPlayed);
             }
@@ -279,11 +306,19 @@ public class CardGameManager : MonoBehaviour
     public bool CanPlayCard(Card candidateCard)
     {
         Card topCard = discardPile.PeekTop();
-        if (topCard == null)
-        {
-            return true;
-        }
-        return topCard.IsValidMatch(candidateCard);
+        if (topCard == null) return true;
+
+        // Eight is always playable on anything
+        if (candidateCard.rank == CardRank.Eight) return true;
+
+        // Swap is always playable
+        if (candidateCard.rank == CardRank.Swap || topCard.rank == CardRank.Swap) return true;
+
+        // If top card is an 8, match against chosen suit
+        if (topCard.rank == CardRank.Eight)
+            return candidateCard.suit == currSuit;
+
+        return candidateCard.rank == topCard.rank || candidateCard.suit == currSuit;
     }
 
     private void HandleCardEffects(BaseCharacter player, Card cardPlayed)
@@ -339,9 +374,11 @@ public class CardGameManager : MonoBehaviour
         {
             currSuit = chosenSuit;
             Debug.Log("Suit chosen: " + chosenSuit);
-            ContinueTurnAfterEffect();            
-        }
 
+            discardPile.UpdateTopCardSuitDisplay(chosenSuit); // ? ADD
+
+            ContinueTurnAfterEffect();
+        }
     }
 
     public void OnSwapChosen(BaseCharacter player, BaseCharacter target)
@@ -373,11 +410,7 @@ public class CardGameManager : MonoBehaviour
 
         foreach (BaseCharacter p in players)
         {
-            if (p is HumanPlayer h)
-            {
-                human = h;
-                break;
-            }
+            if (p is HumanPlayer h) { human = h; break; }
         }
 
         if (human == null) return;
@@ -393,18 +426,16 @@ public class CardGameManager : MonoBehaviour
             }
         }
 
-        // Win — human has 0 cards AND nothing on the discard pile owned by them
-        // (card must be fully resolved into discard, not still in their hand)
-        if (human.GetOwnedCardsCount() == 0)
-        {
-            Card topDiscard = discardPile.PeekTop();
-            bool lastCardStillResolving = topDiscard != null && topDiscard.owner == human;
+        // Win — check BOTH owned cards AND hand cards are 0
+        bool handEmpty = human.GetHandCards().Count == 0;
+        bool ownedEmpty = human.GetOwnedCardsCount() == 0;
 
-            if (!lastCardStillResolving)
-            {
-                Debug.Log("Human player wins!");
-                TriggerGameOver(true);
-            }
+        Debug.Log("Win check — hand: " + human.GetHandCards().Count + " owned: " + human.GetOwnedCardsCount());
+
+        if (handEmpty && ownedEmpty)
+        {
+            Debug.Log("Human player wins!");
+            TriggerGameOver(true);
         }
     }
 
@@ -419,6 +450,9 @@ public class CardGameManager : MonoBehaviour
 
     private void AdvanceTurn()
     {
+        // Don't advance if we're waiting for a player choice
+        if (waitingForEffect) return; // ? ADD THIS
+
         int count = GetPlayers().Count;
 
         if (!reversed)
@@ -427,7 +461,6 @@ public class CardGameManager : MonoBehaviour
             currentTurnIdx = (currentTurnIdx - 1 + count) % count;
 
         currentPlayerTurn = GetPlayers()[currentTurnIdx];
-        
         beginPlayerTurn.Invoke(currentPlayerTurn);
     }
 

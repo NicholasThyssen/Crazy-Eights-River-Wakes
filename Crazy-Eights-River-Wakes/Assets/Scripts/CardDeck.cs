@@ -317,7 +317,24 @@ public class CardDeck : MonoBehaviour
     public void RemoveCard(Card card)
     {
         this.cards.Remove(card);
+
+        // Clear any socket hover state to prevent null reference
+        if (acceptSocket != null && acceptSocket.gameObject.activeSelf)
+        {
+            acceptSocket.gameObject.SetActive(false);
+            acceptSocket.gameObject.SetActive(true);
+        }
+
         UpdateCardBlob();
+    }
+
+    public void UpdateTopCardSuitDisplay(CardSuit suit)
+    {
+        Card topCard = PeekTop();
+        if (topCard == null) return;
+
+        // Update the blob face texture to show chosen suit
+        SetFaceTexture(suit, topCard.rank);
     }
 
     public void CardAcceptedBySocket()

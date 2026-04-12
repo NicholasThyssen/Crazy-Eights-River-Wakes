@@ -47,11 +47,10 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     public void StopPhysicsMode()
     {
         forcePhysics = false;
-
         rb.isKinematic = true;
         rb.useGravity = false;
-
-        // Once back in the fan, scripts are allowed to move it again
+        rb.linearVelocity = Vector3.zero;      // ? ADD
+        rb.angularVelocity = Vector3.zero;     // ? ADD
         transform.hasChanged = false;
     }
 
@@ -68,12 +67,18 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     {
         if (forcePhysics)
         {
-            // Override ANY script trying to move the card
             rb.isKinematic = false;
             rb.useGravity = true;
-
-            // Prevent ANY transform override
             transform.hasChanged = false;
+        }
+
+        // ? ADD: while held by controller, force kinematic every frame
+        if (currentlyHeld)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
     }
 
@@ -232,6 +237,15 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
                 human.EndTurn();
             }
         }
+    }
+
+    // In Card.cs — add this public method
+    public virtual void ReRegisterGrabListeners()
+    {
+        if (grab == null) grab = GetComponent<XRGrabInteractable>();
+        grab.selectEntered.RemoveAllListeners();
+        grab.selectExited.RemoveAllListeners();
+        grab.selectEntered.AddListener(OnCardGrabbed);
     }
 
 }

@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using System.Collections.Generic;
+using Unity.XR.CoreUtils;
 
 public class TestCard : Card
 {
@@ -7,18 +9,78 @@ public class TestCard : Card
     private Renderer rend;
     private Material faceMaterial;
 
+    private Vector3 throwVelocity;
+    private Vector3 lastControllerPos;
+    private Vector3 controllerVelocity;
+    private bool isBeingHeld = false;
+
     protected override void Awake()
     {
-        base.Awake(); // ? REQUIRED
-
+        base.Awake();
         rend = GetComponent<Renderer>();
         text = GetComponentInChildren<TextMeshPro>();
         faceMaterial = transform.GetChild(0).GetComponent<MeshRenderer>().material;
 
         if (faceMaterial != null)
-        {
             SetFaceTexture(suit, rank);
+
+        grab.selectEntered.AddListener(OnCardGrabStarted);
+        grab.selectExited.AddListener(OnCardReleased);
+    }
+
+    private void OnCardGrabStarted(UnityEngine.XR.Interaction.Toolkit.SelectEnterEventArgs args)
+    {
+        isBeingHeld = true;
+        currentlyHeld = true;
+        controllerVelocity = Vector3.zero;
+        lastControllerPos = args.interactorObject.transform.position;
+
+        grab.trackPosition = false;
+        grab.trackRotation = false;
+
+        Transform controllerTransform = args.interactorObject.transform;
+        transform.SetParent(controllerTransform, true);
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.Euler(0, 180, 0);
+    }
+
+    private void OnCardReleased(UnityEngine.XR.Interaction.Toolkit.SelectExitEventArgs args)
+    {
+        isBeingHeld = false;
+        currentlyHeld = false; // ? ADD
+
+        grab.trackPosition = true;
+        grab.trackRotation = true;
+
+        transform.SetParent(null, true);
+        EnablePhysics();
+        rb.linearVelocity = controllerVelocity;
+    }
+
+    private void Update()
+    {
+        if (isBeingHeld && grab.interactorsSelecting.Count > 0)
+        {
+            Transform controllerTransform = grab.interactorsSelecting[0].transform;
+
+            transform.position = controllerTransform.position;
+            transform.rotation = controllerTransform.rotation * Quaternion.Euler(0, 180, 0);
+
+            // No threshold — track all movement
+            controllerVelocity = (controllerTransform.position - lastControllerPos) / Time.deltaTime;
+            lastControllerPos = controllerTransform.position;
         }
+    }
+
+    public void UpdateSuitDisplay(CardSuit newSuit)
+    {
+        if (faceMaterial == null) return;
+        // Use instance to avoid affecting all cards
+        MeshRenderer mr = transform.GetChild(0).GetComponent<MeshRenderer>();
+        Material instanceMat = mr.material; // .material creates an instance
+        instanceMat.SetFloat("Suit", (int)newSuit);
+        instanceMat.SetFloat("Rank", 7);
+        faceMaterial = instanceMat;
     }
 
     public void Initialize(CardSuit suit, CardRank rank)
@@ -45,22 +107,21 @@ public class TestCard : Card
     // Sets the face texture of the card.
     private void SetFaceTexture(CardSuit suit, CardRank rank)
     {
-        if (rank != CardRank.Eight && rank != CardRank.Swap) {
-            faceMaterial.SetFloat("Suit", (int)suit);
-        }
-        else if (rank == CardRank.Eight)
+        if (rank == CardRank.Eight)
         {
-            // Set the card to a blue 8 for now
             faceMaterial.SetFloat("Suit", 0);
             faceMaterial.SetFloat("Rank", 7);
         }
         else if (rank == CardRank.Swap)
         {
-            // Set the card to a green 8 for now
             faceMaterial.SetFloat("Suit", 1);
             faceMaterial.SetFloat("Rank", 7);
         }
-        faceMaterial.SetFloat("Rank", (int)rank);
+        else
+        {
+            faceMaterial.SetFloat("Suit", (int)suit);
+            faceMaterial.SetFloat("Rank", (int)rank);
+        }
     }
 
     public void PlaySpecialEffect(string effectName)
@@ -88,6 +149,15 @@ public class TestCard : Card
             return 1;
         }
         return 0;
+    }
+
+    // Override in TestCard.cs
+    public override void ReRegisterGrabListeners()
+    {
+        base.ReRegisterGrabListeners();
+        grab.selectExited.RemoveAllListeners();
+        grab.selectExited.AddListener(OnCardReleased); // ? always fresh on each return to hand
+        grab.selectEntered.AddListener(OnCardGrabStarted);
     }
 
     private void EnableXRInteractions()
