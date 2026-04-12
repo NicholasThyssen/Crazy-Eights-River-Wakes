@@ -33,6 +33,9 @@ public class CardGameManager : MonoBehaviour
     public UnityEvent<BaseCharacter, SuitSelectionUI> requestSuit;
     public UnityEvent<BaseCharacter, SwapSelectionUI, List<BaseCharacter>> requestSwap;
 
+    public GameObject winScreen;
+    public GameObject loseScreen;
+
     void Awake()
     {
         instance = this;
@@ -176,7 +179,10 @@ public class CardGameManager : MonoBehaviour
         {
             Debug.Log("Player " + player.playerId + " turn end event received. Cards: " + player.GetOwnedCardsCount());
             Debug.Log("Draw deck: " + deck.GetCardCount() + ", discard pile: " + discardPile.GetCardCount());
-            int count = GetPlayers().Count;
+
+            CheckGameOver(); // ? ADD before advancing turn
+
+            if (!enabled) return; // game over was triggered, stop here
 
             AdvanceTurn();
         }
@@ -204,13 +210,27 @@ public class CardGameManager : MonoBehaviour
 
     public Card GetNextCardFromDeck()
     {
-        if (deck.PeekTop() == null)
+        if (deck.PeekTop() == null || deck.GetCardCount() <= 1)
         {
-            // If the deck is empty, replace the deck with the discard pile (sans the top card) and shuffle.
-            // If the discard pile is somehow empty too (how???), spawn a fresh deck.
+            ReshuffleDiscardIntoDeck();
         }
-        Card nextCard = deck.Pop();
-        return nextCard;
+        return deck.Pop();
+    }
+
+    private void ReshuffleDiscardIntoDeck()
+    {
+        Card topCard = discardPile.PeekTop(); // keep the current top card in place
+
+        List<Card> discardCards = discardPile.PopAllCards();
+
+        foreach (Card card in discardCards)
+        {
+            if (card == topCard) continue; // leave the top discard card alone
+            deck.AddCard(card);
+        }
+
+        deck.ShuffleDeck();
+        Debug.Log("Deck reshuffled from discard pile. New deck size: " + deck.GetCardCount());
     }
 
     public BaseCharacter GetCurrentPlayer()
@@ -324,16 +344,63 @@ public class CardGameManager : MonoBehaviour
     private void ContinueTurnAfterEffect()
     {
         waitingForEffect = false;
+
+        CheckGameOver(); // ? ADD here too for card effects that empty a hand
+        if (!enabled) return;
+
         AdvanceTurn();
     }
 
-    void CheckWin(BaseCharacter player)
+    void CheckGameOver()
     {
-        if (player.GetOwnedCardsCount() == 0)
+        List<BaseCharacter> players = GetPlayers();
+        HumanPlayer human = null;
+
+        foreach (BaseCharacter p in players)
         {
-            Debug.Log(player.name + " WINS!");
-            enabled = false;
+            if (p is HumanPlayer h)
+            {
+                human = h;
+                break;
+            }
         }
+
+        if (human == null) return;
+
+        // Lose — any AI has 0 cards
+        foreach (BaseCharacter p in players)
+        {
+            if (p is AICharacter && p.GetOwnedCardsCount() == 0)
+            {
+                Debug.Log("AI " + p.playerId + " won — human loses!");
+                TriggerGameOver(false);
+                return;
+            }
+        }
+
+        // Win — human has 0 cards AND nothing on the discard pile owned by them
+        // (card must be fully resolved into discard, not still in their hand)
+        if (human.GetOwnedCardsCount() == 0)
+        {
+            Card topDiscard = discardPile.PeekTop();
+            bool lastCardStillResolving = topDiscard != null && topDiscard.owner == human;
+
+            if (!lastCardStillResolving)
+            {
+                Debug.Log("Human player wins!");
+                TriggerGameOver(true);
+            }
+        }
+    }
+
+    private void TriggerGameOver(bool playerWon)
+    {
+        enabled = false; // stop game manager updates
+
+        if (playerWon && winScreen != null)
+            winScreen.SetActive(true);
+        else if (!playerWon && loseScreen != null)
+            loseScreen.SetActive(true);
     }
 
     public bool CurrentPlayerIs(BaseCharacter player) => currentPlayerTurn == player;

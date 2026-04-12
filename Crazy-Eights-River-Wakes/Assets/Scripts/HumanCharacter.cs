@@ -131,16 +131,11 @@ public class HumanPlayer : BaseCharacter
     // Call this from your UI when a card is selected
     public void OnCardSelected(Card selectedCard)
     {
-        // If we can play card we do!
         if (CardGameManager.instance.CanPlayCard(selectedCard))
         {
             PlayCardToDeck(selectedCard, CardGameManager.instance.discardPile);
-            playerPlayedCard.Invoke(this, selectedCard);
-        }
-        // If we cannot play card warn in debug
-        else
-        {
-            Debug.Log("Cannot play this card!");
+            playerPlayedCard.Invoke(this, selectedCard); // ? REMOVE THIS LINE
+                                                         // PlayedToDiscardPile already invokes playerPlayedCard via cardPlayedToDeck event
         }
     }
 

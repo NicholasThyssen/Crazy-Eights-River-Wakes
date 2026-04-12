@@ -180,13 +180,14 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     public void Warpback()
     {
         rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        StopPhysicsMode(); // ? ADD THIS — clears forcePhysics before hand tries to place it
         if (owner != null)
         {
             owner.WarpCardToHand(this);
         }
         else
         {
-            // Unowned cards shouldn't be falling out
             CardGameManager cgm = CardGameManager.instance;
             transform.position = cgm.deck.transform.position;
             transform.rotation = cgm.deck.transform.rotation;
@@ -210,24 +211,26 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     private void OnCardGrabbed(SelectEnterEventArgs args)
     {
-        // If the card has no owner, it's coming from the deck
         if (owner == null)
         {
             Debug.Log("Card grabbed from deck: " + name);
 
             BaseCharacter current = CardGameManager.instance.GetCurrentPlayer();
 
-            // Remove THIS card from the deck
-            CardGameManager.instance.deck.RemoveCard(this);
+            CardGameManager.instance.deck.RemoveCard(this); // remove from deck
 
-            current.TeleportNewCardToHand(this);  // handles owner + hand placement
+            current.TeleportNewCardToHand(this);
 
-
-            // Store hover origin
             StoreOriginalPosition();
-
-            // Disable grabbing so it stays in the hand
             DisableGrab();
+
+            // ? ADD THIS — grabbing from deck ends your turn
+            HumanPlayer human = current as HumanPlayer;
+            if (human != null && CardGameManager.instance.IsPlayerTurn(human))
+            {
+                human.IncrementCardDraws();
+                human.EndTurn();
+            }
         }
     }
 

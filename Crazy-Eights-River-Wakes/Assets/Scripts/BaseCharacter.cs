@@ -113,9 +113,10 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public void TeleportNewCardToHand(Card targetCard, bool flying = false)
     {
+        targetCard.StopPhysicsMode(); // ? freeze physics BEFORE hand placement
+        targetCard.DisableGrab();     // ? prevent XR fighting the placement
         AddCardToOwned(targetCard);
         playerHand.AddCardFromTeleport(targetCard);
-        // playerHand.SummonCardToHand(targetCard);
     }
 
     public void PullCardToHandObject(Card targetCard, Transform handObject, bool flying = false)
@@ -179,6 +180,8 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public void WarpCardToHand(Card targetCard)
     {
+        targetCard.StopPhysicsMode(); // ? ADD THIS
+        targetCard.DisableGrab();     // ? ADD THIS
         if (!HasCard(targetCard))
         {
             AddCardToOwned(targetCard);

@@ -102,7 +102,8 @@ public class CardHand : MonoBehaviour
     IEnumerator DelayedEnableGrabInteractions(Card targetCard)
     {
         yield return new WaitForSeconds(0.2f);
-        targetCard.GetComponent<XRGrabInteractable>().selectEntered.AddListener(delegate {CardGrabbedFromHand(targetCard);});
+        targetCard.EnableGrab(); // ? ADD THIS — re-enables the XRGrabInteractable component
+        targetCard.GetComponent<XRGrabInteractable>().selectEntered.AddListener(delegate { CardGrabbedFromHand(targetCard); });
     }
 
     public void RemoveCardFromHand(Card targetCard)
@@ -186,20 +187,17 @@ public class CardHand : MonoBehaviour
     // "Summon" the card to the hand
     public void SummonCardToHand(Card targetCard)
     {
-        // Disable physics so it doesn't fall again
         targetCard.DisablePhysics();
-
-        // Reparent to hand
         targetCard.transform.SetParent(cardContainer, false);
 
-        // Add back to hand list if missing
         if (!heldCards.Contains(targetCard))
             heldCards.Add(targetCard);
 
-        // Collapse or fan depending on your design
-        MakeCardFan(); // or MakeCardFan()
-
+        MakeCardFan();
         targetCard.StoreOriginalPosition();
+
+        // ADD — re-enable grab after placement
+        StartCoroutine(DelayedEnableGrabInteractions(targetCard));
     }
 
 

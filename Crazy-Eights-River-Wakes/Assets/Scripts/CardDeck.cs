@@ -106,7 +106,7 @@ public class CardDeck : MonoBehaviour
             RemoveCard(cardAtTop);
         }
         cardAtTop.gameObject.SetActive(true);
-        cardAtTop.EnableGrab();
+        // REMOVED: cardAtTop.EnableGrab(); — called too early, hand placement handles this
         return cardAtTop;
     }
 
@@ -288,9 +288,9 @@ public class CardDeck : MonoBehaviour
         var interactor = action.interactorObject;
         HumanPlayer firingUser = interactor.transform.GetComponentInParent<HumanPlayer>();
         bool socketEnabled = acceptSocket.gameObject.activeSelf;
-        
+
         CardGameManager cgm = CardGameManager.instance;
-        if (firingUser != cgm.IsPlayerTurn(firingUser) || !firingUser.CanDraw())
+        if (!cgm.IsPlayerTurn(firingUser) || !firingUser.CanDraw())
         {
             return;
         }
@@ -298,6 +298,7 @@ public class CardDeck : MonoBehaviour
         {
             acceptSocket.gameObject.SetActive(false);
         }
+
         Card nextCard = Pop();
         firingUser.IncrementCardDraws();
         firingUser.TeleportNewCardToHand(nextCard);
@@ -306,6 +307,10 @@ public class CardDeck : MonoBehaviour
         {
             acceptSocket.gameObject.SetActive(true);
         }
+        Debug.Log("Calling EndTurn for: " + firingUser.playerId); // ? ADD
+        firingUser.EndTurn();
+        Debug.Log("EndTurn called, current player now: " + CardGameManager.instance.GetCurrentPlayer().playerId); // ? ADD
+        
     }
 
 
@@ -360,5 +365,15 @@ public class CardDeck : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         transform.position = respawnAnchor.position;
         transform.rotation = respawnAnchor.rotation;
+    }
+    public List<Card> PopAllCards()
+    {
+        List<Card> allCards = new List<Card>(cards);
+        foreach (Card card in allCards)
+        {
+            RemoveCard(card);
+        }
+        cards.Clear();
+        return allCards;
     }
 }
