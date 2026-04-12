@@ -86,7 +86,14 @@ public class CardHand : MonoBehaviour
         StartCoroutine(DelayedEnableGrabInteractions(targetCard));
 
         targetCard.transform.SetParent(cardContainer);
-        MakeCardFan();
+        if (owner.CardShouldFan())
+        {
+            MakeCardFan();
+        }
+        
+        else {
+            MakeCardNotFan();
+        }
 
         cardAdded.Invoke(targetCard);
     }
@@ -102,7 +109,7 @@ public class CardHand : MonoBehaviour
     IEnumerator DelayedEnableGrabInteractions(Card targetCard)
     {
         yield return new WaitForSeconds(0.2f);
-        targetCard.EnableGrab(); // ? ADD THIS — re-enables the XRGrabInteractable component
+        targetCard.EnableGrab(); // ? ADD THIS ï¿½ re-enables the XRGrabInteractable component
         targetCard.GetComponent<XRGrabInteractable>().selectEntered.AddListener(delegate { CardGrabbedFromHand(targetCard); });
     }
 
@@ -138,7 +145,7 @@ public class CardHand : MonoBehaviour
         // 1. Remove it from the hand list, but DO NOT fan or touch other cards yet
         heldCards.Remove(targetCard);
 
-        // 2. Make sure it’s not parented to the hand
+        // 2. Make sure itï¿½s not parented to the hand
         targetCard.transform.SetParent(null);
 
         // 3. Turn physics fully on
@@ -174,7 +181,14 @@ public class CardHand : MonoBehaviour
             cardAdded.Invoke(addedCard);
         }
 
-        MakeCardFan();
+        if (owner.CardShouldFan())
+        {
+            MakeCardFan();
+        }
+        
+        else {
+            MakeCardNotFan();
+        }
 
         Debug.Log("You now have " + heldCards.Count + " cards in your hand.");
     }
@@ -193,10 +207,17 @@ public class CardHand : MonoBehaviour
         if (!heldCards.Contains(targetCard))
             heldCards.Add(targetCard);
 
-        MakeCardFan();
+        if (owner.CardShouldFan())
+        {
+            MakeCardFan();
+        }
+        
+        else {
+            MakeCardNotFan();
+        }
         targetCard.StoreOriginalPosition();
 
-        // ADD — re-enable grab after placement
+        // ADD ï¿½ re-enable grab after placement
         StartCoroutine(DelayedEnableGrabInteractions(targetCard));
     }
 
@@ -239,6 +260,30 @@ public class CardHand : MonoBehaviour
 
             heldCards[i].transform.localPosition = localPos;
             heldCards[i].transform.rotation = cardRot;
+        }
+    }
+
+    // vertically stacked instead of fanned
+    protected void MakeCardNotFan() {
+        int cardCount = heldCards.Count;
+        if (cardCount == 0 || cardContainer == null) return;
+
+        float startZOffset = 0;
+        float offsetStep = 0.5f;
+
+        for (int i = 0; i < cardCount; i++)
+        {
+            float offsetZ = startZOffset + offsetStep * i;
+
+            Vector3 offset = transform.forward * offsetZ;
+            Vector3 localPos = offset * 0.008f;
+
+            Quaternion cardRot = transform.rotation;
+
+            heldCards[i].transform.localPosition = localPos;
+            heldCards[i].transform.rotation = cardRot;
+            heldCards[i].transform.localRotation = Quaternion.identity;
+
         }
     }
 
