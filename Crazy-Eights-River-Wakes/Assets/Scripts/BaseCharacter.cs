@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -212,11 +211,6 @@ public abstract class BaseCharacter : MonoBehaviour
     protected virtual void HandleSwapRequest(BaseCharacter player, SwapSelectionUI suitUI, List<BaseCharacter> players)
     {
         
-    }
-
-    public virtual bool CardShouldFan()
-    {
-        return true;
     }
 
 }

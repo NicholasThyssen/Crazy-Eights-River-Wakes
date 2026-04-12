@@ -45,8 +45,6 @@ public class AICharacter : BaseCharacter
     IEnumerator HandlePlayerTurn()
     {
         yield return new WaitForSeconds(1.5f);
-        animator.SetTrigger("Look At Cards");
-        yield return new WaitForSeconds(3f);
 
         List<Card> playableCards = GetPlayableCards();
         Card selectedCard = null;
@@ -68,17 +66,15 @@ public class AICharacter : BaseCharacter
 
         if (selectedCard != null)
         {
-            animator.SetTrigger("Select Card");
             PullCardToHandObject(selectedCard, cardAttach.transform);
-            yield return new WaitForSeconds(3.0f);
+            yield return new WaitForSeconds(1.0f);
             AIPlayerPlayCard(selectedCard);
         }
         else
         {
             yield return new WaitForSeconds(0.5f);
-            animator.SetTrigger("End Look At Cards");
             EndTurn();
-        }
+        }  
     }
 
     public override void FinishPlayerTurn(BaseCharacter player)
@@ -101,7 +97,6 @@ public class AICharacter : BaseCharacter
     {
         PlayCardToDeck(selectedCard, CardGameManager.instance.discardPile);
         playerPlayedCard.Invoke(this, selectedCard);
-        animator.SetTrigger("End Look At Cards");
     }
 
     // Chooses a card that is valid 
@@ -160,10 +155,5 @@ public class AICharacter : BaseCharacter
             swapSelected.Invoke(this, target);
         }
 
-    }
-
-    public override bool CardShouldFan()
-    {
-        return false;   // don't fan cards for AI
     }
 }
