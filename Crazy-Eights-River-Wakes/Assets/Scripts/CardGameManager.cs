@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using UnityEngine.InputSystem;
 
 using UnityEngine.Events;
 
@@ -33,8 +34,7 @@ public class CardGameManager : MonoBehaviour
     public UnityEvent<BaseCharacter, SuitSelectionUI> requestSuit;
     public UnityEvent<BaseCharacter, SwapSelectionUI, List<BaseCharacter>> requestSwap;
 
-    public GameObject winScreen;
-    public GameObject loseScreen;
+    public GameOverUI gameOverUI;
 
     void Awake()
     {
@@ -77,7 +77,22 @@ public class CardGameManager : MonoBehaviour
         BeginFirstTurn();
     }
 
-    void Update() { }
+    void Update() {
+        
+        // TEMP TESTING — remove before shipping
+        if ((Keyboard.current.digit3Key.wasPressedThisFrame))
+        {
+            Debug.Log("W pressed, gameOverUI = " + gameOverUI);
+            TriggerGameOver(true);  // test win screen
+        }
+            
+        if ((Keyboard.current.digit4Key.wasPressedThisFrame))
+        {
+            Debug.Log("L pressed, gameOverUI = " + gameOverUI);
+            TriggerGameOver(false);
+        }
+        
+    }
 
     private void BeginFirstTurn()
     {
@@ -395,12 +410,9 @@ public class CardGameManager : MonoBehaviour
 
     private void TriggerGameOver(bool playerWon)
     {
-        enabled = false; // stop game manager updates
-
-        if (playerWon && winScreen != null)
-            winScreen.SetActive(true);
-        else if (!playerWon && loseScreen != null)
-            loseScreen.SetActive(true);
+        enabled = false;
+        if (gameOverUI != null)
+            gameOverUI.Show(playerWon);
     }
 
     public bool CurrentPlayerIs(BaseCharacter player) => currentPlayerTurn == player;
