@@ -53,7 +53,7 @@ public class HandSocket : XRSocketInteractor
         }
         if (cardHand != null)
         {
-            // Debug.Log("Trying to socket with Card Hand");
+            Debug.Log("Trying to socket with Card Hand");
             if (targetCard == cardHand.socketIgnoreCard)
             {
                 return false;
@@ -62,7 +62,7 @@ public class HandSocket : XRSocketInteractor
         }
         else if (cardDeck != null)
         {
-            // Debug.Log("Trying to socket with Card Deck");
+            Debug.Log("Trying to socket with Card Deck");
             CardGameManager cgm = CardGameManager.instance;
             if (cgm.IsPlayerTurn(targetCard.owner))
             {
