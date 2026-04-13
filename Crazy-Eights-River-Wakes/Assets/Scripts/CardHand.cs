@@ -134,7 +134,13 @@ public class CardHand : MonoBehaviour
             mainSocket.gameObject.SetActive(true);
         }
 
-        MakeCardFan(); // ? refresh fan after removal
+        if (owner.CardShouldFan())
+        {
+            MakeCardFan(); // ? refresh fan after removal
+        }
+        else {
+            MakeCardNotFan();
+        }
 
         cardRemoved.Invoke(targetCard);
     }

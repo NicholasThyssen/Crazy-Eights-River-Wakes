@@ -69,7 +69,7 @@ public class AICharacter : BaseCharacter
         if (selectedCard != null)
         {
             animator.SetTrigger("Select Card");
-            PullCardToHandObject(selectedCard, cardAttach.transform);
+            TeleportCardToHand(selectedCard, cardAttach.transform);
             yield return new WaitForSeconds(3.0f);
             AIPlayerPlayCard(selectedCard);
         }
@@ -165,5 +165,19 @@ public class AICharacter : BaseCharacter
     public override bool CardShouldFan()
     {
         return false;   // don't fan cards for AI
+    }
+
+    private void TeleportCardToHand(Card targetCard, Transform handObject, bool flying = false)
+    {
+        if (flying)
+        {
+        
+        }
+        else
+        {
+            targetCard.gameObject.transform.SetParent(handObject);
+            targetCard.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        }
+
     }
 }
