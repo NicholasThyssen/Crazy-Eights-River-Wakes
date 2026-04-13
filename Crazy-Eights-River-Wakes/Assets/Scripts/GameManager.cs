@@ -9,13 +9,13 @@ public class GameManager : MonoBehaviour
     public GameState gameState;
     [HideInInspector] public static GameManager instance;
     [HideInInspector] public List<BaseCharacter> characters;
+    private List<Transform> nearbyTreeLeaves = new List<Transform>();
 
     private void Awake()
     {
         instance = this;
         gameState = GameState.Default;
-        characters = new List<BaseCharacter>();
-        var charactersArray = FindObjectsByType<BaseCharacter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        characters = BuildCharactersArray();
     }
 
     public List<BaseCharacter> BuildCharactersArray()
@@ -46,6 +46,52 @@ public class GameManager : MonoBehaviour
         }
 
         return sum / transforms.Count;
+    }
+
+    private void Start()
+    {
+        InvokeRepeating(nameof(FindNearbyTrees), 0f, 5f);
+    }
+
+    private void Update()
+    {
+        SwayTrees();
+    }
+
+    private void FindNearbyTrees()
+    {
+        nearbyTreeLeaves.Clear();
+        int treeLeavesMask = LayerMask.GetMask("TreeLeaves");
+        if (characters.Count < 1)
+        {
+            return;
+        }
+        Vector3 startPosition = characters[UnityEngine.Random.Range(0, characters.Count)].transform.position;
+
+        Collider[] hits = Physics.OverlapSphere(startPosition, 80, treeLeavesMask);
+
+        foreach (Collider hit in hits)
+        {
+            Transform t = hit.transform;
+            nearbyTreeLeaves.Add(t);
+        }
+    }
+
+    private void SwayTrees()
+    {
+        Debug.Log("swaying Trees is length " + this.nearbyTreeLeaves.Count);
+        foreach (Transform treeTop in this.nearbyTreeLeaves)
+        {
+
+            float swaySpeed = 0.65f;
+            float swayAmount = 2f;
+
+            float x = Mathf.Sin(Time.time * swaySpeed + treeTop.position.x) * swayAmount;
+            float y = Mathf.Sin(Time.time * swaySpeed + treeTop.position.y) * swayAmount;
+            float z = Mathf.Sin(Time.time * swaySpeed + treeTop.position.z) * swayAmount;
+
+            treeTop.localRotation = Quaternion.Euler(x, 0f, z);
+        }
     }
 }
 
