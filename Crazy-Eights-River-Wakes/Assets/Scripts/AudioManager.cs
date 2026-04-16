@@ -55,6 +55,27 @@ public class AudioManager : MonoBehaviour
         audioSource.PlayOneShot(sound.clip, sound.volume);
     }
 
+    public void Play(SoundName soundName, GameObject playFromObject)
+    {
+        if (!soundDict.TryGetValue(soundName, out Sound sound))
+        {
+            Debug.LogWarning($"Sound not found: {soundName}");
+            return;
+        }
+
+        AudioSource objectAudioSource = playFromObject.GetComponent<AudioSource>();
+        if (objectAudioSource)
+        {
+            audioSource.PlayOneShot(sound.clip, sound.volume);
+        }
+        else
+        {
+            Debug.LogWarning($"Object {objectAudioSource} did not have an AudioSource");
+        }
+
+        
+    }
+
     public void Stop()
     {
         audioSource.Stop();
