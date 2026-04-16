@@ -79,7 +79,7 @@ public class CardGameManager : MonoBehaviour
 
     void Update() {
         
-        // TEMP TESTING — remove before shipping
+        // TEMP TESTING ï¿½ remove before shipping
         if ((Keyboard.current.digit3Key.wasPressedThisFrame))
         {
             Debug.Log("W pressed, gameOverUI = " + gameOverUI);
@@ -108,13 +108,13 @@ public class CardGameManager : MonoBehaviour
                 {
                     human.RemoveCardFromOwned(c); // removes from ownedCards AND CardHand
                 }
-                Debug.Log("Human cards cleared — hand: " + human.GetHandCards().Count + " owned: " + human.GetOwnedCardsCount());
+                Debug.Log("Human cards cleared ï¿½ hand: " + human.GetHandCards().Count + " owned: " + human.GetOwnedCardsCount());
                 CheckGameOver();
             }
         }
         /*if (Keyboard.current.digit6Key.wasPressedThisFrame)
         {
-            Debug.Log("Testing suit display update — setting suit to Hearts");
+            Debug.Log("Testing suit display update ï¿½ setting suit to Hearts");
             discardPile.UpdateTopCardSuitDisplay(CardSuit.Hearts);
         }*/
 
@@ -204,7 +204,7 @@ public class CardGameManager : MonoBehaviour
 
                 // Check win immediately after card is played
                 CheckGameOver();      // ? ADD
-                if (!enabled) return; // ? ADD — stop if game over
+                if (!enabled) return; // ? ADD ï¿½ stop if game over
 
                 HandleCardEffects(player, cardPlayed);
             }
@@ -335,6 +335,7 @@ public class CardGameManager : MonoBehaviour
 
             case CardRank.Skip:
                 currentTurnIdx = (currentTurnIdx + 1) % GetPlayers().Count;
+                AudioManager.Instance.Play(SoundName.Skip);
                 Debug.Log("Next player skipped!");
                 break;
 
@@ -415,22 +416,22 @@ public class CardGameManager : MonoBehaviour
 
         if (human == null) return;
 
-        // Lose — any AI has 0 cards
+        // Lose ï¿½ any AI has 0 cards
         foreach (BaseCharacter p in players)
         {
             if (p is AICharacter && p.GetOwnedCardsCount() == 0)
             {
-                Debug.Log("AI " + p.playerId + " won — human loses!");
+                Debug.Log("AI " + p.playerId + " won ï¿½ human loses!");
                 TriggerGameOver(false);
                 return;
             }
         }
 
-        // Win — check BOTH owned cards AND hand cards are 0
+        // Win ï¿½ check BOTH owned cards AND hand cards are 0
         bool handEmpty = human.GetHandCards().Count == 0;
         bool ownedEmpty = human.GetOwnedCardsCount() == 0;
 
-        Debug.Log("Win check — hand: " + human.GetHandCards().Count + " owned: " + human.GetOwnedCardsCount());
+        Debug.Log("Win check ï¿½ hand: " + human.GetHandCards().Count + " owned: " + human.GetOwnedCardsCount());
 
         if (handEmpty && ownedEmpty)
         {
