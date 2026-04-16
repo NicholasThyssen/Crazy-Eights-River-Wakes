@@ -252,12 +252,14 @@ public class CardHand : MonoBehaviour
         transform.rotation = lastKnownSocketPosition.rotation;
     }
     
-    public void MakeCardFan(bool animate = true)
+
+    // Use fanAngleOverride getFanAngle(cardsCount-1) if you want to add a card to deck without moving the other cards
+    public void MakeCardFan(bool animate = true, float fanAngleOverride=-1f)
     {
         int cardCount = heldCards.Count;
         if (cardCount == 0 || cardContainer == null) return;
 
-        float fanAngle = GetFanAngle(cardCount);
+        float fanAngle = fanAngleOverride < 0 ? GetFanAngle(cardCount) : fanAngleOverride;
         float radius = 0.45f;
         float tilt = 15f;
 
