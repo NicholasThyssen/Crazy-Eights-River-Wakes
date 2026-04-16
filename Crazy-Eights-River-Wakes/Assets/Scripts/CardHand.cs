@@ -252,7 +252,7 @@ public class CardHand : MonoBehaviour
         transform.rotation = lastKnownSocketPosition.rotation;
     }
     
-    public void MakeCardFan()
+    public void MakeCardFan(bool animate = false)
     {
         int cardCount = heldCards.Count;
         if (cardCount == 0 || cardContainer == null) return;
@@ -279,35 +279,32 @@ public class CardHand : MonoBehaviour
             Quaternion cardRot = rotation * Quaternion.Euler(tilt, -angle, 0f);
 
             // TODO: Make the card fan not be awkwardly offset from the origin
-
-            heldCards[i].transform.localPosition = localPos;
-            heldCards[i].transform.rotation = cardRot;
+            StartCoroutine(Utils.AnimateTransform(heldCards[i].transform, localPos, cardRot, true, false, animate ? 0.5f : 0));
+            // heldCards[i].transform.localPosition = localPos;
+            // heldCards[i].transform.rotation = cardRot;
         }
     }
 
     // vertically stacked instead of fanned
-    protected void MakeCardNotFan() {
-        int cardCount = heldCards.Count;
-        if (cardCount == 0 || cardContainer == null) return;
+   protected void MakeCardNotFan(bool animate = false)
+{
+    int cardCount = heldCards.Count;
+    if (cardCount == 0 || cardContainer == null) return;
 
-        float startZOffset = 0;
-        float offsetStep = 0.5f;
+    float startZOffset = 0f;
+    float offsetStep = 0.004f;
 
-        for (int i = 0; i < cardCount; i++)
-        {
-            float offsetZ = startZOffset + offsetStep * i;
+    for (int i = 0; i < cardCount; i++)
+    {
+        float offsetZ = startZOffset + offsetStep * i;
 
-            Vector3 offset = transform.forward * offsetZ;
-            Vector3 localPos = offset * 0.008f;
+        Vector3 localPos = Vector3.forward * offsetZ;
 
-            Quaternion cardRot = transform.rotation;
-
-            heldCards[i].transform.localPosition = localPos;
-            heldCards[i].transform.rotation = cardRot;
-            heldCards[i].transform.localRotation = Quaternion.identity;
-
-        }
+        // heldCards[i].transform.localPosition = localPos;
+        // heldCards[i].transform.localRotation = Quaternion.identity;
+        StartCoroutine(Utils.AnimateTransform(heldCards[i].transform, localPos, Quaternion.identity, true, true, animate ? 1.5f : 0 ));
     }
+}
 
     public void Warpback()
     {
