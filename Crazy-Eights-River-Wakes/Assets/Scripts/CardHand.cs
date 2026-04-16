@@ -252,12 +252,12 @@ public class CardHand : MonoBehaviour
         transform.rotation = lastKnownSocketPosition.rotation;
     }
     
-    public void MakeCardFan(bool animate = false)
+    public void MakeCardFan(bool animate = true)
     {
         int cardCount = heldCards.Count;
         if (cardCount == 0 || cardContainer == null) return;
 
-        float fanAngle = 55f;
+        float fanAngle = GetFanAngle(cardCount);
         float radius = 0.45f;
         float tilt = 15f;
 
@@ -310,5 +310,15 @@ public class CardHand : MonoBehaviour
     {
         transform.position = respawnAnchor.position;
         transform.rotation = respawnAnchor.rotation;
+    }
+
+    private float GetFanAngle(int cardCount)
+    {
+        if (cardCount <= 1) return 0f;
+
+        float anglePerCard = 15f;
+        float maxFanAngle = 115f;
+
+        return Mathf.Min(maxFanAngle, anglePerCard * (cardCount - 1));
     }
 }
