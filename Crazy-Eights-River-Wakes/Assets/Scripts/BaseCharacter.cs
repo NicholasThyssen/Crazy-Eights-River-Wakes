@@ -140,6 +140,7 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public void PlayCardToDeck(Card targetCard, CardDeck targetDeck, bool flying = false)
     {
+        AudioManager.Instance.Play(SoundName.PlaceCard, targetDeck.gameObject);
         RemoveCardFromOwned(targetCard);
         if (flying)
         {
