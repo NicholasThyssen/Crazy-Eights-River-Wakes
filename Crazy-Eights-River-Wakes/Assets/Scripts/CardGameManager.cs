@@ -35,6 +35,7 @@ public class CardGameManager : MonoBehaviour
     public UnityEvent<BaseCharacter, SwapSelectionUI, List<BaseCharacter>> requestSwap;
 
     public GameOverUI gameOverUI;
+    private TurnIndicator turnIndicator;
 
     void Awake()
     {
@@ -134,6 +135,10 @@ public class CardGameManager : MonoBehaviour
             discardPile.EnableAcceptSocket();
 
             currentPlayerTurn = players[currentTurnIdx];
+
+            // Spawn turn indicator and put it above currentPlayerTurn's head
+            this.turnIndicator = Instantiate(GlobalData.Instance.turnIndicatorPrefab, currentPlayerTurn.GetTransform()).GetComponent<TurnIndicator>();
+            turnIndicator.SetParent(currentPlayerTurn);
             beginPlayerTurn.Invoke(currentPlayerTurn);
         }        
     }
@@ -462,6 +467,8 @@ public class CardGameManager : MonoBehaviour
             currentTurnIdx = (currentTurnIdx - 1 + count) % count;
 
         currentPlayerTurn = GetPlayers()[currentTurnIdx];
+        // move turn indicator
+        turnIndicator.SetParent(currentPlayerTurn);
         beginPlayerTurn.Invoke(currentPlayerTurn);
     }
 
@@ -500,6 +507,7 @@ public class CardGameManager : MonoBehaviour
         Debug.Log($"Playing {cardInHand.rank} of {cardInHand.suit}.");
         humanPlayer.OnCardSelected(cardInHand);
     }
+
 }
 
 public enum Suit
