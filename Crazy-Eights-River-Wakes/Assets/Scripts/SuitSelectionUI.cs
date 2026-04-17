@@ -7,6 +7,7 @@ public class SuitSelectionUI : MonoBehaviour
     public Button clubsBtn;
     public Button spadesBtn;
     public Button diamondsBtn;
+    public Transform anchorPoint;
 
     private BaseCharacter requestingPlayer;
     private Canvas canvas;
@@ -31,7 +32,7 @@ public class SuitSelectionUI : MonoBehaviour
     public void Show(BaseCharacter player)
     {
         requestingPlayer = player;
-        PositionInFrontOfPlayer();
+        PositionAtAnchor();
         gameObject.SetActive(true);
     }
 
@@ -46,24 +47,18 @@ public class SuitSelectionUI : MonoBehaviour
         Hide();
     }
 
-    private void PositionInFrontOfPlayer()
-    {
-        // Find camera — works for both regular and VR setups
-        Camera cam = Camera.main;
-        if (cam == null)
-            cam = FindFirstObjectByType<Camera>();
-        if (cam == null)
+    public void PositionAtAnchor()
+    {   
+        if (anchorPoint == null)
         {
-            Debug.LogWarning("SuitSelectionUI: no camera found.");
+            Debug.LogWarning($"{name}: No anchor point assigned.");
             return;
         }
 
-        // Assign event camera so World Space canvas buttons receive clicks
-        if (canvas != null)
-            canvas.worldCamera = cam;
+        transform.position = anchorPoint.position;
+        transform.rotation = anchorPoint.rotation;
 
-        transform.position = cam.transform.position + cam.transform.forward * 1.0f;
-        transform.LookAt(cam.transform);
-        transform.Rotate(0, 180, 0);
+        if (canvas != null)
+            canvas.worldCamera = Camera.main;
     }
 }

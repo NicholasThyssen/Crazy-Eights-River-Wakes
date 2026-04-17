@@ -350,10 +350,22 @@ public class CardGameManager : MonoBehaviour
                 break;
 
             case CardRank.PlusOne:
-                BaseCharacter next = GetPlayers()[(currentTurnIdx + 1) % GetPlayers().Count];
-                next.TeleportNewCardToHand(deck.Pop());
-                Debug.Log("Next player draws +1");
-                break;
+                
+                    int count = GetPlayers().Count;
+
+                    // Determine direction-aware next player
+                    int nextIndex = !reversed
+                        ? (currentTurnIdx + 1) % count
+                        : (currentTurnIdx - 1 + count) % count;
+
+                    BaseCharacter nextPlayer = GetPlayers()[nextIndex];
+
+                    // Give them a card
+                    nextPlayer.TeleportNewCardToHand(deck.Pop());
+
+                    Debug.Log("Next player draws +1 (direction-aware)");
+                    break;
+                
 
             case CardRank.Swap:
                 waitingForEffect = true;

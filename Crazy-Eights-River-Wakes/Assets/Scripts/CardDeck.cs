@@ -264,16 +264,19 @@ public class CardDeck : MonoBehaviour
     }
 
     public void PlayCardFromSocket()
-    {   
+    {
         var selected = acceptSocket.GetOldestInteractableSelected();
         if (selected != null)
         {
             acceptSocket.interactionManager.SelectExit(acceptSocket, selected);
             Card targetCard = selected.transform.gameObject.GetComponent<Card>();
-            BaseCharacter owner = targetCard.owner;
+            BaseCharacter cardOwner = targetCard.owner;
+
+            cardOwner.RemoveCardFromOwned(targetCard); // ? ADD THIS first
             AddCard(targetCard);
+
             Debug.Log("Card played to socket successfully! Telling the game manager");
-            owner.playerPlayedCard.Invoke(owner, targetCard);
+            cardOwner.playerPlayedCard.Invoke(cardOwner, targetCard);
         }
     }
 
