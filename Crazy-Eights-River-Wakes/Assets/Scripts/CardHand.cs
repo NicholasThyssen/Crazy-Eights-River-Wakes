@@ -252,12 +252,14 @@ public class CardHand : MonoBehaviour
         transform.rotation = lastKnownSocketPosition.rotation;
     }
     
-    public void MakeCardFan()
+
+    // Use fanAngleOverride getFanAngle(cardsCount-1) if you want to add a card to deck without moving the other cards
+    public void MakeCardFan(bool animate = true, float fanAngleOverride=-1f)
     {
         int cardCount = heldCards.Count;
         if (cardCount == 0 || cardContainer == null) return;
 
-        float fanAngle = 55f;
+        float fanAngle = fanAngleOverride < 0 ? GetFanAngle(cardCount) : fanAngleOverride;
         float radius = 0.45f;
         float tilt = 15f;
 
@@ -279,39 +281,46 @@ public class CardHand : MonoBehaviour
             Quaternion cardRot = rotation * Quaternion.Euler(tilt, -angle, 0f);
 
             // TODO: Make the card fan not be awkwardly offset from the origin
-
-            heldCards[i].transform.localPosition = localPos;
-            heldCards[i].transform.rotation = cardRot;
+            StartCoroutine(Utils.AnimateTransform(heldCards[i].transform, localPos, cardRot, true, false, animate ? 0.5f : 0));
+            // heldCards[i].transform.localPosition = localPos;
+            // heldCards[i].transform.rotation = cardRot;
         }
     }
 
     // vertically stacked instead of fanned
-    protected void MakeCardNotFan() {
-        int cardCount = heldCards.Count;
-        if (cardCount == 0 || cardContainer == null) return;
+   protected void MakeCardNotFan(bool animate = false)
+{
+    int cardCount = heldCards.Count;
+    if (cardCount == 0 || cardContainer == null) return;
 
-        float startZOffset = 0;
-        float offsetStep = 0.5f;
+    float startZOffset = 0f;
+    float offsetStep = 0.004f;
 
-        for (int i = 0; i < cardCount; i++)
-        {
-            float offsetZ = startZOffset + offsetStep * i;
+    for (int i = 0; i < cardCount; i++)
+    {
+        float offsetZ = startZOffset + offsetStep * i;
 
-            Vector3 offset = transform.forward * offsetZ;
-            Vector3 localPos = offset * 0.008f;
+        Vector3 localPos = Vector3.forward * offsetZ;
 
-            Quaternion cardRot = transform.rotation;
-
-            heldCards[i].transform.localPosition = localPos;
-            heldCards[i].transform.rotation = cardRot;
-            heldCards[i].transform.localRotation = Quaternion.identity;
-
-        }
+        // heldCards[i].transform.localPosition = localPos;
+        // heldCards[i].transform.localRotation = Quaternion.identity;
+        StartCoroutine(Utils.AnimateTransform(heldCards[i].transform, localPos, Quaternion.identity, true, true, animate ? 1.5f : 0 ));
     }
+}
 
     public void Warpback()
     {
         transform.position = respawnAnchor.position;
         transform.rotation = respawnAnchor.rotation;
+    }
+
+    private float GetFanAngle(int cardCount)
+    {
+        if (cardCount <= 1) return 0f;
+
+        float anglePerCard = 15f;
+        float maxFanAngle = 115f;
+
+        return Mathf.Min(maxFanAngle, anglePerCard * (cardCount - 1));
     }
 }

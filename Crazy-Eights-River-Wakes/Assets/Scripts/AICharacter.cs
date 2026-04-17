@@ -180,4 +180,9 @@ public class AICharacter : BaseCharacter
         }
 
     }
+
+    public override Transform GetTransform()
+    {
+        return transform;
+    }
 }

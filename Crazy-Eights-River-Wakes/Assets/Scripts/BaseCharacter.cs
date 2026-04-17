@@ -140,6 +140,7 @@ public abstract class BaseCharacter : MonoBehaviour
 
     public void PlayCardToDeck(Card targetCard, CardDeck targetDeck, bool flying = false)
     {
+        AudioManager.Instance.Play(SoundName.PlaceCard, targetDeck.gameObject);
         RemoveCardFromOwned(targetCard);
         if (flying)
         {
@@ -217,6 +218,14 @@ public abstract class BaseCharacter : MonoBehaviour
     public virtual bool CardShouldFan()
     {
         return true;
+    }
+
+    // Transform is the CAMERA position for VR player
+    public abstract Transform GetTransform();
+
+    public virtual float GetCameraHeight()
+    {
+        return 0f;
     }
 
 }

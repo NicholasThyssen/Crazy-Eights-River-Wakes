@@ -19,6 +19,8 @@ public class HumanPlayer : BaseCharacter
 
     private int cardsDrawnThisRound = 0;
 
+    private Transform cameraTransform;
+
     //TESTING ONLY
     /*void Start()
     {
@@ -39,6 +41,7 @@ public class HumanPlayer : BaseCharacter
 
     void Awake()
     {
+        cameraTransform = GetComponentInChildren<Camera>().transform;
         Initialize();
     }
 
@@ -218,6 +221,17 @@ public class HumanPlayer : BaseCharacter
         {
             swapUI.Show(this, players);
         }
+    }
+
+    public override Transform GetTransform()
+    {
+        return cameraTransform;
+    }
+
+    public override float GetCameraHeight()
+    {
+        // return cameraTransform.localPosition.y;
+        return 1.3479f;
     }
 }
 

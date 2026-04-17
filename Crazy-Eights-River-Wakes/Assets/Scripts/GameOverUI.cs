@@ -7,8 +7,11 @@ public class GameOverUI : MonoBehaviour
 {
     public string mainMenuSceneName = "Scenes/Menu";
     public Button mainMenuBtn;
+    
     public GameObject winText;  // your "You Win!" text object
     public GameObject loseText; // your "You Lose!" text object
+
+    public Transform anchorPoint;
 
     private Canvas canvas;
 
@@ -27,13 +30,13 @@ public class GameOverUI : MonoBehaviour
 
     public void Show(bool playerWon)
     {
-        gameObject.SetActive(true); // activate first
-
         winText.SetActive(playerWon);
         loseText.SetActive(!playerWon);
 
-        PositionInFrontOfPlayer(); // now runs on an active object
+        PositionAtAnchor();
+        gameObject.SetActive(true);
     }
+
 
     private void OnMainMenuClicked()
     {
@@ -41,26 +44,19 @@ public class GameOverUI : MonoBehaviour
         SceneManager.LoadScene("Menu");
     }
 
-    private void PositionInFrontOfPlayer()
+    private void PositionAtAnchor()
     {
-        Camera cam = Camera.main;
-        if (cam == null)
-            cam = FindFirstObjectByType<Camera>();
-        if (cam == null)
+        if (anchorPoint == null)
         {
-            Debug.LogWarning("GameOverUI: no camera found, cam is null");
+            Debug.LogWarning("GameOverUI: No anchor point assigned.");
             return;
         }
 
-        Debug.Log("Camera found: " + cam.name + " at position: " + cam.transform.position);
+        transform.position = anchorPoint.position;
+        transform.rotation = anchorPoint.rotation;
 
         if (canvas != null)
-            canvas.worldCamera = cam;
-
-        transform.position = cam.transform.position + cam.transform.forward * 1.0f;
-        transform.LookAt(cam.transform);
-        transform.Rotate(0, 180, 0);
-
-        Debug.Log("Panel positioned at: " + transform.position);
+            canvas.worldCamera = Camera.main;
     }
+
 }

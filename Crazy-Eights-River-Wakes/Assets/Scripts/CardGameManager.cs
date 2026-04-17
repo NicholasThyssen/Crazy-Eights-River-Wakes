@@ -35,6 +35,7 @@ public class CardGameManager : MonoBehaviour
     public UnityEvent<BaseCharacter, SwapSelectionUI, List<BaseCharacter>> requestSwap;
 
     public GameOverUI gameOverUI;
+    private TurnIndicator turnIndicator;
 
     void Awake()
     {
@@ -79,7 +80,7 @@ public class CardGameManager : MonoBehaviour
 
     void Update() {
         
-        // TEMP TESTING — remove before shipping
+        // TEMP TESTING ï¿½ remove before shipping
         if ((Keyboard.current.digit3Key.wasPressedThisFrame))
         {
             Debug.Log("W pressed, gameOverUI = " + gameOverUI);
@@ -108,13 +109,13 @@ public class CardGameManager : MonoBehaviour
                 {
                     human.RemoveCardFromOwned(c); // removes from ownedCards AND CardHand
                 }
-                Debug.Log("Human cards cleared — hand: " + human.GetHandCards().Count + " owned: " + human.GetOwnedCardsCount());
+                Debug.Log("Human cards cleared ï¿½ hand: " + human.GetHandCards().Count + " owned: " + human.GetOwnedCardsCount());
                 CheckGameOver();
             }
         }
         /*if (Keyboard.current.digit6Key.wasPressedThisFrame)
         {
-            Debug.Log("Testing suit display update — setting suit to Hearts");
+            Debug.Log("Testing suit display update ï¿½ setting suit to Hearts");
             discardPile.UpdateTopCardSuitDisplay(CardSuit.Hearts);
         }*/
 
@@ -134,6 +135,10 @@ public class CardGameManager : MonoBehaviour
             discardPile.EnableAcceptSocket();
 
             currentPlayerTurn = players[currentTurnIdx];
+
+            // Spawn turn indicator and put it above currentPlayerTurn's head
+            this.turnIndicator = Instantiate(GlobalData.Instance.turnIndicatorPrefab, currentPlayerTurn.GetTransform()).GetComponent<TurnIndicator>();
+            turnIndicator.SetParent(currentPlayerTurn);
             beginPlayerTurn.Invoke(currentPlayerTurn);
         }        
     }
@@ -204,7 +209,7 @@ public class CardGameManager : MonoBehaviour
 
                 // Check win immediately after card is played
                 CheckGameOver();      // ? ADD
-                if (!enabled) return; // ? ADD — stop if game over
+                if (!enabled) return; // ? ADD ï¿½ stop if game over
 
                 HandleCardEffects(player, cardPlayed);
             }
@@ -335,6 +340,7 @@ public class CardGameManager : MonoBehaviour
 
             case CardRank.Skip:
                 currentTurnIdx = (currentTurnIdx + 1) % GetPlayers().Count;
+                AudioManager.Instance.Play(SoundName.Skip);
                 Debug.Log("Next player skipped!");
                 break;
 
@@ -344,10 +350,22 @@ public class CardGameManager : MonoBehaviour
                 break;
 
             case CardRank.PlusOne:
-                BaseCharacter next = GetPlayers()[(currentTurnIdx + 1) % GetPlayers().Count];
-                next.TeleportNewCardToHand(deck.Pop());
-                Debug.Log("Next player draws +1");
-                break;
+                
+                    int count = GetPlayers().Count;
+
+                    // Determine direction-aware next player
+                    int nextIndex = !reversed
+                        ? (currentTurnIdx + 1) % count
+                        : (currentTurnIdx - 1 + count) % count;
+
+                    BaseCharacter nextPlayer = GetPlayers()[nextIndex];
+
+                    // Give them a card
+                    nextPlayer.TeleportNewCardToHand(deck.Pop());
+
+                    Debug.Log("Next player draws +1 (direction-aware)");
+                    break;
+                
 
             case CardRank.Swap:
                 waitingForEffect = true;
@@ -415,22 +433,22 @@ public class CardGameManager : MonoBehaviour
 
         if (human == null) return;
 
-        // Lose — any AI has 0 cards
+        // Lose ï¿½ any AI has 0 cards
         foreach (BaseCharacter p in players)
         {
             if (p is AICharacter && p.GetOwnedCardsCount() == 0)
             {
-                Debug.Log("AI " + p.playerId + " won — human loses!");
+                Debug.Log("AI " + p.playerId + " won ï¿½ human loses!");
                 TriggerGameOver(false);
                 return;
             }
         }
 
-        // Win — check BOTH owned cards AND hand cards are 0
+        // Win ï¿½ check BOTH owned cards AND hand cards are 0
         bool handEmpty = human.GetHandCards().Count == 0;
         bool ownedEmpty = human.GetOwnedCardsCount() == 0;
 
-        Debug.Log("Win check — hand: " + human.GetHandCards().Count + " owned: " + human.GetOwnedCardsCount());
+        Debug.Log("Win check ï¿½ hand: " + human.GetHandCards().Count + " owned: " + human.GetOwnedCardsCount());
 
         if (handEmpty && ownedEmpty)
         {
@@ -461,6 +479,8 @@ public class CardGameManager : MonoBehaviour
             currentTurnIdx = (currentTurnIdx - 1 + count) % count;
 
         currentPlayerTurn = GetPlayers()[currentTurnIdx];
+        // move turn indicator
+        turnIndicator.SetParent(currentPlayerTurn);
         beginPlayerTurn.Invoke(currentPlayerTurn);
     }
 
@@ -499,6 +519,7 @@ public class CardGameManager : MonoBehaviour
         Debug.Log($"Playing {cardInHand.rank} of {cardInHand.suit}.");
         humanPlayer.OnCardSelected(cardInHand);
     }
+
 }
 
 public enum Suit
