@@ -508,7 +508,6 @@ public class CardGameManager : MonoBehaviour
         humanPlayer.OnCardSelected(cardInHand);
     }
 
-    // Moves the turn indicator onto a player
 }
 
 public enum Suit
