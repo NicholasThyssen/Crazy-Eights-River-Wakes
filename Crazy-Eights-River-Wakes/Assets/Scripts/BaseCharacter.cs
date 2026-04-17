@@ -220,4 +220,12 @@ public abstract class BaseCharacter : MonoBehaviour
         return true;
     }
 
+    // Transform is the CAMERA position for VR player
+    public abstract Transform GetTransform();
+
+    public virtual float GetCameraHeight()
+    {
+        return 0f;
+    }
+
 }
