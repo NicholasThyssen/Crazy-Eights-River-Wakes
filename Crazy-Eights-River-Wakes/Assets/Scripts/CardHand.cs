@@ -12,6 +12,7 @@ public class CardHand : MonoBehaviour
     public GameObject socketPrefab;
     public int maxHandSize = 20;
     public float fanSpread = 2.0f;
+    [SerializeField] private bool isFanned;
     private BaseCharacter owner;
     private Transform lastKnownSocketPosition;
     private List<Card> heldCards;
@@ -27,10 +28,56 @@ public class CardHand : MonoBehaviour
     public UnityEvent<Card> cardRemoved;
 
     private bool useSocketInteractions = true;
+    [SerializeField] private BoxCollider deckCollider;
+    private XRGrabInteractable parentGrab;
+
+    /* This is for a CRAZY trick I figured out for dealing with nested colliders
+        when deck is already grabbed in one hand, reduce its collider to be reeeeeeeally small.
+        This way it stays paired to the grabbing hand, but the other hand grabs the card instead of
+        re-grabbing the deck
+    */
+    [SerializeField] private float fannedColliderScale = 0.001f;
+
+    private Vector3 originalDeckColliderSize;
+    private Vector3 originalDeckColliderCenter;
+
+    // custom setter so that changing IsFanned in inspector actually fans/unfans
+    public bool IsFanned
+    {
+        get => isFanned;
+        set
+        {
+            isFanned = value;
+
+            if (isFanned)
+            {
+                MakeCardFan();
+            }
+            else
+            {
+                MakeCardNotFan();
+            }
+        }
+    }
 
     void Awake()
     {
         InitializeHand();
+        parentGrab = GetComponent<XRGrabInteractable>();
+        if (deckCollider != null)
+        {
+            originalDeckColliderSize = deckCollider.size;
+            originalDeckColliderCenter = deckCollider.center;
+        }
+
+        parentGrab.selectEntered.AddListener(OnDeckGrabbed);
+        parentGrab.selectExited.AddListener(OnDeckReleased);
+        isFanned = false;
+    }
+
+    void OnValidate()
+    {
+        IsFanned = isFanned;
     }
 
     public void InitializeHand()
@@ -94,6 +141,10 @@ public class CardHand : MonoBehaviour
         else {
             MakeCardNotFan();
         }
+
+        // ignore collisions between CardHand and cards. Stops weird self-intersecting collisions
+        Collider collider = GetComponent<Collider>();
+        Physics.IgnoreCollision(collider, targetCard.GetComponent<Collider>());
 
         cardAdded.Invoke(targetCard);
     }
@@ -254,8 +305,9 @@ public class CardHand : MonoBehaviour
     
 
     // Use fanAngleOverride getFanAngle(cardsCount-1) if you want to add a card to deck without moving the other cards
-    public void MakeCardFan(bool animate = true, float fanAngleOverride=-1f)
+    public void MakeCardFan(bool animate = true, float fanAngleOverride = -1f)
     {
+        Debug.Log("FANNING");
         int cardCount = heldCards.Count;
         if (cardCount == 0 || cardContainer == null) return;
 
@@ -267,14 +319,14 @@ public class CardHand : MonoBehaviour
         Quaternion rotation = cardContainer.rotation;
 
         float startAngle = -fanAngle / 2f;
-        float angleStep = cardCount > 1 ? fanAngle / (cardCount - 1) : 0;
+        float angleStep = cardCount > 1 ? fanAngle / (cardCount - 1) : 0f;
 
         for (int i = 0; i < cardCount; i++)
         {
             float angle = startAngle + angleStep * i;
 
             // Position cards in an arc
-            Vector3 offset = Quaternion.Euler(0, angle, 0) * (Vector3.forward * radius);
+            Vector3 offset = Quaternion.Euler(0f, angle, 0f) * (Vector3.forward * radius);
             Vector3 localPos = rotation * offset * 0.5f;
 
             // IMPORTANT FIX: rotate inward, not outward
@@ -285,28 +337,97 @@ public class CardHand : MonoBehaviour
             // heldCards[i].transform.localPosition = localPos;
             // heldCards[i].transform.rotation = cardRot;
         }
+        ShrinkDeckCollider();
+
+        XRGrabInteractable[] childGrabs = GetComponentsInChildren<XRGrabInteractable>(true);
+        foreach (var childGrab in childGrabs)
+        {
+            if (childGrab == parentGrab) continue;
+
+            // make sure all children (cards) are grabbable
+            childGrab.enabled = true;
+            childGrab.interactionLayers = GameManager.instance.grabbableLayer;
+        }
+
     }
 
     // vertically stacked instead of fanned
-   protected void MakeCardNotFan(bool animate = false)
-{
-    int cardCount = heldCards.Count;
-    if (cardCount == 0 || cardContainer == null) return;
-
-    float startZOffset = 0f;
-    float offsetStep = 0.004f;
-
-    for (int i = 0; i < cardCount; i++)
+    protected void MakeCardNotFan(bool animate = false)
     {
-        float offsetZ = startZOffset + offsetStep * i;
+        Debug.Log("UNFANNING");
+        int cardCount = heldCards.Count;
+        if (cardCount == 0 || cardContainer == null) return;
 
-        Vector3 localPos = Vector3.forward * offsetZ;
+        float startZOffset = 0f;
+        float offsetStep = 0.004f;
 
-        // heldCards[i].transform.localPosition = localPos;
-        // heldCards[i].transform.localRotation = Quaternion.identity;
-        StartCoroutine(Utils.AnimateTransform(heldCards[i].transform, localPos, Quaternion.identity, true, true, animate ? 1.5f : 0 ));
+        for (int i = 0; i < cardCount; i++)
+        {
+            float offsetZ = startZOffset + offsetStep * i;
+
+            Vector3 localPos = Vector3.forward * offsetZ;
+
+            StartCoroutine(Utils.AnimateTransform(heldCards[i].transform, localPos, Quaternion.identity, true, true, animate ? 1.5f : 0 ));
+        }
+
+        RestoreDeckCollider();
+
+        XRGrabInteractable[] childGrabs = GetComponentsInChildren<XRGrabInteractable>(true);
+        foreach (var childGrab in childGrabs)
+        {
+            if (childGrab == parentGrab) continue;
+
+            // individual cards should not be grabbable while not fanned
+            childGrab.enabled = false;
+            childGrab.interactionLayers = GameManager.instance.notGrabbableLayer;
+        }
     }
-}
+
+    private void OnDeckGrabbed(SelectEnterEventArgs args)
+    {
+        Debug.Log("DECK GRABBED");
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.isKinematic = true;
+        rb.useGravity = false;
+        StartCoroutine(FanNextFrame());
+    }
+
+    private IEnumerator FanNextFrame()
+    {
+        yield return null;
+        MakeCardFan();
+    }
+
+    private IEnumerator UnFanNextFrame()
+    {
+        yield return null;
+        MakeCardNotFan();
+    }
+
+    private void OnDeckReleased(SelectExitEventArgs args)
+    {
+        Debug.Log("DECK RELEASED");
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.isKinematic = false;
+        rb.useGravity = true;
+        StartCoroutine(UnFanNextFrame());
+    }
+
+    private void ShrinkDeckCollider()
+    {
+        if (deckCollider == null) return;
+
+        deckCollider.size = originalDeckColliderSize * fannedColliderScale;
+        deckCollider.center = originalDeckColliderCenter;
+    }
+
+    private void RestoreDeckCollider()
+    {
+        if (deckCollider == null) return;
+
+        deckCollider.size = originalDeckColliderSize;
+        deckCollider.center = originalDeckColliderCenter;
+    }
 
     public void Warpback()
     {
@@ -322,5 +443,10 @@ public class CardHand : MonoBehaviour
         float maxFanAngle = 115f;
 
         return Mathf.Min(maxFanAngle, anglePerCard * (cardCount - 1));
+    }
+
+    [HideInInspector] public bool GetIsFanned()
+    {
+        return this.isFanned;
     }
 }
