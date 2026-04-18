@@ -233,5 +233,14 @@ public class HumanPlayer : BaseCharacter
         // return cameraTransform.localPosition.y;
         return 1.3479f;
     }
+
+    public override bool CardShouldFan()
+    {
+        if (this.playerHand)
+        {
+            return this.playerHand.GetIsFanned();
+        }
+        return false;
+    }
 }
 

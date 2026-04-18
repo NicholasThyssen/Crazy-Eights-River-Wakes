@@ -215,10 +215,7 @@ public abstract class BaseCharacter : MonoBehaviour
         
     }
 
-    public virtual bool CardShouldFan()
-    {
-        return true;
-    }
+    public abstract bool CardShouldFan();
 
     // Transform is the CAMERA position for VR player
     public abstract Transform GetTransform();

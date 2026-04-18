@@ -4,18 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class GameManager : MonoBehaviour
 {
     public GameState gameState;
     [HideInInspector] public static GameManager instance;
     [HideInInspector] public List<BaseCharacter> characters;
+    [HideInInspector] public InteractionLayerMask grabbableLayer;
+    [HideInInspector] public InteractionLayerMask notGrabbableLayer;
 
     private void Awake()
     {
         instance = this;
         gameState = GameState.Default;
         characters = BuildCharactersArray();
+        grabbableLayer = InteractionLayerMask.GetMask("Grabbable");
+        notGrabbableLayer = InteractionLayerMask.GetMask("Not Grabbable");
     }
 
     public List<BaseCharacter> BuildCharactersArray()
