@@ -329,9 +329,6 @@ public class CardHand : MonoBehaviour
         float radius = 0.45f;
         float tilt = 15f;
 
-        Vector3 center = cardContainer.position;
-        Quaternion rotation = cardContainer.rotation;
-
         float startAngle = -fanAngle / 2f;
         float angleStep = cardCount > 1 ? fanAngle / (cardCount - 1) : 0f;
 
@@ -340,17 +337,24 @@ public class CardHand : MonoBehaviour
             float angle = startAngle + angleStep * i;
 
             // Position cards in an arc
-            Vector3 offset = Quaternion.Euler(0f, angle, 0f) * (Vector3.forward * radius);
-            Vector3 localPos = rotation * offset * 0.5f;
+            Vector3 offset = Quaternion.Euler(0f, angle, 0f) * (Vector3.back * radius);
+            Vector3 localPos = offset * 0.5f + Vector3.forward * 0.225f;
 
-            // IMPORTANT FIX: rotate inward, not outward
-            Quaternion cardRot = rotation * Quaternion.Euler(tilt, -angle, 0f);
+            Quaternion localRot = Quaternion.Euler(tilt, angle, 0f);
 
-            // TODO: Make the card fan not be awkwardly offset from the origin
-            StartCoroutine(Utils.AnimateTransform(heldCards[i].transform, localPos, cardRot, true, false, animate ? 0.5f : 0));
-            // heldCards[i].transform.localPosition = localPos;
-            // heldCards[i].transform.rotation = cardRot;
+            StartCoroutine(
+
+                Utils.AnimateTransform(
+                    heldCards[i].transform,
+                    localPos,
+                    localRot,
+                    true,
+                    true,
+                    animate ? 0.5f : 0f
+                )
+            );
         }
+
         ShrinkDeckCollider();
 
         XRGrabInteractable[] childGrabs = GetComponentsInChildren<XRGrabInteractable>(true);
@@ -381,7 +385,16 @@ public class CardHand : MonoBehaviour
 
             Vector3 localPos = Vector3.forward * offsetZ;
 
-            StartCoroutine(Utils.AnimateTransform(heldCards[i].transform, localPos, Quaternion.identity, true, true, animate ? 1.5f : 0 ));
+            StartCoroutine(
+                Utils.AnimateTransform(
+                    heldCards[i].transform,
+                    localPos,
+                    Quaternion.identity,
+                    true,
+                    true,
+                    animate ? 1.5f : 0f
+                )
+            );
         }
 
         RestoreDeckCollider();
@@ -486,7 +499,7 @@ public class CardHand : MonoBehaviour
     {
         if (cardCount <= 1) return 0f;
 
-        float anglePerCard = 15f;
+        float anglePerCard = 20f;
         float maxFanAngle = 115f;
 
         return Mathf.Min(maxFanAngle, anglePerCard * (cardCount - 1));
