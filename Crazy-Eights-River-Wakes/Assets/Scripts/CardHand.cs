@@ -355,7 +355,7 @@ public class CardHand : MonoBehaviour
     protected void MakeCardNotFan(bool animate = false)
     {
         Debug.Log("UNFANNING");
-        int cardCount = heldCards.Count;
+        int cardCount = heldCards?.Count ?? 0;
         if (cardCount == 0 || cardContainer == null) return;
 
         float startZOffset = 0f;
