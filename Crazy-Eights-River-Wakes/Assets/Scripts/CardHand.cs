@@ -360,7 +360,7 @@ public class CardHand : MonoBehaviour
 
             // make sure all children (cards) are grabbable
             childGrab.enabled = true;
-            childGrab.interactionLayers = GameManager.instance.grabbableLayer;
+            SetChildGrabLayerState(childGrab, true);
         }
 
     }
@@ -393,8 +393,27 @@ public class CardHand : MonoBehaviour
 
             // individual cards should not be grabbable while not fanned
             childGrab.enabled = false;
-            childGrab.interactionLayers = GameManager.instance.notGrabbableLayer;
+            SetChildGrabLayerState(childGrab, false);
         }
+    }
+
+    // switches between the "grabbable" and "not grabbale" layer without affecting other layers
+    private void SetChildGrabLayerState(XRGrabInteractable childGrab, bool isGrabbable)
+    {
+        int currentLayers = childGrab.interactionLayers.value;
+        int grabbableLayer = GameManager.instance.grabbableLayer.value;
+        int notGrabbableLayer = GameManager.instance.notGrabbableLayer.value;
+
+        // remove both Grabbale and NotGrabbable layers
+        currentLayers &= ~grabbableLayer;
+        currentLayers &= ~notGrabbableLayer;
+
+        currentLayers |= isGrabbable ? grabbableLayer : notGrabbableLayer;
+
+        // add new currentLayers to a mask and apply that mask
+        InteractionLayerMask newMask = new InteractionLayerMask();
+        newMask.value = currentLayers;
+        childGrab.interactionLayers = newMask;
     }
 
     private void OnDeckGrabbed(SelectEnterEventArgs args)
