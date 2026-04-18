@@ -29,18 +29,9 @@ public class CardHand : MonoBehaviour
     public UnityEvent<Card> cardRemoved;
 
     private bool useSocketInteractions = true;
-    [SerializeField] private BoxCollider deckCollider;
     private XRGrabInteractable parentGrab;
 
-    /* This is for a CRAZY trick I figured out for dealing with nested colliders
-        when deck is already grabbed in one hand, reduce its collider to be reeeeeeeally small.
-        This way it stays paired to the grabbing hand, but the other hand grabs the card instead of
-        re-grabbing the deck
-    */
-    [SerializeField] private float fannedColliderScale = 0.001f;
-
-    private Vector3 originalDeckColliderSize;
-    private Vector3 originalDeckColliderCenter;
+    private BoxCollider boxCollider;
 
     // custom setter so that changing IsFanned in inspector actually fans/unfans
     public bool IsFanned
@@ -65,14 +56,10 @@ public class CardHand : MonoBehaviour
     {
         InitializeHand();
         parentGrab = GetComponent<XRGrabInteractable>();
-        if (deckCollider != null)
-        {
-            originalDeckColliderSize = deckCollider.size;
-            originalDeckColliderCenter = deckCollider.center;
-        }
 
         parentGrab.selectEntered.AddListener(OnDeckGrabbed);
         parentGrab.selectExited.AddListener(OnDeckReleased);
+        boxCollider = GetComponent<BoxCollider>();
         isFanned = false;
     }
 
@@ -156,9 +143,15 @@ public class CardHand : MonoBehaviour
             MakeCardNotFan();
         }
 
+        UpdateCollider();   // size of hand grows when cards are added
+
         // ignore collisions between CardHand and cards. Stops weird self-intersecting collisions
         Collider collider = GetComponent<Collider>();
-        Physics.IgnoreCollision(collider, targetCard.GetComponent<Collider>());
+        if (collider)
+        {
+            Physics.IgnoreCollision(collider, targetCard.GetComponent<Collider>());
+        }
+        
 
         cardAdded.Invoke(targetCard);
     }
@@ -206,6 +199,8 @@ public class CardHand : MonoBehaviour
         else {
             MakeCardNotFan();
         }
+
+        UpdateCollider();   // size of deck (hand) shrinks when cards are removed
 
         cardRemoved.Invoke(targetCard);
     }
@@ -322,6 +317,7 @@ public class CardHand : MonoBehaviour
     public void MakeCardFan(bool animate = true, float fanAngleOverride = -1f)
     {
         Debug.Log("FANNING");
+        isFanned = true;
         int cardCount = heldCards.Count;
         if (cardCount == 0 || cardContainer == null) return;
 
@@ -355,7 +351,7 @@ public class CardHand : MonoBehaviour
             );
         }
 
-        ShrinkDeckCollider();
+        UpdateCollider();   // shrinks collider to size 0 so player doesn't grab this deck with other hand
 
         XRGrabInteractable[] childGrabs = GetComponentsInChildren<XRGrabInteractable>(true);
         foreach (var childGrab in childGrabs)
@@ -373,6 +369,7 @@ public class CardHand : MonoBehaviour
     protected void MakeCardNotFan(bool animate = false)
     {
         Debug.Log("UNFANNING");
+        isFanned = false;
         int cardCount = heldCards?.Count ?? 0;
         if (cardCount == 0 || cardContainer == null) return;
 
@@ -397,7 +394,7 @@ public class CardHand : MonoBehaviour
             );
         }
 
-        RestoreDeckCollider();
+        UpdateCollider();
 
         XRGrabInteractable[] childGrabs = GetComponentsInChildren<XRGrabInteractable>(true);
         foreach (var childGrab in childGrabs)
@@ -459,21 +456,6 @@ public class CardHand : MonoBehaviour
         StartCoroutine(UnFanNextFrame());
     }
 
-    private void ShrinkDeckCollider()
-    {
-        if (deckCollider == null) return;
-
-        deckCollider.size = originalDeckColliderSize * fannedColliderScale;
-        deckCollider.center = originalDeckColliderCenter;
-    }
-
-    private void RestoreDeckCollider()
-    {
-        if (deckCollider == null) return;
-
-        deckCollider.size = originalDeckColliderSize;
-        deckCollider.center = originalDeckColliderCenter;
-    }
 
     public void Warpback()
     {
@@ -509,4 +491,33 @@ public class CardHand : MonoBehaviour
     {
         return this.isFanned;
     }
+
+    private void UpdateCollider()
+    {
+        Renderer[] renderers = GetComponentsInChildren<Renderer>();
+
+        if (renderers.Length == 0 || isFanned)
+        {
+            boxCollider.size = Vector3.zero;
+            return;
+        }
+
+        Bounds bounds = renderers[0].bounds;
+
+        for (int i = 1; i < renderers.Length; i++)
+        {
+            bounds.Encapsulate(renderers[i].bounds);
+        }
+
+        // Convert world bounds to local
+        Vector3 localCenter = transform.InverseTransformPoint(bounds.center);
+        Vector3 localSize = transform.InverseTransformVector(bounds.size);
+
+        // add some padding just in case collider gets blocked by child colliders?
+        Vector3 padding = new Vector3(0.004f, 0.04f, 0.04f);
+        boxCollider.center = localCenter;
+        boxCollider.size = localSize + padding;
+    }
+
+
 }
