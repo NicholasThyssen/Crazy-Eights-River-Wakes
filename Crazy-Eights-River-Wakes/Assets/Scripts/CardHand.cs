@@ -337,10 +337,10 @@ public class CardHand : MonoBehaviour
             float angle = startAngle + angleStep * i;
 
             // Position cards in an arc
-            Vector3 offset = Quaternion.Euler(0f, angle, 0f) * (Vector3.forward * radius);
-            Vector3 localPos = offset * 0.5f;
+            Vector3 offset = Quaternion.Euler(0f, angle, 0f) * (Vector3.back * radius);
+            Vector3 localPos = offset * 0.5f + Vector3.forward * 0.225f;
 
-            Quaternion localRot = Quaternion.Euler(tilt, -angle, 0f);
+            Quaternion localRot = Quaternion.Euler(tilt, angle, 0f);
 
             StartCoroutine(
 
@@ -499,7 +499,7 @@ public class CardHand : MonoBehaviour
     {
         if (cardCount <= 1) return 0f;
 
-        float anglePerCard = 15f;
+        float anglePerCard = 20f;
         float maxFanAngle = 115f;
 
         return Mathf.Min(maxFanAngle, anglePerCard * (cardCount - 1));
