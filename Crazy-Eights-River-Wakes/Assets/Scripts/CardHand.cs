@@ -21,6 +21,7 @@ public class CardHand : MonoBehaviour
     private Rigidbody rb;
     private Transform cardContainer;
     private Transform respawnAnchor;
+    public int maxDistanceFromSpawn = 5;
 
     public Card socketIgnoreCard;
 
@@ -73,6 +74,19 @@ public class CardHand : MonoBehaviour
         parentGrab.selectEntered.AddListener(OnDeckGrabbed);
         parentGrab.selectExited.AddListener(OnDeckReleased);
         isFanned = false;
+    }
+
+    void Update()
+    {
+        // If the hand has a spawn anchor, check distance and warp back if too far
+        if (respawnAnchor == null) return;
+
+        float dist = Vector3.Distance(transform.position, respawnAnchor.position);
+        if (dist > maxDistanceFromSpawn)
+        {
+            Debug.Log($"CardHand strayed {dist:F1}m from spawn — warping back.");
+            Warpback();
+        }
     }
 
     void OnValidate()
@@ -346,7 +360,7 @@ public class CardHand : MonoBehaviour
 
             // make sure all children (cards) are grabbable
             childGrab.enabled = true;
-            childGrab.interactionLayers = GameManager.instance.grabbableLayer;
+            SetChildGrabLayerState(childGrab, true);
         }
 
     }
@@ -379,8 +393,27 @@ public class CardHand : MonoBehaviour
 
             // individual cards should not be grabbable while not fanned
             childGrab.enabled = false;
-            childGrab.interactionLayers = GameManager.instance.notGrabbableLayer;
+            SetChildGrabLayerState(childGrab, false);
         }
+    }
+
+    // switches between the "grabbable" and "not grabbale" layer without affecting other layers
+    private void SetChildGrabLayerState(XRGrabInteractable childGrab, bool isGrabbable)
+    {
+        int currentLayers = childGrab.interactionLayers.value;
+        int grabbableLayer = GameManager.instance.grabbableLayer.value;
+        int notGrabbableLayer = GameManager.instance.notGrabbableLayer.value;
+
+        // remove both Grabbale and NotGrabbable layers
+        currentLayers &= ~grabbableLayer;
+        currentLayers &= ~notGrabbableLayer;
+
+        currentLayers |= isGrabbable ? grabbableLayer : notGrabbableLayer;
+
+        // add new currentLayers to a mask and apply that mask
+        InteractionLayerMask newMask = new InteractionLayerMask();
+        newMask.value = currentLayers;
+        childGrab.interactionLayers = newMask;
     }
 
     private void OnDeckGrabbed(SelectEnterEventArgs args)
@@ -431,8 +464,22 @@ public class CardHand : MonoBehaviour
 
     public void Warpback()
     {
+        if (respawnAnchor == null)
+        {
+            Debug.LogWarning("CardHand.Warpback: no respawnAnchor set.");
+            return;
+        }
+
+        // Stop all motion before teleporting
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
+
         transform.position = respawnAnchor.position;
         transform.rotation = respawnAnchor.rotation;
+        Debug.Log("CardHand warped back to spawn.");
     }
 
     private float GetFanAngle(int cardCount)
