@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System.Collections;
 
 public class SuitSelectionUI : MonoBehaviour
 {
@@ -11,6 +13,8 @@ public class SuitSelectionUI : MonoBehaviour
 
     private BaseCharacter requestingPlayer;
     private Canvas canvas;
+
+    public TMPro.TMP_Text announcementText;
 
     void Awake()
     {
@@ -61,4 +65,30 @@ public class SuitSelectionUI : MonoBehaviour
         if (canvas != null)
             canvas.worldCamera = Camera.main;
     }
+
+    public void ShowAnnouncement(CardSuit suit, float duration = 3f)
+    {
+        if (announcementText != null)
+            announcementText.text = "Suit changed to: " + suit.ToString();
+
+        heartsBtn.gameObject.SetActive(false);
+        clubsBtn.gameObject.SetActive(false);
+        spadesBtn.gameObject.SetActive(false);
+        diamondsBtn.gameObject.SetActive(false);
+
+        PositionAtAnchor();
+        gameObject.SetActive(true);
+        StartCoroutine(AutoHide(duration));
+    }
+
+    private IEnumerator AutoHide(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        heartsBtn.gameObject.SetActive(true);
+        clubsBtn.gameObject.SetActive(true);
+        spadesBtn.gameObject.SetActive(true);
+        diamondsBtn.gameObject.SetActive(true);
+        Hide();
+    }
+
 }

@@ -113,11 +113,11 @@ public class CardGameManager : MonoBehaviour
                 CheckGameOver();
             }
         }
-        /*if (Keyboard.current.digit6Key.wasPressedThisFrame)
+        if (Keyboard.current.digit6Key.wasPressedThisFrame)
         {
-            Debug.Log("Testing suit display update � setting suit to Hearts");
-            discardPile.UpdateTopCardSuitDisplay(CardSuit.Hearts);
-        }*/
+            suitUI.ShowAnnouncement(CardSuit.Hearts, 10f);
+        }
+       
 
     }
 
@@ -394,6 +394,7 @@ public class CardGameManager : MonoBehaviour
             Debug.Log("Suit chosen: " + chosenSuit);
 
             discardPile.UpdateTopCardSuitDisplay(chosenSuit); // ? ADD
+            suitUI.ShowAnnouncement(chosenSuit, 3f);
 
             ContinueTurnAfterEffect();
         }
@@ -405,6 +406,10 @@ public class CardGameManager : MonoBehaviour
         {
             currentPlayerTurn.SwapCardsWithPlayer(target);
             Debug.Log("Swapped hands with: " + target.name);
+
+            // Chould make sure that when sawp played, discard pile updates to show card on top
+            discardPile.UpdateCardBlob();
+
             ContinueTurnAfterEffect();
         }
     }

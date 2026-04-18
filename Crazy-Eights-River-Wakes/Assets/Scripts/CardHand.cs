@@ -108,13 +108,38 @@ public class CardHand : MonoBehaviour
         List<Card> replacedCards = new List<Card>(heldCards);
         foreach (Card c in replacedCards)
         {
-            RemoveCardFromHand(c);
+            RemoveCardFromHand(c, skipFanRefresh: true); // ✅ skip fan refresh
         }
         heldCards.Clear();
-        
         StartCoroutine(reenableSocket());
-
         return replacedCards;
+    }
+
+    public void RemoveCardFromHand(Card targetCard, bool skipFanRefresh = false)
+    {
+        var grabInteractable = targetCard.GetComponent<XRGrabInteractable>();
+        if (grabInteractable != null)
+            grabInteractable.selectEntered.RemoveAllListeners();
+
+        heldCards.Remove(targetCard);
+        targetCard.transform.SetParent(null);
+        targetCard.gameObject.SetActive(false);
+
+        if (mainSocket != null && mainSocket.gameObject.activeSelf)
+        {
+            mainSocket.gameObject.SetActive(false);
+            mainSocket.gameObject.SetActive(true);
+        }
+
+        if (!skipFanRefresh) // ✅ only refresh fan when needed
+        {
+            if (owner.CardShouldFan())
+                MakeCardFan();
+            else
+                MakeCardNotFan();
+        }
+
+        cardRemoved.Invoke(targetCard);
     }
 
     IEnumerator reenableSocket()
