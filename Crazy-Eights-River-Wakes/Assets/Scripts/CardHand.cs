@@ -21,6 +21,7 @@ public class CardHand : MonoBehaviour
     private Rigidbody rb;
     private Transform cardContainer;
     private Transform respawnAnchor;
+    public int maxDistanceFromSpawn = 5;
 
     public Card socketIgnoreCard;
 
@@ -73,6 +74,19 @@ public class CardHand : MonoBehaviour
         parentGrab.selectEntered.AddListener(OnDeckGrabbed);
         parentGrab.selectExited.AddListener(OnDeckReleased);
         isFanned = false;
+    }
+
+    void Update()
+    {
+        // If the hand has a spawn anchor, check distance and warp back if too far
+        if (respawnAnchor == null) return;
+
+        float dist = Vector3.Distance(transform.position, respawnAnchor.position);
+        if (dist > maxDistanceFromSpawn)
+        {
+            Debug.Log($"CardHand strayed {dist:F1}m from spawn — warping back.");
+            Warpback();
+        }
     }
 
     void OnValidate()
@@ -431,8 +445,22 @@ public class CardHand : MonoBehaviour
 
     public void Warpback()
     {
+        if (respawnAnchor == null)
+        {
+            Debug.LogWarning("CardHand.Warpback: no respawnAnchor set.");
+            return;
+        }
+
+        // Stop all motion before teleporting
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
+
         transform.position = respawnAnchor.position;
         transform.rotation = respawnAnchor.rotation;
+        Debug.Log("CardHand warped back to spawn.");
     }
 
     private float GetFanAngle(int cardCount)
