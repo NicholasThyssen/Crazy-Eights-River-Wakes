@@ -987,6 +987,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameState: 0
   characters: []
+  grabbableLayer:
+    m_Bits: 0
+  notGrabbableLayer:
+    m_Bits: 0
 --- !u!4 &488511286
 Transform:
   m_ObjectHideFlags: 0
@@ -1857,7 +1861,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3589948439351952342, guid: bf6aa98837b1acb409b31fa040b4661f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.13047981
+      value: -1.039
       objectReference: {fileID: 0}
     - target: {fileID: 3589948439351952342, guid: bf6aa98837b1acb409b31fa040b4661f, type: 3}
       propertyPath: m_LocalRotation.w
