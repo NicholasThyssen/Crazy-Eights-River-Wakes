@@ -40,14 +40,16 @@ public class SwapSelectionUI : MonoBehaviour
 
             GameObject btnObj = Instantiate(buttonPrefab, buttonContainer);
 
+            string label = p.name + " (" + p.GetOwnedCardsCount() + " cards)";
+
             // Support both legacy Text and TextMeshPro
             var legacyText = btnObj.GetComponentInChildren<Text>();
             if (legacyText != null)
-                legacyText.text = p.name;
+                legacyText.text = label;
 
             var tmpText = btnObj.GetComponentInChildren<TMP_Text>();
             if (tmpText != null)
-                tmpText.text = p.name;
+                tmpText.text = label;
 
             BaseCharacter captured = p;
             btnObj.GetComponent<Button>().onClick.AddListener(() => Choose(captured));

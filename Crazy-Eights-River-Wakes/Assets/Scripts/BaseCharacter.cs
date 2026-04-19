@@ -155,8 +155,12 @@ public abstract class BaseCharacter : MonoBehaviour
     public void SwapCardsWithPlayer(BaseCharacter other)
     {
         CardHand otherHand = other.GetHandObject();
-        List<Card> myCards = new List<Card>(playerHand.PopAllCards());   // ? copy
-        List<Card> otherCards = new List<Card>(otherHand.PopAllCards()); // ? copy
+        List<Card> myCards = new List<Card>(playerHand.PopAllCards());
+        List<Card> otherCards = new List<Card>(otherHand.PopAllCards());
+
+        // Fixes swap cards to show top of deck
+        foreach (Card c in myCards) c.gameObject.SetActive(true);
+        foreach (Card c in otherCards) c.gameObject.SetActive(true);
 
         SetOwnedCards(otherCards);
         other.SetOwnedCards(myCards);
