@@ -230,5 +230,5 @@ public abstract class BaseCharacter : MonoBehaviour
         return 0f;
     }
 
-    public List<Card> GetPlayableCards() => playerHand.GetHeldCards().Where(x => CardGameManager.instance.CanPlayCard(x)).ToList();
+    public List<Card> GetPlayableCards() => GetOwnedCards().Where(x => CardGameManager.instance.CanPlayCard(x)).ToList();
 }
