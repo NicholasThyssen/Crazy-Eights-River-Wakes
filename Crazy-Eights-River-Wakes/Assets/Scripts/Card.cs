@@ -216,27 +216,32 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     private void OnCardGrabbed(SelectEnterEventArgs args)
     {
-        if (owner == null)
-        {
-            Debug.Log("Card grabbed from deck: " + name);
+        Debug.Log($"card {gameObject.name} grabbed by {args.interactorObject.transform.name}");
 
-            BaseCharacter current = CardGameManager.instance.GetCurrentPlayer();
+        // I removed the code below because it was teleporting card back to hand after it was played
+        // and I don't think its needed anymore
 
-            CardGameManager.instance.deck.RemoveCard(this); // remove from deck
+        // if (owner == null)
+        // {
+        //     Debug.Log("Card grabbed from deck: " + name);
 
-            current.TeleportNewCardToHand(this);
+        //     BaseCharacter current = CardGameManager.instance.GetCurrentPlayer();
 
-            StoreOriginalPosition();
-            DisableGrab();
+        //     CardGameManager.instance.deck.RemoveCard(this); // remove from deck
 
-            // ? ADD THIS � grabbing from deck ends your turn
-            HumanPlayer human = current as HumanPlayer;
-            if (human != null && CardGameManager.instance.IsPlayerTurn(human))
-            {
-                human.IncrementCardDraws();
-                human.EndTurn();
-            }
-        }
+        //     current.TeleportNewCardToHand(this);
+
+        //     StoreOriginalPosition();
+        //     DisableGrab();
+
+        //     // ? ADD THIS � grabbing from deck ends your turn
+        //     HumanPlayer human = current as HumanPlayer;
+        //     if (human != null && CardGameManager.instance.IsPlayerTurn(human))
+        //     {
+        //         human.IncrementCardDraws();
+        //         human.EndTurn();
+        //     }
+        // }
     }
 
     // In Card.cs � add this public method

@@ -148,6 +148,10 @@ public class HumanPlayer : BaseCharacter
         Card drawnCard = CardGameManager.instance.deck.Pop();
         TeleportNewCardToHand(drawnCard);
         // Optionally, check if the drawn card is playable and allow immediate play
+        if (GetPlayableCards().Count < 1)
+        {
+            EndTurn();
+        }
     }
 
     public override void TryPlayCard(Card selectedCard)
