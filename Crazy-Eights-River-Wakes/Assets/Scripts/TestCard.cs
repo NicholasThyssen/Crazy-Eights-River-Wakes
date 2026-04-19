@@ -32,44 +32,42 @@ public class TestCard : Card
     {
         isBeingHeld = true;
         currentlyHeld = true;
-        controllerVelocity = Vector3.zero;
-        lastControllerPos = args.interactorObject.transform.position;
+        // controllerVelocity = Vector3.zero;
+        // lastControllerPos = args.interactorObject.transform.position;
 
-        grab.trackPosition = false;
-        grab.trackRotation = false;
+        grab.trackPosition = true;
+        grab.trackRotation = true;
+        grab.movementType = UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.MovementType.VelocityTracking;
 
-        Transform controllerTransform = args.interactorObject.transform;
-        transform.SetParent(controllerTransform, true);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.Euler(0, 180, 0);
+        // Transform controllerTransform = args.interactorObject.transform;
+        // transform.SetParent(controllerTransform, true);
+        // transform.localPosition = Vector3.zero;
+        // transform.localRotation = Quaternion.Euler(0, 180, 0);
     }
 
     private void OnCardReleased(UnityEngine.XR.Interaction.Toolkit.SelectExitEventArgs args)
     {
+        EnablePhysics();
         isBeingHeld = false;
         currentlyHeld = false; // ? ADD
-
-        grab.trackPosition = true;
-        grab.trackRotation = true;
-
         transform.SetParent(null, true);
-        EnablePhysics();
-        rb.linearVelocity = controllerVelocity;
+        // EnablePhysics();
+        // rb.linearVelocity = controllerVelocity;
     }
 
     private void Update()
     {
-        if (isBeingHeld && grab.interactorsSelecting.Count > 0)
-        {
-            Transform controllerTransform = grab.interactorsSelecting[0].transform;
+        // if (isBeingHeld && grab.interactorsSelecting.Count > 0)
+        // {
+        //     Transform controllerTransform = grab.interactorsSelecting[0].transform;
 
-            transform.position = controllerTransform.position;
-            transform.rotation = controllerTransform.rotation * Quaternion.Euler(0, 180, 0);
+        //     transform.position = controllerTransform.position;
+        //     transform.rotation = controllerTransform.rotation * Quaternion.Euler(0, 180, 0);
 
-            // No threshold — track all movement
-            controllerVelocity = (controllerTransform.position - lastControllerPos) / Time.deltaTime;
-            lastControllerPos = controllerTransform.position;
-        }
+        //     // No threshold ï¿½ track all movement
+        //     controllerVelocity = (controllerTransform.position - lastControllerPos) / Time.deltaTime;
+        //     lastControllerPos = controllerTransform.position;
+        // }
     }
 
     public void UpdateSuitDisplay(CardSuit newSuit)

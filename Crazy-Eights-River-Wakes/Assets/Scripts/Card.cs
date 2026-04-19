@@ -73,13 +73,13 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         }
 
         // ? ADD: while held by controller, force kinematic every frame
-        if (currentlyHeld)
-        {
-            rb.isKinematic = true;
-            rb.useGravity = false;
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
+        // if (currentlyHeld)
+        // {
+        //     rb.isKinematic = true;
+        //     rb.useGravity = false;
+        //     rb.linearVelocity = Vector3.zero;
+        //     rb.angularVelocity = Vector3.zero;
+        // }
     }
 
 
@@ -186,7 +186,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     {
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-        StopPhysicsMode(); // ? ADD THIS — clears forcePhysics before hand tries to place it
+        StopPhysicsMode(); // ? ADD THIS ï¿½ clears forcePhysics before hand tries to place it
         if (owner != null)
         {
             owner.WarpCardToHand(this);
@@ -229,7 +229,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
             StoreOriginalPosition();
             DisableGrab();
 
-            // ? ADD THIS — grabbing from deck ends your turn
+            // ? ADD THIS ï¿½ grabbing from deck ends your turn
             HumanPlayer human = current as HumanPlayer;
             if (human != null && CardGameManager.instance.IsPlayerTurn(human))
             {
@@ -239,7 +239,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         }
     }
 
-    // In Card.cs — add this public method
+    // In Card.cs ï¿½ add this public method
     public virtual void ReRegisterGrabListeners()
     {
         if (grab == null) grab = GetComponent<XRGrabInteractable>();
