@@ -356,12 +356,22 @@ public class CardHand : MonoBehaviour
         for (int i = 0; i < cardCount; i++)
         {
             float angle = startAngle + angleStep * i;
+            float centeredIndex = i - (cardCount - 1) * 0.5f;
+            float normalizedIndex = cardCount > 1 ? centeredIndex / ((cardCount - 1) * 0.5f) : 0f;
+            float depthCurve = Mathf.Abs(normalizedIndex);
 
-            // Position cards in an arc
-            Vector3 offset = Quaternion.Euler(0f, angle, 0f) * (Vector3.back * radius);
-            Vector3 localPos = offset * 0.5f + Vector3.forward * 0.225f;
+            // Fan mostly upward with roll so the spread feels more like a held hand of cards.
+            Vector3 arcOffset = Quaternion.Euler(0f, 0f, -angle) * (Vector3.up * radius);
+            Vector3 localPos = new Vector3(
+                arcOffset.x * 0.65f,
+                (arcOffset.y - radius) * 0.35f,
+                0.225f
+                    + Mathf.Abs(arcOffset.x) * 0.04f
+                    + centeredIndex * 0.004f
+                    - (1f - depthCurve) * 0.01f
+            );
 
-            Quaternion localRot = Quaternion.Euler(tilt, angle, 0f);
+            Quaternion localRot = Quaternion.Euler(tilt, angle * 0.2f, -angle);
 
             StartCoroutine(
 
