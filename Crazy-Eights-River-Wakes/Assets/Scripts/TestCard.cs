@@ -30,8 +30,8 @@ public class TestCard : Card
 
     private void OnCardGrabStarted(UnityEngine.XR.Interaction.Toolkit.SelectEnterEventArgs args)
     {
-        // isBeingHeld = true;
-        // currentlyHeld = true;
+        isBeingHeld = true;
+        currentlyHeld = true;
         // controllerVelocity = Vector3.zero;
         // lastControllerPos = args.interactorObject.transform.position;
 
@@ -48,13 +48,9 @@ public class TestCard : Card
     private void OnCardReleased(UnityEngine.XR.Interaction.Toolkit.SelectExitEventArgs args)
     {
         EnablePhysics();
-        // isBeingHeld = false;
-        // currentlyHeld = false; // ? ADD
-
-        // grab.trackPosition = true;
-        // grab.trackRotation = true;
-
-        // transform.SetParent(null, true);
+        isBeingHeld = false;
+        currentlyHeld = false; // ? ADD
+        transform.SetParent(null, true);
         // EnablePhysics();
         // rb.linearVelocity = controllerVelocity;
     }
