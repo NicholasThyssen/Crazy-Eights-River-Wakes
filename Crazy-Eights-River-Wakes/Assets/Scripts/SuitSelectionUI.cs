@@ -66,7 +66,7 @@ public class SuitSelectionUI : MonoBehaviour
             canvas.worldCamera = Camera.main;
     }
 
-    public void ShowAnnouncement(CardSuit suit, float duration = 3f)
+    public void ShowAnnouncement(CardSuit suit, float duration = 10f)
     {
         if (announcementText != null)
             announcementText.text = "Suit changed to: " + suit.ToString();
