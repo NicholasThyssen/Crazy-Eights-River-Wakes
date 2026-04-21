@@ -19,9 +19,12 @@ public class BoatPath : MonoBehaviour
         Transform target = waypoints[currentWaypoint];
         Vector3 direction = (target.position - transform.position).normalized;
 
+        Quaternion lookDirection = Quaternion.LookRotation(direction) * offset;
+        lookDirection.y = 0f;
+
         if (!hasStartedMoving)
         {
-            transform.rotation = Quaternion.LookRotation(direction) * offset;
+            transform.rotation = lookDirection;
             hasStartedMoving = true;
         }
 
@@ -33,7 +36,7 @@ public class BoatPath : MonoBehaviour
 
         float tiltStrength = 0.2f;
         Quaternion tilt = Quaternion.Euler(0, 0, -turnAmount * tiltStrength);
-        Quaternion targetRotation = Quaternion.LookRotation(direction) * offset;
+        Quaternion targetRotation = lookDirection;
 
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
