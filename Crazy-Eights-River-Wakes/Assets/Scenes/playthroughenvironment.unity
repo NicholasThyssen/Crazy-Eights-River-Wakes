@@ -95279,6 +95279,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4219185971946927200, guid: e219da27970eb4bb38fda730ff09bd6a, type: 3}
   m_PrefabInstance: {fileID: 629233789}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &629566601 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3051814472913707988, guid: ce8cab87489fbdb4ebb33cdfe4ba9e18, type: 3}
+  m_PrefabInstance: {fileID: 2004637046}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73af3dcf61ce2a64b8357e844cd08ea9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &629663972
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -207923,7 +207934,7 @@ PrefabInstance:
     - target: {fileID: 86469216418539511, guid: 980691177a356449eb52cb3798c32fc8, type: 3}
       propertyPath: gameOverUI
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 629566601}
     - target: {fileID: 86469216418539511, guid: 980691177a356449eb52cb3798c32fc8, type: 3}
       propertyPath: discardPile
       value: 
