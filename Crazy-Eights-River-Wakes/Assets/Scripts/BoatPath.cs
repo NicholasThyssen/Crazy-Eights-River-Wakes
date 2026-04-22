@@ -10,8 +10,14 @@ public class BoatPath : MonoBehaviour
 
     private bool hasStartedMoving = false;
     private readonly Quaternion offset = Quaternion.Euler(0, 90f, 0);
+    private Rigidbody rb;
 
-    void Update()
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    void FixedUpdate()
     {
         if (!isMoving) return;
         if (waypoints.Length == 0) return;
@@ -30,13 +36,23 @@ public class BoatPath : MonoBehaviour
             hasStartedMoving = true;
         }
 
-        transform.position += direction * speed * Time.deltaTime;
+        Vector3 newPosition = rb.position + direction * speed * Time.deltaTime;
+        rb.MovePosition(newPosition);
 
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
+        // transform.position += direction * speed * Time.deltaTime;
+
+        Quaternion newRotation = Quaternion.Slerp(
+            rb.rotation,
             lookDirection,
             Time.deltaTime * turnSpeed
         );
+        rb.MoveRotation(newRotation);
+
+        // transform.rotation = Quaternion.Slerp(
+        //     transform.rotation,
+        //     lookDirection,
+        //     Time.deltaTime * turnSpeed
+        // );
 
         if (Vector3.Distance(transform.position, target.position) < 1f)
         {
