@@ -3,7 +3,7 @@ using UnityEngine;
 public class BoatPath : MonoBehaviour
 {
     public Transform[] waypoints;
-    public float speed = 5f;
+    public float speed = 4f;
     public float turnSpeed = 2f;
     private int currentWaypoint = 0;
     public bool isMoving = false;
