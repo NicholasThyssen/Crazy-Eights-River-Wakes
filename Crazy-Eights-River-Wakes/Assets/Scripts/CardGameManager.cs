@@ -83,7 +83,7 @@ public class CardGameManager : MonoBehaviour
         // TEMP TESTING � remove before shipping
         if ((Keyboard.current.digit3Key.wasPressedThisFrame))
         {
-            Debug.Log("W pressed, gameOverUI = " + gameOverUI);
+            Debug.Log("W pressed, gameOverUI = " + gameOverUI); 
             TriggerGameOver(true);  // test win screen
         }
             
