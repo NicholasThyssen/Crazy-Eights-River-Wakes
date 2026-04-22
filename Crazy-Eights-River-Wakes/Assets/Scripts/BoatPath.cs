@@ -36,7 +36,7 @@ public class BoatPath : MonoBehaviour
             hasStartedMoving = true;
         }
 
-        Vector3 newPosition = rb.position + direction * speed * Time.deltaTime;
+        Vector3 newPosition = rb.position + direction * speed * Time.fixedDeltaTime;
         rb.MovePosition(newPosition);
 
         // transform.position += direction * speed * Time.deltaTime;
@@ -44,7 +44,7 @@ public class BoatPath : MonoBehaviour
         Quaternion newRotation = Quaternion.Slerp(
             rb.rotation,
             lookDirection,
-            Time.deltaTime * turnSpeed
+            Time.fixedDeltaTime * turnSpeed
         );
         rb.MoveRotation(newRotation);
 

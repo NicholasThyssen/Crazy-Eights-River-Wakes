@@ -51437,7 +51437,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &333761072
 Transform:
   m_ObjectHideFlags: 0
@@ -245823,7 +245823,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6282664146322979405, guid: 86be93f3383004973ad79d9d7239eade, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -288668,6 +288668,10 @@ PrefabInstance:
       propertyPath: handAttach
       value: 
       objectReference: {fileID: 416834988}
+    - target: {fileID: 2707896945846247741, guid: 82563d3f1ca11487f91ce98294c74d90, type: 3}
+      propertyPath: m_UpdateType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6505691748780621370, guid: 82563d3f1ca11487f91ce98294c74d90, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.39999893
@@ -288719,6 +288723,10 @@ PrefabInstance:
     - target: {fileID: 6505691748780621370, guid: 82563d3f1ca11487f91ce98294c74d90, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9127451090324572843, guid: 82563d3f1ca11487f91ce98294c74d90, type: 3}
+      propertyPath: m_UpdateType
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
