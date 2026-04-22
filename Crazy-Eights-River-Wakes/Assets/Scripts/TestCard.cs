@@ -37,7 +37,7 @@ public class TestCard : Card
 
         grab.trackPosition = true;
         grab.trackRotation = true;
-        grab.movementType = UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.MovementType.VelocityTracking;
+        grab.movementType = UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.MovementType.Instantaneous;
 
         // Transform controllerTransform = args.interactorObject.transform;
         // transform.SetParent(controllerTransform, true);
