@@ -13,7 +13,7 @@ public abstract class BaseCharacter : MonoBehaviour
     protected List<Card> ownedCards;
 
     // The physical representation of a player's hand.
-    protected CardHand playerHand;
+    [HideInInspector] public CardHand playerHand;
 
     protected bool playedThisTurn = false;
 

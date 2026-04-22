@@ -13,6 +13,7 @@ public class TestCard : Card
     private Vector3 lastControllerPos;
     private Vector3 controllerVelocity;
     private bool isBeingHeld = false;
+    private float timeSinceHeld = 0f;
 
     protected override void Awake()
     {
@@ -59,17 +60,23 @@ public class TestCard : Card
 
     private void Update()
     {
-        // if (isBeingHeld && grab.interactorsSelecting.Count > 0)
-        // {
-        //     Transform controllerTransform = grab.interactorsSelecting[0].transform;
-
-        //     transform.position = controllerTransform.position;
-        //     transform.rotation = controllerTransform.rotation * Quaternion.Euler(0, 180, 0);
-
-        //     // No threshold � track all movement
-        //     controllerVelocity = (controllerTransform.position - lastControllerPos) / Time.deltaTime;
-        //     lastControllerPos = controllerTransform.position;
-        // }
+        if (currentlyHeld)
+        {
+            timeSinceHeld = 0;
+        }
+        else if (owner != null && (owner.playerHand != null))
+        {
+            if (!owner.playerHand.HasCardInHand(this))
+            {
+                // card has owner, but owner isn't holding the card. so it is lost
+               timeSinceHeld += Time.deltaTime;
+                if (timeSinceHeld > 3)
+                {
+                    Warpback();
+                } 
+            }
+            
+        }
     }
 
     public void UpdateSuitDisplay(CardSuit newSuit)

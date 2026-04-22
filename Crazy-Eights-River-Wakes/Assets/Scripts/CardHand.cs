@@ -32,6 +32,8 @@ public class CardHand : MonoBehaviour
     private XRGrabInteractable parentGrab;
 
     private BoxCollider boxCollider;
+    private bool isDropped = false;
+    private float timeSinceHeld = 0f;
 
     // custom setter so that changing IsFanned in inspector actually fans/unfans
     public bool IsFanned
@@ -73,6 +75,21 @@ public class CardHand : MonoBehaviour
         {
             Debug.Log($"CardHand strayed {dist:F1}m from spawn — warping back.");
             Warpback();
+        }
+        else
+        {
+            if (!isDropped)
+            {
+                timeSinceHeld = 0;
+            }
+            else if (owner != null)
+            {
+                timeSinceHeld += Time.deltaTime;
+                if (timeSinceHeld > 3)
+                {
+                    Warpback();
+                }    
+            }
         }
     }
 
@@ -463,6 +480,7 @@ public class CardHand : MonoBehaviour
 
     private void OnDeckGrabbed(SelectEnterEventArgs args)
     {
+        isDropped = false;
         Debug.Log("DECK GRABBED");
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.isKinematic = true;
@@ -484,6 +502,7 @@ public class CardHand : MonoBehaviour
 
     private void OnDeckReleased(SelectExitEventArgs args)
     {
+        isDropped = true;
         Debug.Log("DECK RELEASED");
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.isKinematic = false;
