@@ -3,7 +3,7 @@ using UnityEngine;
 public class BoatPath : MonoBehaviour
 {
     public Transform[] waypoints;
-    public float speed = 4f;
+    public float speed;
     public float turnSpeed = 2f;
     private int currentWaypoint = 0;
     public bool isMoving = false;
@@ -15,6 +15,7 @@ public class BoatPath : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        speed = 3.5f;
     }
 
     void FixedUpdate()
