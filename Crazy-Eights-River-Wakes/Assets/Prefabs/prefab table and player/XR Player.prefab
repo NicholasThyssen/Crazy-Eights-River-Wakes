@@ -2255,6 +2255,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardHandPrefab: {fileID: 4412261983161512068, guid: 3a258f7c755b9374fa07d934d86ce34e, type: 3}
+  playerHand: {fileID: 0}
   playerId: -1
   playerPlayedCard:
     m_PersistentCalls:
