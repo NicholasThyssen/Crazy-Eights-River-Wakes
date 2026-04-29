@@ -62,6 +62,11 @@ public class GameManager : MonoBehaviour
     {
 
     }
+
+    void LateUpdate()
+    {
+        Physics.SyncTransforms();
+    }
 }
 
 public enum GameState
