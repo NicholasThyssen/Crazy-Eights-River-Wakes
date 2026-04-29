@@ -9,19 +9,19 @@ public class FallTeleporter : MonoBehaviour
         collider = GetComponent<BoxCollider>();
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        Debug.Log(other);
-        CardDeck deck = other.gameObject.GetComponent<CardDeck>();
-        Debug.Log(deck);
-        if (deck != null)
-        {
-            deck.Warpback();
-        }
-        Card card = other.gameObject.GetComponent<Card>();
-        if (card != null)
-        {
-            card.Warpback();
-        }
-    }
+    // private void OnTriggerEnter(Collider other)
+    // {
+    //     Debug.Log(other);
+    //     CardDeck deck = other.gameObject.GetComponent<CardDeck>();
+    //     Debug.Log(deck);
+    //     if (deck != null)
+    //     {
+    //         deck.Warpback();
+    //     }
+    //     Card card = other.gameObject.GetComponent<Card>();
+    //     if (card != null)
+    //     {
+    //         card.Warpback();
+    //     }
+    // }
 }
