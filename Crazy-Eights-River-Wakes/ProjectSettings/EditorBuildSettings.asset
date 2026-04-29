@@ -9,14 +9,14 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: 5708fd3fa5432459ab0b7642abdcbbd2
   - enabled: 1
-    path: Assets/Scenes/ChaseTestScene.unity
-    guid: 6bbd7f6810bf13643b8ee0264d515f35
-  - enabled: 1
-    path: Assets/Scenes/NicksTestScene2.unity
-    guid: 7dd126e62d4f01743a75a0ea65948cf5
-  - enabled: 1
     path: Assets/Scenes/playthroughenvironment.unity
     guid: 95538d70d3dbd427c97ede3d5fe74e97
+  - enabled: 0
+    path: Assets/Scenes/ChaseTestScene.unity
+    guid: 6bbd7f6810bf13643b8ee0264d515f35
+  - enabled: 0
+    path: Assets/Scenes/NicksTestScene2.unity
+    guid: 7dd126e62d4f01743a75a0ea65948cf5
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 1533c7de4a2411c45aa4d4fe79504b9a, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

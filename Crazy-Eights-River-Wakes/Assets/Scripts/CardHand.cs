@@ -34,6 +34,7 @@ public class CardHand : MonoBehaviour
     private BoxCollider boxCollider;
     private bool isDropped = false;
     private float timeSinceHeld = 0f;
+    private Coroutine currFanAnimationRoutine = null;
 
     // custom setter so that changing IsFanned in inspector actually fans/unfans
     public bool IsFanned
@@ -359,6 +360,10 @@ public class CardHand : MonoBehaviour
     public void MakeCardFan(bool animate = true, float fanAngleOverride = -1f)
     {
         Debug.Log("FANNING");
+        if (currFanAnimationRoutine != null)
+        {
+            StopCoroutine(currFanAnimationRoutine);
+        }
         isFanned = true;
         int cardCount = heldCards.Count;
         if (cardCount == 0 || cardContainer == null) return;
@@ -390,7 +395,7 @@ public class CardHand : MonoBehaviour
 
             Quaternion localRot = Quaternion.Euler(tilt, angle * 0.2f, -angle);
 
-            StartCoroutine(
+            currFanAnimationRoutine = StartCoroutine(
 
                 Utils.AnimateTransform(
                     heldCards[i].transform,
@@ -421,6 +426,10 @@ public class CardHand : MonoBehaviour
     protected void MakeCardNotFan(bool animate = false)
     {
         Debug.Log("UNFANNING");
+        if (currFanAnimationRoutine != null)
+        {
+            StopCoroutine(currFanAnimationRoutine);
+        }
         isFanned = false;
         int cardCount = heldCards?.Count ?? 0;
         if (cardCount == 0 || cardContainer == null) return;
@@ -434,7 +443,7 @@ public class CardHand : MonoBehaviour
 
             Vector3 localPos = Vector3.forward * offsetZ;
 
-            StartCoroutine(
+            currFanAnimationRoutine = StartCoroutine(
                 Utils.AnimateTransform(
                     heldCards[i].transform,
                     localPos,

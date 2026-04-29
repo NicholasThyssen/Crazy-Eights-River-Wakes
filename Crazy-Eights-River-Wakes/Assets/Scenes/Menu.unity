@@ -65574,9 +65574,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6207710870860301065, guid: bf6aa98837b1acb409b31fa040b4661f, type: 3}
+      propertyPath: m_CastDistance
+      value: 19
+      objectReference: {fileID: 0}
     - target: {fileID: 8517607156371064570, guid: bf6aa98837b1acb409b31fa040b4661f, type: 3}
       propertyPath: m_InteractionLayers.m_Bits
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8638010198198770372, guid: bf6aa98837b1acb409b31fa040b4661f, type: 3}
+      propertyPath: m_CastDistance
+      value: 19
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
