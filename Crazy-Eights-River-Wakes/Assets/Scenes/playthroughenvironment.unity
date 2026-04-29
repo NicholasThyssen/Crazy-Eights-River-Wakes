@@ -291880,6 +291880,10 @@ PrefabInstance:
       propertyPath: m_UpdateType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3806925401896755184, guid: 82563d3f1ca11487f91ce98294c74d90, type: 3}
+      propertyPath: m_HitDetectionType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6505691748780621370, guid: 82563d3f1ca11487f91ce98294c74d90, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.39999893
@@ -291935,6 +291939,10 @@ PrefabInstance:
     - target: {fileID: 7454895783479805089, guid: 82563d3f1ca11487f91ce98294c74d90, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8837420559969636651, guid: 82563d3f1ca11487f91ce98294c74d90, type: 3}
+      propertyPath: m_HitDetectionType
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9127451090324572843, guid: 82563d3f1ca11487f91ce98294c74d90, type: 3}
       propertyPath: m_UpdateType
